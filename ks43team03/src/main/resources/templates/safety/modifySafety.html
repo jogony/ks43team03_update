@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{margin-top:10px;}
+		</style>
+	</th:block>	
+	
+	<!-- 사용자 정의 Js 파일 -->
+	<th:block layout:fragment="customJs">
+	<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>	
+	<script>
+		$(function() {
+			function validationCheck(data) {
+				if (typeof data == 'undefined' || data == '' || data == null) {
+					return false;
+				}
+				return true;
+			}	
+			/* 안전점검 등록시 유효성 검사 */
+			$('#modifySafetyBtn').click(function(){
+				var isSubmit = true;
+				var inputObj = $('#modifySafetyForm').find('input');
+				
+				$.each(inputObj, function(){
+					var inputData 	= $(this).val();
+					var result 		= validationCheck(inputData);
+					
+					// 사용자가 입력하지 않은 경우
+					if(!result){
+						alert('필수 항목입니다. 입력해주세요.');
+						$(this).focus();
+						isSubmit = false;
+						return false;
+					}
+				});
+					
+					if(isSubmit) $('#modifySafetyForm').submit();
+				});
+			});
+	</script>
+	</th:block>	
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+	
+	<div class="title_left" style="margin-top:80px; margin-bottom:30px">	
+		<h3>안전점검 수정</h3>
+	</div>	
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12">
+			<div class="x_panel">
+			<div class="x_title">		
+				<h2>안전점검 정보 수정 </h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>		
+			<div class="x_content">
+			<form id="modifySafetyForm" th:action="@{/safety/modifySafety}" method="post">
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="safetyCheckCd">안전점검 등록코드 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="safetyCheckCd" th:value="${safetyInfoByCd.safetyCheckCd}" readonly="readonly"/> 
+					</div>
+				</div>													
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="facilityCd">시설대표코드<span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="facilityCd" th:value="${safetyInfoByCd.facilityCd}" readonly="readonly"/> 
+					</div>
+				</div>			
+<!-- 				<div class="field item form-group" style = "list-style:none;">
+					<div class="col-form-label col-md-3 col-sm-3 label-align" id="safety-File-label">안전점검 결과 첨부 파일<span class="required">*</span></div>
+					<div class="col-md-6 col-sm-6">
+						<input type="file" name="safetyCheckFile" class="safety-file" th:value="${safetyFile}" required multiple>			
+					</div>
+				</div>	 -->			
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3 label-align" for="safetyCheckDate">안전 점검일
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-6 col-sm-6 ">
+						<input class="form-control" type="date" name="safetyCheckDate" th:value="${safetyInfoByCd.safetyCheckDate}">
+					</div>
+				</div>		
+				<div class="ln_solid">
+					<div class="form-group">
+						<div class="col-md-6 offset-md-3">
+							<button type='reset' class="btn btn-primary">취소</button>
+							<button type='submit' id="modifySafetyBtn" class="btn btn-success">등록</button>
+						</div>
+					</div>
+				</div>		
+			</form>
+			</div>
+			</div>
+		</div>
+	</div>
+</th:block>		
+
+</html>

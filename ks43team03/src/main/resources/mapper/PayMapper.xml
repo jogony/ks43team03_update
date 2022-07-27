@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="ks43team03.mapper.PayMapper">
+	<resultMap type="Pay" id="payResultMap">
+		<id column="pay_cd" property="payCd"/>
+		<result column="order_cd" property="orderCd"/>
+		<result column="user_id" property="userId"/>
+		<result column="pay_used_point" property="payUsedPoint"/>
+		<result column="pay_method" property="payMethod"/>
+		<result column="payment_key" property="paymentKey"/>
+		<result column="order_uuid_id" property="orderUUID"/>
+		<result column="pay_price" property="payPrice"/>
+		<result column="pay_total_price" property="payTotalPrice"/>
+		<result column="pay_reg_date" property="payRegDate"/>
+		<result column="pay_state" property="payState"/>
+		<result column="pay_del_yn" property="payDelYN"/>
+		<result column="pay_del_date" property="payDelDate"/>
+	</resultMap>
+	
+	<insert id="addPay" parameterType="Pay">
+		<selectKey keyProperty="payCd" resultType="String" order="BEFORE">
+		SELECT
+			case
+			when COUNT(p.pay_cd) = 0 
+			then 'pay_cd_1'
+			else
+				CONCAT('pay_cd_',MAX(CAST(SUBSTRING_INDEX(p.pay_cd,'_',-1) AS UNSIGNED))+1)
+			END
+		FROM
+			pay AS p							
+		</selectKey>
+		INSERT INTO pay
+			(
+			pay_cd
+			,order_cd
+			,user_id
+			,pay_used_point
+			,pay_method
+			,payment_key
+			,order_uuid_id
+			,pay_price
+			,pay_total_price
+			,pay_reg_date
+			,pay_state
+			,pay_del_yn
+			)
+		VALUES (
+			#{payCd}
+			,#{orderCd}
+			,#{userId}
+			,#{payUsedPoint}
+			,#{payMethod}
+			,#{paymentKey}
+			,#{orderUUID}
+			,#{payPrice}
+			,#{payTotalPrice}
+			, NOW()
+			,#{payState}
+			,'N'
+			)
+	</insert>
+	
+	<!-- 결제한 카드정보 -->
+	<insert id="addPayCardInfo" parameterType="Pay">
+		INSERT INTO pay_card
+			(
+			pay_cd
+			, pay_card_company
+			, pay_card_number
+			, pay_card_type
+			)
+		VALUES (
+			#{payCd}
+			,#{payCompany}
+			,#{payCardNumber}
+			,#{payCardType}
+		)
+	</insert>
+	
+	<!-- 결제한 가상계좌 -->
+	<insert id="addPayVirtualAccount" parameterType="Pay">
+		INSERT INTO pay_virtual_account
+			(
+			pay_cd
+			, pay_bank
+			, pay_user_name
+			, pay_account_number
+			, pay_due_date
+			)
+			VALUES (
+			#{payCd}
+			,#{payBank}
+			,#{payUserName}
+			,#{accountNumber}
+			,#{payDueDate}
+		)
+	</insert>
+</mapper>

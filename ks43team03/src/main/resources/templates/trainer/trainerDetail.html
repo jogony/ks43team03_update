@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">	
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.board__details__item__title ul li {
+				display: block;
+			}
+			.board__details__item__title ul li:after {
+				content: none;
+			}
+			.board__details__desc ul li {
+				border: none;
+				padding: 10px 5px;
+			}
+		</style>
+	</th:block>
+	
+	<!-- 사용자 정의 Js 파일-->
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	</th:block>
+	
+
+	<th:block layout:fragment="customContents">
+	
+		<!-- Breadcrumb Begin -->
+		<div class="breadcrumb-option">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="breadcrumb__links">
+							<a th:href="@{/user}">
+								<i class="fa fa-home"></i>
+								Home
+							</a>
+							<span>trainerDetail</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+	
+		<!-- 트레이너 정보 -->
+		<section class="board-details spad">
+			<div class="container" th:if="${trainerProfile == null}">
+				<h4>로그인이 필요한 서비스입니다.</h4>
+			</div>
+			<div class="container" th:unless="${trainerProfile == null}">
+				<input type="hidden" id="trainerData" th:value="${trainerProfile.trainerCd}">
+				<div class="row" style="padding-bottom: 80px">
+					<div class="product__details__pic col-lg-6 col-md-6">
+						<div class="product__details__pic__left product__thumb nice-scroll">
+							<th:block th:if="${not #lists.isEmpty(trainerProfile.tFile)}" th:each="t, i : ${trainerProfile.tFile}">
+								<a class="pt" th:data-img="${t.representImg}" th:href="@{#product-} + ${i.index+1}">
+									<img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="" style="height: 60px;">
+								</a>
+							</th:block>
+						</div>
+						<div class="product__details__slider__content">
+							<div class="product__details__pic__slider owl-carousel">
+								<th:block  th:if="${not #lists.isEmpty(trainerProfile.tFile)}" th:each="t, i : ${trainerProfile.tFile}">                           
+									<img th:data-hash="@{product-} + ${i.index+1}" class="product__big__img" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="" style="height: 300px;">
+								</th:block>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6">
+						<div class="board__details__content">
+							<div class="board__details__item">
+								<img src="img/board/details/board-details.jpg" alt="">
+								<div class="board__details__item__title">
+									<span class="tip">트레이너</span>
+									<h4>[[${trainerProfile.trainerNickname}]]</h4>
+								</div>
+								<div class="product__details__text">
+									<div class="rating">
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+										<i class="fa fa-star"></i>
+									</div>
+									<div style="margin: 20px 0 70px 0;">
+				                        <p th:text="'phone ' +${trainerProfile.user.userTell}" style="font-size : medium; margin: 0px;" ></p>
+									</div>
+									<div class="product__details__button">
+										<th:block th:if="${session.SID eq trainerProfile.userId}">
+											<a th:href="@{/trainer/modifyTrainer(trainerCd=${trainerProfile.trainerCd})}" class="cart-btn">
+												<span class="icon_bag_alt"></span>
+												트레이너 정보 수정
+											</a> 	
+										</th:block>
+										<ul>
+											<li><a href="#"><span class="icon_heart_alt"></span></a></li>
+											<li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12 col-md-12">
+						<div>
+							<div class="board__details__quote">
+								<div class="icon">
+									<i class="fa fa-quote-left"></i>
+								</div>
+						 		<p>
+						 			소개 강조 글
+								</p>
+							</div>
+							<div class="board__details__desc">
+								<p>
+									소개 글 있으면 좋을 듯
+								</p>
+							</div>
+							<div class="board__details__tags">
+								<a href="#">Fashion</a>
+								<a href="#">Street style</a>
+								<a href="#">Diversity</a>
+								<a href="#">Beauty</a>
+							</div>
+							<div class="board__details__quote">
+								<div class="icon">
+									<i class="fa fa-quote-left"></i>
+								</div>
+								<div th:if="${session.SID eq trainerProfile.userId}">
+									<a th:href="@{/trainer/addCareer(trainerCd=${trainerProfile.trainerCd})}">
+										<button class="btn btn-info btn-sm">경력 및 자격증 추가</button>
+									</a>
+								</div>
+						 		<p>
+						 			경력
+								</p>
+							</div>
+							<div class="board__details__desc">
+								<ul class="list-group list-group-horizontal"
+									th:if="${not #lists.isEmpty(trainerCareer.trainerCareerList)}" th:each="l : ${trainerCareer.trainerCareerList}">
+									<li class="list-group-item">
+										<span>[[${l.trainerCareerCenter}]]</span>
+									</li>
+									<li class="list-group-item">
+										<span>[[${l.trainerCareerPosition}]]</span>
+									</li>
+									<li class="list-group-item">
+										<span>[[${l.trainerCareerWork}]]</span>
+									</li>
+									<li class="list-group-item">
+										<span>[[${l.trainerCareerTerm}]]</span>
+										년
+									</li>
+									<li th:if="${session.SID eq trainerProfile.userId}">
+										<a th:href="@{/trainer/modifyCareer(trainerCareerCd=${l.trainerCareerCd})}">
+											<button class="btn btn-primary btn-sm">수정</button>
+										</a>
+										<a th:href="@{/trainer/modifyCareer(trainerCareerCd=${l.trainerCareerCd})}">
+											<button class="btn btn-danger btn-sm">삭제</button>
+										</a>
+									</li>
+								</ul>
+								<ul class="list-group list-group-horizontal"
+									th:unless="${not #lists.isEmpty(trainerCareer.trainerCareerList)}">
+									<li class="list-group-item">
+										<span>등록된 경력 사항이 없습니다.</span>
+									</li>
+								</ul>
+							</div>
+							<div class="board__details__tags">
+								<a href="#">Fashion</a>
+								<a href="#">Street style</a>
+								<a href="#">Diversity</a>
+								<a href="#">Beauty</a>
+							</div>
+							<div class="board__details__quote">
+								<div class="icon">
+									<i class="fa fa-quote-left"></i>
+								</div>
+						 		<p>
+						 			자격증
+								</p>
+							</div>
+							<div class="board__details__desc">
+								<ul class="list-group list-group-horizontal"
+									th:if="${not #lists.isEmpty(trainerLicense.trainerLicenseList)}" th:each="l : ${trainerLicense.trainerLicenseList}">
+									<li class="list-group-item">
+										<span>[[${l.trainerLicense}]]</span>
+									</li>
+									<li th:if="${session.SID eq trainerProfile.userId}">
+										<a th:href="@{/trainer/modifyLicense(trainerLicenseCd=${l.trainerLicenseCd})}">
+											<button class="btn btn-primary btn-sm">수정</button>
+										</a>
+										<a th:href="@{/trainer/modifyLicense(trainerLicenseCd=${l.trainerLicenseCd})}">
+											<button class="btn btn-danger btn-sm">삭제</button>
+										</a>
+									</li>
+								</ul>
+								<ul class="list-group list-group-horizontal"
+									th:unless="${not #lists.isEmpty(trainerLicense.trainerLicenseList)}">
+									<li class="list-group-item">
+										<span>등록된 자격증이 없습니다.</span>
+									</li>
+								</ul>
+							</div>
+							<div class="board__details__tags">
+								<a href="#">Fashion</a>
+								<a href="#">Street style</a>
+								<a href="#">Diversity</a>
+								<a href="#">Beauty</a>
+							</div>
+							<div class="board__details__btns">
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<div class="board__details__btn__item">
+											<h6>
+												<a href="#">
+													<i class="fa fa-angle-left"></i>
+													Previous posts
+												</a>
+											</h6>
+										</div>
+									</div>
+									<div class="col-lg-6 col-md-6 col-sm-6">
+										<div class="board__details__btn__item board__details__btn__item--next">
+											<h6>
+												<a href="#">
+													Next posts
+													<i class="fa fa-angle-right"></i>
+												</a>
+											</h6>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</th:block>
+</html>

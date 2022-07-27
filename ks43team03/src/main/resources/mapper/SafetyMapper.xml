@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.SafetyMapper">  
+	<resultMap type="Safety" id="safetyCheckResultMap">	
+		<id column="safety_check_cd"				property="safetyCheckCd"/>
+		<result column="user_id"					property="userId"/>
+		<result column="facility_cd"				property="facilityCd"/>
+		<result column="safety_check_file"			property="safetyCheckFile"/>
+		<result column="safety_check_date"			property="safetyCheckDate"/>
+		<result column="safety_check_reg_date"		property="safetyCheckRegDate"/>
+		<result column="safety_check_state"			property="safetyCheckState"/>
+	<!-- </resultMap> -->
+	
+		<association property="facility" javaType="Facility">
+			<id column="facility_cd"					property="facilityCd"/>
+			<result column="main_ctg_cd"				property="mainCtgCd"/>
+			<result column="facility_use_cd"			property="facilityUseCd"/>
+			<result column="town_cd"					property="townCd"/>
+			<result column="user_id"					property="userId"/>
+			<result column="facility_nm"				property="facilityNm"/>
+			<result column="facility_address"			property="facilityAddr"/>
+			<result column="facility_tell"				property="facilityTell"/>
+			<result column="business_number"			property="businessNum"/>
+			<result column="facility_reg_date"			property="facilityRegDate"/>
+			<result column="facility_post_num"			property="facilityPostNum"/>
+			<result column="facility_detail_addr"		property="facilityDetailAddr"/>
+			<result column="area_cd"					property="areaCd"/>
+			<result column="city_cd"					property="cityCd"/>	
+			<result column="facility_detail"  			property="facilityDetail"/>		
+		</association>
+		
+		<association property="user" javaType="User">
+			<result column="user_level"			property="userLevel"/>
+			<result column="user_password"		property="userPw"/>
+			<result column="user_nm"			property="userName"/>
+			<result column="user_address"		property="userAddr"/>
+			<result column="user_birth"			property="userBirth"/>
+			<result column="user_email"			property="userEmail"/>
+			<result column="user_tell"			property="userTell"/>
+			<result column="user_gender"		property="userGender"/>
+			<result column="user_drop"			property="userDrop"/>
+			<result column="reg_path"			property="userRegPath"/>
+			<result column="user_terms"			property="userTerms"/>
+			<result column="user_reg_date"		property="userRegDate"/>
+			<result column="user_post_num"		property="userPostNum"/>
+			<result column="user_detail_addr"	property="userDetailAddr"/>
+		</association>
+		
+		<collection property="tFile" ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result column="re_file_name"			property="reFileName"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_date"			property="updatedDate"/>
+			<result	column="represent_img"			property="representImg"/>
+		</collection>	
+	</resultMap>
+
+	<insert id="addSafety" parameterType="Safety">
+		/*안전점검 등록*/
+		INSERT INTO safety_check
+			(safety_check_cd
+			,user_id
+			,facility_cd
+			,safety_check_file
+			,safety_check_date
+			,safety_check_reg_date
+			,safety_check_state
+			)VALUES (
+				 #{safetyCheckCd}
+				,#{userId}
+				,#{facilityCd}
+				,'pdf'
+				,#{safetyCheckDate}
+				,NOW()
+				,'Y')		
+	</insert>
+
+	<select id="getSafetyList" parameterType="map" resultType="map">
+		/*안전점검 등록 시설 목록 조회(전체)*/
+		SELECT 
+			 c.safety_check_cd          as safetyCheckCd
+			,c.user_id 					as userId
+			,u.user_nm					as userName
+			,f.facility_nm				as facilityNm
+			,c.safety_check_file		as safetyCheckFile
+			,c.safety_check_date		as safetyCheckDate
+			,c.safety_check_reg_date	as safetyCheckRegDate
+		FROM 
+			safety_check AS c,
+			user AS u,
+			facility AS f
+		WHERE 
+			c.user_id = u.user_id
+			AND 
+			u.user_id = f.user_id
+			AND  
+			c.facility_cd = f.facility_cd
+		LIMIT #{startRow}, #{rowPerPage};		
+	</select>
+	
+	<select id="getSafetyListCount" resultType="int">
+		/*안전점검 등록 시설 목록 총 row(튜플) 수*/
+		SELECT
+			COUNT(*)
+		FROM
+			safety_check;	
+	</select>
+	
+	<select id="getSafetyListById" parameterType="map" resultType="map">
+		/*시설 관리자의 안전점검 등록 목록 조회*/
+		SELECT
+			 c.user_id					as userId 
+			,c.safety_check_cd          as safetyCheckCd
+			,f.facility_nm				as facilityNm
+			,c.safety_check_file		as safetyCheckFile
+			,c.safety_check_date		as safetyCheckDate
+			,c.safety_check_reg_date	as safetyCheckRegDate
+		FROM 
+			safety_check AS c
+			INNER JOIN 
+			facility AS f
+			ON 
+			c.facility_cd = f.facility_cd
+		WHERE 
+			c.user_id = #{session.SID};	
+	</select>	
+	
+	<select id="getSafetyInfoByCd" parameterType="String" resultMap="safetyCheckResultMap">
+		/*안전점검 등록코드별 시설 수정*/
+		SELECT 
+			 c.safety_check_cd
+			,c.user_id
+			,c.facility_cd
+			,c.safety_check_file
+			,c.safety_check_date
+			,c.safety_check_reg_date
+			,c.safety_check_state
+		FROM 
+			safety_check AS c
+		WHERE 
+			c.safety_check_cd = #{safetyCheckCd};		
+	</select>	
+	
+	<update id="modifySafety" parameterType="Safety">	
+		/*안전점검 등록 정보 수정*/
+<!-- 		UPDATE 
+			safety_check
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="safetyCheckCd != null and safetyCheckCd != ''">
+				safety_check_cd = #{safetyCheckCd}
+			</if>
+			<if test="facilityCd != null and facilityCd !=''">
+				,facility_cd = #{facilityCd} 
+			</if>
+			<if test="safetyCheckDate != null and safetyCheckDate !=''">
+				,safety_check_date = #{safetyCheckDate} 
+			</if>
+		</trim>
+		WHERE 
+			safety_check_cd = #{safetyCheckCd}; -->		
+	
+ 		UPDATE safety_check
+		SET
+			safety_check_date = #{safetyCheckDate},
+			safety_check_reg_date = NOW()
+		WHERE 
+			safety_check_cd = #{safetyCheckCd};	 	
+	</update>
+	
+	<delete id="removeSafety" parameterType="Safety">
+		/*안전점검 등록 정보 삭제*/
+		DELETE 
+		FROM 
+			safety_check 
+		WHERE 
+			safety_check_cd = #{safetyCheckCd};	
+	</delete>
+	
+	<delete id="removeSafety2" parameterType="Safety">
+		/*시설 관리자의 안전점검 등록 정보 삭제*/
+		DELETE 
+		FROM 
+			safety_check 
+		WHERE 
+			safety_check_cd = #{safetyCheckCd};	
+	</delete>	
+	
+	<select id="getSafetyResultList" parameterType="map" resultType="map">
+		/*관리자의 안전점검 결과 목록 조회(전체)*/
+		SELECT 
+			 c.user_id 						as userId
+			,u.user_nm						as userName
+			,f.facility_nm					as facilityNm
+			,r.safety_check_result			as safetyCheckResult 
+			,r.safety_result_reg_date	 	as safetyResultRegDate
+		FROM 
+			safety_check AS c,
+			user AS u,
+			facility AS f,
+			safety_result AS r
+		WHERE 
+			c.user_id = u.user_id
+			AND 
+			u.user_id = f.user_id
+			AND  
+			c.facility_cd = f.facility_cd
+			AND 
+			c.safety_check_cd = r.safety_check_cd
+		LIMIT #{startRow}, #{rowPerPage};		
+	</select>
+	
+	<select id="getSafetyResultListCount" resultType="int">
+		/*안전점검 결과 목록 총 row(튜플) 수*/
+		SELECT
+			COUNT(*)
+		FROM
+			safety_result;	
+	</select>	
+	
+	<select id="getSafetyResultListById" parameterType="map" resultType="map">
+		/*시설 관리자의 안전점검 결과 목록 조회*/
+		SELECT
+			f.facility_nm					as facilityNm
+			,r.safety_check_result			as safetyCheckResult 	
+			,r.safety_result_reg_date	 	as safetyResultRegDate		
+		FROM 
+			safety_check AS c
+			INNER JOIN 
+			facility AS f
+			ON 
+			c.facility_cd = f.facility_cd
+			INNER JOIN 
+			safety_result AS r
+			ON r.safety_check_cd = c.safety_check_cd
+		WHERE 
+			c.user_id = #{session.SID};	
+	</select>	
+	
+	
+	
+  
+</mapper>  

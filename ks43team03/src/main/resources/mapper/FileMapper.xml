@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.FileMapper">
+	<delete id="deleteRelFileWithGoods" parameterType="String">
+		DELETE
+			rfwg
+		FROM
+			rel_file_with_goods AS rfwg
+		WHERE
+			rfwg.flie_cd = #{deleteImg}
+	</delete>
+	
+	<delete id="deleteFile" parameterType="String">
+		DELETE t_file FROM t_file WHERE file_cd=#{deleteImg}
+	</delete>
+	<update id="modifyFile" parameterType="Map"> 
+		UPDATE
+			t_file AS tf
+		SET
+			tf.represent_img=#{representImg}
+		WHERE
+			tf.file_cd = #{fileCd}
+	</update>
+	<insert id="uploadFile" parameterType="List">
+		/*파일 업로드*/
+		INSERT INTO t_file (
+			file_cd
+			,original_file_nm
+			,stored_file_path
+			,file_size
+			,re_file_name
+			,uploader_id
+			,upload_date
+			,represent_img
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.fileCd}
+				,#{item.originalFileName}
+				,#{item.storedFilePath}
+				,#{item.fileSize}
+				,#{item.reFileName}
+				,#{item.userId}
+				,NOW()
+				,#{item.representImg}
+			)
+		</foreach>
+	</insert>
+	<insert id="uploadRelationFile" parameterType="List">
+		/*릴레이션 테이블 삽입*/
+		INSERT INTO rel_file_with_goods
+		(
+			facility_goods_cd
+			,flie_cd
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.facilityGoodsCd}
+				,#{item.fileCd}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="uploadRelationFileWithTrainer" parameterType="List">
+		/* 트레이너, 파일 릴레이션 테이블 삽입*/
+		INSERT INTO rel_file_with_trainer
+		(
+			trainer_cd
+			,file_cd
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.trainerCd}
+				,#{item.fileCd}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="uploadRelationFileWithBoard" parameterType="List">
+		/* 게시판, 파일 릴레이션 테이블 삽입*/
+		INSERT INTO rel_file_with_board
+		(
+			board_post_cd
+			,file_cd
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.boardPostCd}
+				,#{item.fileCd}
+			)
+		</foreach>
+	</insert>
+	<insert id="uploadRelationFileWithFacility" parameterType="List">
+		/* 시설, 파일 릴레이션 테이블 삽입*/
+		INSERT INTO rel_file_with_facility
+		(
+			facility_cd
+			,file_cd
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+				#{item.facilityCd}
+				,#{item.fileCd}
+			)
+		</foreach>
+	</insert>
+</mapper>

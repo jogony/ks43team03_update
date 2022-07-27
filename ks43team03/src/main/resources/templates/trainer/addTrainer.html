@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">	
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{margin-top: 30px;}
+		</style>
+	</th:block>
+	
+	<!-- 사용자 정의 Js 파일-->
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+		
+		<script>
+			/* 닉네임 중복 여부 검사 */
+			$(function(){
+				
+				function validationCheck(data){
+					if(typeof data == 'undefined' || data == '' || data == null){
+						return false;
+					}
+					return true;
+				}
+				
+				$(document).on('keyup', '#trainerNickname', function(){
+					$('#addTrainerForm input').not('#trainerNickname').prop('disabled', true);
+					$('#addTrainerForm button').not('#nicknameCheck, #cancleBtn').prop('disabled', true);
+				});
+				
+				$('#nicknameCheck').click(function(){
+					var trainerNickname = $('input[name="trainerNickname"]').val();
+					
+					var vCheck = validationCheck(trainerNickname);
+					
+					if(vCheck){
+						$.ajax({
+							 url: '/trainer/nicknameCheck'
+							,type: 'POST'
+							,data: {'trainerNickname' : trainerNickname}
+							,dataType: 'json'
+							,success: function(data){
+								console.log(data);
+								// 화면에서 맨처음 아이디를 제외한 모든 입력하는 요소는 비활성화 (HTML 속성 추가 disabled="disabled") 
+								// 아이디 중복이 발생 않은 경우(회원가입 O) 입력하는 요소는 활성화
+								if(data){
+									$('#nicknameCheckResult').text('사용 가능한 닉네임 입니다.');
+									$('#nicknameCheckResult').css('color','blue');
+									$('#addTrainerForm input').prop('disabled', false);
+									$('#addTrainerForm button').prop('disabled', false);
+								}else{									
+									// 아이디 중복이 발생하는 경우(회원가입 X) 입력하는 요소는 비활성화
+									$('#nicknameCheckResult').text('중복된 닉네임이 있습니다.');
+									$('#nicknameCheckResult').css('color','red');
+									$('#addTrainerForm input').not('#trainerNickname').prop('disabled', true);
+									$('#addTrainerForm button').not('#nicknameCheck').prop('disabled', true);
+								}
+							}
+						});
+					}
+					
+				});
+				
+				/* 트레이너 등록 시 유효성 검사 */
+				$('#addTrainertBtn').click(function(e){
+					//e.preventDefault();
+					
+					var $trainerNickname = $('input[name="trainerNickname"]');
+					
+					console.log($trainerNickname.val());
+					
+					var result = validationCheck($trainerNickname.val());
+					
+					// 사용자가 입력하지 않은 경우
+					if(!result){
+						alert('필수 항목입니다. 입력해주세요');
+						$trainerNickname.focus();
+						return false;
+					}
+					
+				});
+			});
+			// 최대 li 개수
+			var maxLiNum = 4;
+		</script>
+		<script th:src="@{/resource/js/listUpdate.js}"></script>
+	</th:block>
+	
+	 
+	<th:block layout:fragment="customContents">
+	
+		<!-- Breadcrumb Begin -->
+		<div class="breadcrumb-option">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="breadcrumb__links">
+							<a th:href="@{/user}">
+								<i class="fa fa-home"></i>
+								Home
+							</a>
+							<span>addTrainer</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+	
+		<!-- 트레이너 등록 -->
+		<div class="container" th:if="${#strings.isEmpty(session.SID)}">
+			<h4>로그인이 필요한 서비스입니다.</h4>
+		</div>
+		<div class="container" th:unless="${#strings.isEmpty(session.SID)}">
+			<form id="addTrainerForm" th:action="@{/trainer/addTrainer}" method="post" enctype="multipart/form-data" name="multipart">
+				<div class="form-group row">
+					<label class="control-label col-md-3 col-sm-3" for="trainerNickname">닉네임
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-6 col-sm-6">
+						<input type="text" class="form-control" id="trainerNickname" name="trainerNickname" placeholder="닉네임 입력" required>
+					</div>
+					<div class="col-md-3 col-sm-3">
+						<button type="button" class="btn-primary form-control" id="nicknameCheck">중복체크</button>
+					</div>
+					<div class="offset-md-3">
+						<span id="nicknameCheckResult" style="padding-left: 15px;"></span>
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="control-label col-md-3 col-sm-3" for="userId">아이디
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-9 col-sm-9 ">
+						<input type="text" class="form-control" name="userId" th:value="${session.SID}" readonly="readonly">
+					</div>
+				</div>
+				<div class="form-group row">
+					<label class="control-label col-md-3 col-sm-3" for="trainerImgFile">프로필 사진
+						<span class="required">*</span>
+					</label>
+					<div class="col-md-9 col-sm-9">
+						<ul id="plusUl" class="list-group list-group-flush">
+							<li class="list-group-item">
+								<input type="file" class="form-control" name="trainerImgFile"  accept="image/*" required>
+								<button type="button" id="addLi">플러스</button>
+								<button type="button" id="delLi">마이너스</button>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-8 col-sm-8  offset-md-4">
+						<a th:href="@{/}">
+							<button type="button" id="cancleBtn" class="btn btn-primary">취소</button>
+						</a>
+						<button type="submit" id="addTrainertBtn" class="btn btn-success" disabled="disabled">등록</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</th:block>
+</html>

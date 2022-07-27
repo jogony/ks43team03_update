@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.ReviewMapper">
+	
+	<resultMap type="Review" id="reviewResultMap">
+		<id column="review_cd"				property="reviewCd"/>
+		<result column="pay_cd"				property="payCd"/>
+		<result column="goods_ctg_cd"		property="goodsCtgCd"/>
+		<result column="user_id"			property="userId"/>
+		<result column="review_detail"		property="reviewDetail"/>
+		<result column="review_score"		property="reviewScore"/>
+		<result column="review_reg_date"	property="reviewRegDate"/>
+		<association property="facility" 		javaType="Facility">
+			<id 	column="facility_cd" 			property="facilityCd"/>
+			<result column="main_ctg_cd"			property="mainCtgCd"/>
+			<result column="town_cd"  				property="townCd"/>
+			<result column="facility_use_cd" 		property="facilityUseCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="facility_nm" 			property="facilityNm"/>
+			<result column="facility_address" 		property="facilityAddr"/>
+			<result column="facility_tell" 			property="facilityTell"/>
+			<result column="facility_post_num" 		property="facilityPostNum"/>
+			<result column="business_number" 		property="businessNum"/>
+			<result column="facility_reg_date"		property="facilityRegDate"/>
+			<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+			<result column="area_cd"  				property="areaCd"/>
+			<result column="city_cd"  				property="cityCd"/>
+		</association>
+		<association property="order" 			javaType="Order">
+			<id 	column="order_cd" 			property="orderCd"/>
+			<result column="user_id"			property="userId"/>
+			<result column="facility_goods_cd"  property="facilityGoodsCd"/>
+			<result column="goods_ctg_cd" 		property="goodsCtgCd"/>
+			<result column="order_price" 		property="orderPrice"/>
+			<result column="order_user_point" 	property="userPoint"/>
+			<result column="order_used_point" 	property="usedPoint"/>
+			<result column="order_pay_price" 	property="orderPayPrice"/>
+			<result column="order_reg_date" 	property="orderRegDate"/>
+			<result column="order_pay_state" 	property="orderPayState"/>
+		</association>
+	</resultMap> 
+		
+		<delete id="removeReview" parameterType="review">
+		/*후기 삭제*/
+			DELETE
+			FROM
+				review
+			WHERE
+				review_cd = #{reviewCd} AND user_id = #{userId};
+		</delete>
+		
+		
+		
+		<select id="reviewInfoById" resultType="Review" resultMap="reviewResultMap">
+		/*후기코드로 후기 조회*/
+			SELECT 
+				review_cd
+				,pay_cd
+				,goods_ctg_cd
+				,user_id
+				,review_detail
+				,review_score
+				,review_reg_date
+			FROM 
+				review
+			WHERE 
+				review_cd = #{reviewCd};
+		</select>
+		
+		
+		
+		<select id="isOrderCheck" parameterType="String" resultType="boolean">
+			/*시설별 결제 내역 체크*/
+			SELECT
+				if(COUNT(1) >= 1,0,1)
+			FROM
+			 	goods_order AS o
+			 	INNER join
+			 	facility_goods AS g
+			 	ON 
+			 	o.facility_goods_cd = g.facility_goods_cd
+			WHERE 
+				g.facility_cd = #{facilityCd} AND o.user_id = #{userId} AND o.order_pay_state = '주문완료';
+		</select>
+		
+		<select id="getReviewListByCd" resultType="Review">
+		/*시설별리뷰조회*/
+			SELECT
+				r.review_cd			AS reviewCd
+				,r.pay_cd			AS payCd
+				,r.goods_ctg_cd		AS goodsCtgCd
+				,r.user_id			AS userId
+				,r.review_detail	AS reviewDetail
+				,r.review_score		AS reviewScore
+				,r.review_reg_date	AS reviewRegDate
+				,fg.facility_cd		AS facilityCd
+			FROM 
+				review AS r
+				INNER join
+				pay AS p
+				on
+				r.pay_cd = p.pay_cd
+				INNER join
+				goods_order AS o
+				on
+				p.order_cd = o.order_cd
+				INNER join
+				facility_goods AS fg
+				on
+				o.facility_goods_cd = fg.facility_goods_cd
+			where
+		   		fg.facility_goods_cd = #{facilityGoodsCd}
+		   ORDER BY r.review_reg_date DESC;
+		</select>
+		
+		
+	
+		<select id="getReviewCountByCd" resultType="int">
+			/*시설 별 리뷰 수*/
+			SELECT
+				COUNT(*)
+			FROM 
+				review AS r
+				INNER join
+				pay AS p
+				on
+				r.pay_cd = p.pay_cd
+				INNER join
+				goods_order AS o
+				on
+				p.order_cd = o.order_cd
+				INNER join
+				facility_goods AS fg
+				on
+				o.facility_goods_cd = fg.facility_goods_cd
+			WHERE
+				fg.facility_cd = #{facilityCd};
+		</select>
+		
+		<select id="getReviewList" resultType="Review">
+		/*시설별리뷰조회*/
+			SELECT
+				r.review_cd			AS reviewCd
+				,r.pay_cd			AS payCd
+				,r.goods_ctg_cd		AS goodsCtgCd
+				,r.user_id			AS userId
+				,r.review_detail	AS reviewDetail
+				,r.review_score		AS reviewScore
+				,r.review_reg_date	AS reviewRegDate
+				,fg.facility_cd		AS facilityCd
+			FROM 
+				review AS r
+				INNER join
+				pay AS p
+				on
+				r.pay_cd = p.pay_cd
+				INNER join
+				goods_order AS o
+				on
+				p.order_cd = o.order_cd
+				INNER join
+				facility_goods AS fg
+				on
+				o.facility_goods_cd = fg.facility_goods_cd
+			where
+		   		fg.facility_cd = #{facilityCd}
+		   ORDER BY r.review_reg_date DESC;
+		</select>
+
+
+		<insert id="addReview" parameterType="Review">
+			<selectKey keyProperty="reviewCd" resultType="String" order="BEFORE">
+				 select
+					case
+					when COUNT(r.review_cd) = 0 
+					then 'review_1'
+					else
+						CONCAT('review_',MAX(CAST(SUBSTRING_INDEX(r.review_cd,'_',-1) AS UNSIGNED))+1)
+					end
+				FROM
+					review AS r
+ 			</selectKey>
+			INSERT INTO review
+				(review_cd
+				,pay_cd
+				,goods_ctg_cd
+				,user_id
+				,review_detail
+				,review_score
+				,review_reg_date
+				) VALUES (
+					#{reviewCd}
+					,#{payCd}
+					,#{goodsCtgCd}
+					,#{userId}
+					,#{reviewDetail}
+					,#{reviewScore}
+					,CURDATE())
+		</insert>
+
+		<select id="getAdminReviewListById" resultType="Review" resultMap="reviewResultMap">
+		/*시설관리자가 후기 조회*/
+		SELECT
+			r.review_cd			
+			,r.pay_cd			
+			,r.goods_ctg_cd		
+			,r.user_id			
+			,r.review_detail	
+			,r.review_score		
+			,r.review_reg_date	
+			,fg.facility_cd		
+			,f.facility_nm	
+		FROM 
+			review AS r
+			INNER join
+			pay AS p
+			on
+			r.pay_cd = p.pay_cd
+			INNER join
+			goods_order AS o
+			on
+			p.order_cd = o.order_cd
+			INNER join
+			facility_goods AS fg
+			on
+			o.facility_goods_cd = fg.facility_goods_cd
+			INNER join
+			facility AS f
+			ON 
+			f.facility_cd = fg.facility_cd
+			LEFT join
+			facility_user AS fu
+			on
+			f.facility_cd = fu.facility_cd
+		WHERE
+			fu.user_id = #{userId} AND fu.facility_approve_state = 'Y'OR f.user_id = #{userId}
+		GROUP BY 
+			r.review_cd;
+	</select>
+	
+	
+	
+
+	<select id="getReviewCount" resultType="int">
+		/*후기 총 튜플 수*/
+		SELECT
+			COUNT(*)
+		FROM
+			review;
+	</select>
+	
+	<select id="getAdminReviewList" parameterType="map" resultType="map">
+		/*관리자가 후기 조회*/
+		SELECT
+			r.review_cd			AS reviewCd
+			,r.pay_cd			AS payCd
+			,r.goods_ctg_cd		AS goodsCtgCd
+			,r.user_id			AS userId
+			,r.review_detail	AS reviewDetail
+			,r.review_score		AS reviewScore
+			,r.review_reg_date	AS reviewRegDate
+			,fg.facility_cd		AS facilityCd
+			,f.facility_nm		AS facilityNm
+		FROM 
+			review AS r
+			INNER join
+			pay AS p
+			on
+			r.pay_cd = p.pay_cd
+			INNER join
+			goods_order AS o
+			on
+			p.order_cd = o.order_cd
+			INNER join
+			facility_goods AS fg
+			on
+			o.facility_goods_cd = fg.facility_goods_cd
+			INNER join
+			facility AS f
+			ON 
+			f.facility_cd = fg.facility_cd
+	</select>
+	
+</mapper>

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.UserMapper">
+	<resultMap type="User" id="userResultMap">
+		<id 	column="user_id"			property="userId"/>
+		<result column="user_level"			property="userLevel"/>
+		<result column="user_password"		property="userPw"/>
+		<result column="user_nm"			property="userName"/>
+		<result column="user_address"		property="userAddr"/>
+		<result column="user_birth"			property="userBirth"/>
+		<result column="user_email"			property="userEmail"/>
+		<result column="user_tell"			property="userTell"/>
+		<result column="user_gender"		property="userGender"/>
+		<result column="user_drop"			property="userDrop"/>
+		<result column="reg_path"			property="userRegPath"/>
+		<result column="user_terms"			property="userTerms"/>
+		<result column="user_reg_date"		property="userRegDate"/>
+		<result column="user_post_num"		property="userPostNum"/>
+		<result column="user_detail_addr"	property="userDetailAddr"/>
+		<association property="levelInfo" javaType="UserLevel">
+			<id column="level" 				property="levelNum"/>
+			<result column="level_nm"		property="levelName"/>
+		</association>
+	</resultMap>
+	
+	<update id="modifyFacilityUserState" parameterType="String">
+		/*시설 내 회원 승인*/
+		UPDATE
+			facility_user
+		SET
+			facility_approve_state = #{facilityApproveState}
+		WHERE
+			user_id = #{userId}
+			and
+			facility_cd = #{facilityCd};
+	</update>
+	
+	<insert id="addUser" parameterType="User">
+		/*회원 가입*/
+		INSERT INTO user
+		(	 user_id
+			,user_level
+			,user_password
+			,user_nm
+			,user_address
+			,user_birth
+			,user_email
+			,user_tell
+			,user_gender
+			,user_drop
+			,reg_path
+			,user_terms
+			,user_reg_date
+			,user_post_num
+			,user_detail_addr
+		)	VALUES (
+			 #{userId}
+			,'5'
+			,#{userPw}
+			,#{userName}
+			,#{userAddr}
+			,#{userBirth}
+			,#{userEmail}
+			,#{userTell}
+			,#{userGender}
+			,'N'
+			,#{userRegPath}
+			,'Y'
+			,CURDATE()
+			,#{userPostNum}
+			,#{userDetailAddr}
+		);
+	</insert>
+	
+	<select id="getUserLevelList" resultType="UserLevel">
+		/*회원 등급 목록 조회*/
+		SELECT
+			 l.level		AS levelNum
+			,l.level_nm 	AS levelName
+		FROM
+			user_level AS l;
+	</select>
+	
+	<select id="getFacilityUserList" parameterType="List" resultType="map">
+		/* 시설 내 회원 목록 조회 */
+		SELECT 
+			 f.facility_cd				as facilityCd
+			,f.facility_nm				AS facilityNm
+			,u.user_id					as userId
+			,u.user_nm					as userName
+			,u.user_address				as userAddr
+			,u.user_tell				as userTell
+			,u.user_gender				as userGender
+			,u.user_email				as userEmail
+			,fu.facility_user_level		as facilityUserLevel
+			,fu.facility_approve_state	as facilityApproveState
+			,fu.facility_approve_id		as facilityApproveId
+			,fu.facility_approve_date	as facilityApproveDate
+			,fu.facility_reg_date		as facilityRegDate
+		FROM
+			facility AS f
+			INNER JOIN
+			facility_user as fu
+			ON
+				f.facility_cd = fu.facility_cd
+			INNER JOIN
+			user AS u
+			ON
+				u.user_id = fu.user_id
+		<where>
+			<foreach item="item" collection="list" open="f.facility_cd in (" separator="," close=")">
+				#{item.facilityCd}
+			</foreach>
+		</where>
+	</select>
+	
+	<select id="getFacilityUserCount" parameterType="map" resultType="int">
+		/*시설 내 회원 목록 총 튜플 수*/
+		SELECT
+			COUNT(*)
+		FROM
+			facility AS f
+			INNER JOIN
+			facility_user as fu
+			ON
+				f.facility_cd = fu.facility_cd
+			INNER JOIN
+			user AS u
+			ON
+				u.user_id = fu.user_id
+		<where>
+			<foreach item="item" collection="list" open="f.facility_cd in (" separator="," close=")">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+	
+	<update id="modifyUser" parameterType="User">
+		/* 회원 정보 변경 */
+		UPDATE user
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="userLevel != null and userLevel != ''">
+				user_level			= #{userLevel}
+			</if>
+			<if test="userPw != null and userPw != ''">
+				,user_password		= #{userPw}
+			</if>
+			<if test="userName != null and userName != ''">
+				,user_nm			= #{userName}
+			</if>
+			<if test="userAddr != null and userAddr != ''">
+				,user_address		= #{userAddr}
+			</if>
+			<if test="userBirth != null and userBirth != ''">
+				,user_birth			= #{userBirth}
+			</if>
+			<if test="userEmail != null and userEmail != ''">
+				,user_email			= #{userEmail}
+			</if>
+			<if test="userTell != null and userTell != ''">
+				,user_tell			= #{userTell}
+			</if>
+			<if test="userGender != null and userGender != ''">
+				,user_gender		= #{userGender}
+			</if>
+			<if test="userDrop != null and userDrop != ''">
+				,user_drop			= #{userDrop}
+			</if>
+			<if test="userDrop != null and userDrop != ''">
+				,user_post_num		= #{userPostNum}
+			</if>
+			<if test="userDrop != null and userDrop != ''">
+				,user_detail_addr	= #{userDetailAddr}
+			</if>
+		</trim>
+		WHERE
+			user_id = #{userId};
+	</update>
+	
+	<select id="isIdCheck" parameterType="String" resultType="boolean">
+		/* 회원 아이디 중복 체크 */
+		SELECT
+			IF(COUNT(1) = 1, 0, 1)
+		FROM 
+		   user AS u
+		WHERE 
+		   u.user_id = #{userId};
+	</select>
+
+	<select id="getUserList" parameterType="map" resultType="map">
+		/* 회원 전체 목록 조회 */
+		SELECT
+			 user_id 			as userId
+			,user_level			as userLevel
+			,user_password		as userPw
+			,user_nm			as userName
+			,user_address		as userAddr
+			,user_birth			as userBirth
+			,user_email			as userEmail
+			,user_tell			as userTell
+			,user_gender		as userGender
+			,user_drop			as userDrop
+			,reg_path			as userRegPath
+			,user_terms			as userTerms
+			,user_reg_date		as userRegDate
+			,user_post_num		as userPostNum
+			,user_detail_addr	as userDetailAddr
+		FROM
+			user
+		LIMIT #{startRow}, #{rowPerPage};
+	</select>
+	
+		<!-- resultMap 태그 아이디 값을 찾아서 알아서 프로퍼티명으로 변경해줌 -->
+	<select id="getUserInfoById" parameterType="String" resultMap="userResultMap">
+		/* 아이디로 회원 정보 조회 */
+		SELECT 
+			 u.user_id
+			,u.user_level
+			,u.user_password
+			,u.user_nm
+			,u.user_address
+			,u.user_birth
+			,u.user_email
+			,u.user_tell
+			,u.user_gender
+			,u.user_drop
+			,u.reg_path
+			,u.user_terms
+			,u.user_reg_date
+			,u.user_post_num
+			,u.user_detail_addr
+			,l.level_nm
+		FROM 
+			user as u
+			INNER JOIN
+			user_level AS l
+			on
+			u.user_level = l.`level`
+		WHERE 
+			user_id = #{userId};
+	</select>
+	
+	
+	<select id="getLoginHistory" parameterType="map" resultType="map"> <!-- type사용 -> map을 사용하려면 위에서 정의해야함 -->
+		/*로그인 이력 조회*/
+		SELECT 
+			 login_number
+			,user_id
+			,login_date
+			,logout_date
+		FROM 
+			user_login
+		ORDER BY CAST(login_number AS SIGNED)	
+		LIMIT #{startRow}, #{rowPerPage};		
+	</select>
+	
+	<select id="getLoginHistoryCount" resultType="int">
+		SELECT 
+			COUNT(login_number)
+		FROM
+			user_login;	
+	</select>	
+	
+	<select id="isEmailCheck" parameterType="String" resultType="String">
+		/*이메일로 아이디 찾기*/
+		SELECT 
+			user_id
+		FROM 
+			user
+		WHERE 	 
+			user_email = #{userEmail};	
+	</select>
+	
+	<select id="isIdCheck2" parameterType="String" resultType="String">
+		/*아이디로 비밀번호 찾기*/
+		SELECT 
+			user_password 
+		FROM 
+			user
+		WHERE 	
+			user_id = #{userId};
+	</select>	
+	
+	
+</mapper>

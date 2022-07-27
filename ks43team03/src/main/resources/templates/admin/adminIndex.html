@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+	<th:block layout:fragment="customTitle">
+		<title>관리자 페이지</title>
+	</th:block>
+
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+	<style>
+		
+		@font-face {
+		    font-family: 'SEBANG_Gothic_Bold';
+		    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2104@1.0/SEBANG_Gothic_Bold.woff') format('woff');
+		    font-weight: normal;
+		    font-style: normal;
+		}
+		
+		h3 {font-family:'SEBANG_Gothic_Bold';}
+	</style>
+	</th:block>
+	
+	<!-- 사용자 정의 JsScript 파일-->
+	<th:block layout:fragment="customJsScript">
+	</th:block>
+	
+	<!-- 사용자 정의 Script-->
+	<th:block layout:fragment="customScript">
+	</th:block>
+
+	<th:block layout:fragment="customContents">
+		<div class="row">
+			<div class="col-md-12 col-sm-12  ">
+				<div class="x_panel">
+					<div class="x_title text-center">
+						<h3>Project | 2022.02.21 ~ 2022.08.03</h3>
+						<div class="clearfix"></div>
+					</div>
+					<div class="text-center">
+						<img alt="로고" th:src="@{/img/adminLogo.png}"> <!-- 로고 이미지 -->
+						<img alt="이름, 역할" th:src="@{/img/adminLogo3.png}"> <!-- 이름, 역할 이미지 -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+</html>

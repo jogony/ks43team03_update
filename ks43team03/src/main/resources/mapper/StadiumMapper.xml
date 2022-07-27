@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="ks43team03.mapper.StadiumMapper">
+	<resultMap type="Stadium" id="stadiumResultMap">
+		<id column="facility_stadium_cd" 			property="facilityStadiumCd"/>
+		<result column="facility_goods_cd" 			property="facilityGoodsCd"/>
+		<result column="facility_cd" 				property="facilityCd"/>
+		<result column="goods_ctg_cd" 				property="goodsCtgCd"/>
+		<result column="sports_cd" 					property="sportsCd"/>
+		<result column="user_id" 					property="userId"/>
+		<result column="facility_stadium_nm" 		property="facilityStadiumNm"/>
+		<result column="facility_stadium_reg_date"	property="facilityStadiumRegDate"/>
+		<result column="facility_stadium_detail"	property="facilityStadiumDetail"/>
+		<association property="facility" javaType="Facility">
+			<id 	column="facility_cd" 			property="facilityCd"/>
+			<result column="main_ctg_cd"			property="mainCtgCd"/>
+			<result column="town_cd"  				property="townCd"/>
+			<result column="facility_use_cd" 		property="facilityUseCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="facility_nm" 			property="facilityNm"/>
+			<result column="facility_address" 		property="facilityAddr"/>
+			<result column="facility_tell" 			property="facilityTell"/>
+			<result column="facility_post_num" 		property="facilityPostNum"/>
+			<result column="business_number" 		property="businessNum"/>
+			<result column="facility_reg_date"		property="facilityRegDate"/>
+			<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+			<result column="area_cd"  				property="areaCd"/>
+			<result column="city_cd"  				property="cityCd"/>
+		</association>
+		<association property="sports" javaType="Sports">
+			<id 	column="sports_cd"	property="sportsCd"/>
+			<result column="sports_nm" 	property="sportsName"/>
+		</association> 
+		<association property="stadiumPrice" javaType="StadiumPrice">
+			<id 	column="stadium_price_cd" 		property="stadiumPriceCd"/>
+			<result column="facility_stadium_cd"	property="facilityStadiumCd"/>
+			<result column="sports_cd"				property="sportsCd"/>
+			<result column="day_price"				property="dayPrice"/>
+			<result column="night_price"			property="nightPrice"/>
+			<result column="hol_price"				property="holPrice"/>
+		</association>
+		<collection property="relFileWithGoods" ofType="Map">
+			<result	column="facility_goods_cd"	property="facilityGoodsCd"/>
+			<result	column="file_cd"			property="fileCd"/>
+		</collection>
+		<collection property="tFile"  ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result column="re_file_name"			property="reFileName"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_date"			property="updatedDate"/>
+			<result	column="represent_img"		property="representImg"/>
+		</collection>
+		<collection property="facilityUser" javaType="FacilityUser">
+		<id column="facility_cd"				property="facilityCd"/>
+		<result column="user_id"				property="userId"/>
+		<result column="facility_user_level"	property="facilityUserLevel"/>
+		<result column="facility_approve_state"	property="facilityApproveState"/>
+		<result column="facility_approve_id"	property="facilityApproveId"/>
+		<result column="facility_approve_date"	property="facilityApproveDate"/>
+		<result column="facility_reg_date"		property="facilityRegDate"/>
+		</collection>
+		<collection property="reservation"	 ofType="Reservation">
+			<id		column="reservation_cd"			property="reservationCd"/>	
+			<result	column="facility_goods_cd"		property="facilityGoodsCd"/>
+			<result	column="reservation_id"			property="reservationId"/>
+			<result	column="reservation_date"		property="reservationDate"/>
+			<result	column="reservation_start_time"	property="reservationStartTime"/>
+			<result column="reservation_end_time"	property="reservationEndTime"/>
+			<result column="reservation_reg_date"	property="reservationRegDate"/>
+			<result	column="reservation_cancel"		property="reservationCancel"/>
+		</collection>
+	</resultMap>
+	<resultMap type="stadiumPrice" id="stadiumPriceResultMap">
+			<id 	column="stadium_price_cd" 		property="stadiumPriceCd"/>
+			<result column="facility_stadium_cd"	property="facilityStadiumCd"/>
+			<result column="sports_cd"				property="sportsCd"/>
+			<result column="day_price"				property="dayPrice"/>
+			<result column="night_price"			property="nightPrice"/>
+			<result column="hol_price"				property="holPrice"/>
+	</resultMap>
+	<select id="getReservation" resultMap="stadiumResultMap" parameterType="Map">
+		SELECT
+			fs.facility_goods_cd,
+			sp.day_price,
+			sp.night_price,
+			sp.hol_price,
+			r.reservation_id,
+			r.reservation_date,
+			r.reservation_start_time,
+			r.reservation_end_time
+		FROM
+			facility_stadium AS fs
+			INNER JOIN
+			stadium_price AS sp
+			on
+			sp.facility_stadium_cd = fs.facility_stadium_cd
+			LEFT JOIN
+			reservation AS r
+			on
+			fs.facility_goods_cd = r.facility_goods_cd
+				WHERE
+			fs.facility_goods_cd = #{facilityGoodsCd}
+	</select>
+	
+	<select id="getStadiumListByCd" resultType="Stadium" resultMap="stadiumResultMap">
+	/*시설내 구장 목록*/
+		SELECT 
+			fs.facility_stadium_cd										
+			,fs.facility_stadium_nm				
+			,fs.facility_stadium_detail			
+			,stadium_file.file_cd				
+			,stadium_file.re_file_name			
+			,stadium_file.original_file_nm		
+			,stadium_file.stored_file_path		
+			,stadium_file.represent_img			
+		FROM 
+			facility_stadium AS fs
+			INNER join
+			facility AS f
+			on
+			fs.facility_cd = f.facility_cd
+			INNER join
+			sports AS s
+			on
+			fs.sports_cd = s.sports_cd
+			left join
+			 (SELECT
+				rfwg.facility_goods_cd 	
+				,tf.file_cd				
+				,tf.re_file_name		
+				,tf.original_file_nm	
+				,tf.stored_file_path	
+				,tf.file_size		
+				,tf.uploader_id			
+				,tf.upload_date		
+				,tf.updator_id			
+				,tf.updated_datetime	
+				,tf.represent_img		
+			FROM
+				rel_file_with_goods AS rfwg
+			   INNER JOIN
+			   t_file	AS tf
+			   on
+			   tf.file_cd = rfwg.flie_cd
+			WHERE
+				tf.deleted_yn != 'Y') AS stadium_file
+			on
+			fs.facility_goods_cd = stadium_file.facility_goods_cd
+		WHERE 
+			f.facility_cd = #{facilityCd}
+	
+	</select>
+	
+
+	
+	
+	<select id="getStadiumInfoByCd" parameterType="String" resultMap="stadiumResultMap">
+	/*구장코드로 구장 조회*/
+		SELECT 
+			fs.facility_stadium_cd
+			,fs.facility_goods_cd
+			,fs.facility_cd
+			,fs.goods_ctg_cd
+			,fs.sports_cd
+			,fs.user_id
+			,fs.facility_stadium_nm
+			,fs.facility_stadium_reg_date
+			,fs.facility_stadium_detail
+			,sp.stadium_price_cd
+			,sp.sports_cd
+			,sp.day_price
+			,sp.night_price
+			,sp.hol_price
+			,f.main_ctg_cd
+			,f.facility_address
+			,f.facility_detail_addr
+			,f.facility_nm
+			,f.facility_tell
+			,stadium_file.file_cd			
+			,stadium_file.re_file_name		
+			,stadium_file.original_file_nm	
+			,stadium_file.stored_file_path	
+			,stadium_file.represent_img		
+		FROM 
+			facility_stadium AS fs
+			INNER JOIN
+			stadium_price AS sp
+			on
+			fs.facility_stadium_cd = sp.facility_stadium_cd
+			INNER join
+			facility AS f
+			on
+			fs.facility_cd = f.facility_cd
+			left join
+			 (SELECT
+				rfwg.facility_goods_cd 	
+				,tf.file_cd				
+				,tf.re_file_name		
+				,tf.original_file_nm	
+				,tf.stored_file_path	
+				,tf.file_size		
+				,tf.uploader_id			
+				,tf.upload_date		
+				,tf.updator_id			
+				,tf.updated_datetime	
+				,tf.represent_img		
+			FROM
+				rel_file_with_goods AS rfwg
+			   INNER JOIN
+			   t_file	AS tf
+			   on
+			   tf.file_cd = rfwg.flie_cd
+			WHERE
+				tf.deleted_yn != 'Y') AS stadium_file
+			on
+			fs.facility_goods_cd = stadium_file.facility_goods_cd
+		WHERE
+			fs.facility_stadium_cd =  #{facilityStadiumCd};
+	</select>
+	
+	
+	<select id="getStadiumList" parameterType="Map" resultMap="stadiumResultMap">
+			SELECT 
+			fs.facility_stadium_cd			
+			,fs.facility_goods_cd 			
+			,fs.facility_cd					
+			,f.facility_nm
+			,f.main_ctg_cd
+			,f.town_cd						
+			,fs.goods_ctg_cd				
+			,fs.sports_cd					
+			,s.sports_nm 					
+			,fs.user_id						
+			,fs.facility_stadium_nm			
+			,fs.facility_stadium_reg_date	
+			,fs.facility_stadium_detail		
+			,stadium_file.file_cd			
+			,stadium_file.re_file_name		
+			,stadium_file.original_file_nm	
+			,stadium_file.stored_file_path	
+			,stadium_file.represent_img		
+		FROM 
+			facility_stadium AS fs
+			INNER join
+			facility AS f
+			on
+			fs.facility_cd = f.facility_cd
+			INNER join
+			sports AS s
+			on
+			fs.sports_cd = s.sports_cd
+			left join
+			 (SELECT
+				rfwg.facility_goods_cd 	
+				,tf.file_cd				
+				,tf.re_file_name		
+				,tf.original_file_nm	
+				,tf.stored_file_path	
+				,tf.file_size		
+				,tf.uploader_id			
+				,tf.upload_date		
+				,tf.updator_id			
+				,tf.updated_datetime	
+				,tf.represent_img		
+			FROM
+				rel_file_with_goods AS rfwg
+			   INNER JOIN
+			   t_file	AS tf
+			   on
+			   tf.file_cd = rfwg.flie_cd
+			WHERE
+				tf.deleted_yn != 'Y') AS stadium_file
+			on
+			fs.facility_goods_cd = stadium_file.facility_goods_cd
+			<trim prefix="WHERE" prefixOverrides="and">
+		   		<if test="mainCtgCd != null and mainCtgCd != '' ">
+		   			f.main_ctg_cd = #{mainCtgCd}
+		   		</if>
+		   		<if test="areaCd != null and areaCd != ''">
+		   			and f.area_cd = #{areaCd}
+		   		</if>
+		   		<if test="cityCd != null and cityCd != ''">
+		   			 and f.city_cd LIKE CONCAT(#{cityCd}, '%')
+		   		</if>
+		   		<if test="sportsCd != null and sportsCd != '' ">
+		   			and fs.sports_cd = #{sportsCd}
+		   		</if>
+		   		<if test="searchValue != null and searchValue != '' ">		
+					and f.facility_nm LIKE CONCAT('%', #{searchValue}, '%')
+		   		</if>
+	   		</trim>
+	   			ORDER BY fs.facility_stadium_reg_date DESC
+				LIMIT #{startRow}, #{rowPerPage};
+	</select>
+	
+	
+	
+	
+	<update id="modifyStadiumPrice" parameterType="StadiumPrice">
+	/*구장단가수정*/
+		UPDATE stadium_price
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="facilityStadiumCd != null and facilityStadiumCd != ''">
+				facility_stadium_cd = 				#{facilityStadiumCd},
+			</if>
+			<if test="sportsCd != null and sportsCd != ''">
+				sports_cd = 				#{sportsCd},
+			</if>
+			<if test="dayPrice != null and dayPrice != ''">
+				day_price = 				#{dayPrice},
+			</if>
+			<if test="nightPrice != null and nightPrice != ''">
+				night_price = 		#{nightPrice},
+			</if>
+			<if test="holPrice != null and holPrice != ''">
+				hol_price = 	#{holPrice}
+			</if>
+		</trim>	
+		WHERE 
+			facility_stadium_cd	=			#{facilityStadiumCd};
+	</update>	
+	
+	
+	<select id="getAdminStadiumPriceInfoByCd" parameterType="String" resultMap="stadiumPriceResultMap">
+	/*구장코드별 구장가격 상세정보 조회*/
+		SELECT 
+			stadium_price_cd
+			,facility_stadium_cd
+			,sports_cd
+			,day_price
+			,night_price
+			,hol_price
+		FROM 
+			stadium_price
+		WHERE 
+			facility_stadium_cd =  #{facilityStadiumCd};
+	</select>
+	
+	
+	<update id="modifyStadium" parameterType="Stadium" >
+	/*구장수정*/
+		UPDATE facility_stadium
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="facilityGoodsCd != null and facilityGoodsCd != ''">
+				facility_goods_cd = 		#{facilityGoodsCd},
+			</if>
+			<if test="facilityCd != null and facilityCd != ''">
+				facility_cd = 				#{facilityCd},
+			</if>
+			<if test="goodsCtgCd != null and goodsCtgCd != ''">
+				goods_ctg_cd = 				#{goodsCtgCd},
+			</if>
+			<if test="sportsCd != null and sportsCd != ''">
+				sports_cd = 				#{sportsCd},
+			</if>
+			<if test="userId != null and userId != ''">
+				user_id = 				#{userId},
+			</if>
+			<if test="facilityStadiumNm != null and facilityStadiumNm != ''">
+				facility_stadium_nm = 		#{facilityStadiumNm},
+			</if>
+			<if test="facilityStadiumDetail != null and facilityStadiumDetail != ''">
+				facility_stadium_detail = 	#{facilityStadiumDetail}
+			</if>
+		</trim>	
+		WHERE 
+			facility_stadium_cd	=			#{facilityStadiumCd};
+	</update>
+		
+	<select id="getAdminStadiumInfoByCd" parameterType="String" resultMap="stadiumResultMap">
+	/*구장코드별 구장 상세정보 조회*/
+		SELECT
+			fs.facility_stadium_cd
+			,fs.facility_goods_cd
+			,fs.facility_cd
+			,fs.goods_ctg_cd
+			,fs.sports_cd
+			,fs.user_id
+			,fs.facility_stadium_nm
+			,fs.facility_stadium_reg_date
+			,fs.facility_stadium_detail
+			,stadium_file.file_cd
+			,stadium_file.re_file_name
+			,stadium_file.original_file_nm
+			,stadium_file.stored_file_path
+			,stadium_file.represent_img
+		FROM
+			 facility_stadium AS fs
+			 left join
+			 (SELECT
+				rfwg.facility_goods_cd
+				,tf.file_cd
+				,tf.re_file_name
+				,tf.original_file_nm
+				,tf.stored_file_path
+				,tf.file_size
+				,tf.uploader_id
+				,tf.upload_date
+				,tf.updator_id
+				,tf.updated_datetime
+				,tf.represent_img
+			FROM
+				rel_file_with_goods AS rfwg
+			   INNER JOIN
+			   t_file	AS tf
+			   on
+			   tf.file_cd = rfwg.flie_cd
+			WHERE
+				tf.deleted_yn != 'Y') AS stadium_file
+			on
+			fs.facility_goods_cd = stadium_file.facility_goods_cd
+		WHERE
+			fs.facility_stadium_cd = #{facilityStadiumCd};
+	</select>
+
+	
+	<insert id="addStadiumPrice" parameterType="StadiumPrice">
+		/*구장단가등록*/
+		
+		INSERT INTO stadium_price
+			(stadium_price_cd
+			,facility_stadium_cd
+			,sports_cd
+			,day_price
+			,night_price
+			,hol_price)
+			VALUES (
+				sf_new_stadium_price_cd()
+				,#{facilityStadiumCd}
+				,#{sportsCd}
+				,#{dayPrice}
+				,#{nightPrice}
+				,#{holPrice});
+	</insert>
+	
+	
+	<insert id="addStadium" parameterType="Stadium">
+	/*구장등록*/
+		<selectKey resultType="String" keyProperty="facilityStadiumCd" order="BEFORE">
+			SELECT sf_new_stadium_cd()
+		</selectKey>
+		INSERT INTO facility_stadium
+			(facility_stadium_cd
+			,facility_goods_cd
+			,facility_cd
+			,goods_ctg_cd
+			,sports_cd
+			,user_id
+			,facility_stadium_nm
+			,facility_stadium_reg_date
+			,facility_stadium_detail
+			)VALUES (
+				sf_new_stadium_cd()
+				,#{facilityGoodsCd}
+				,#{facilityCd}
+				,#{goodsCtgCd}
+				,#{sportsCd}
+				,#{userId}
+				,#{facilityStadiumNm}
+				,CURDATE()
+				,#{facilityStadiumDetail});
+	</insert>
+	
+	<select id="getFacilityListById" resultType="Facility">
+	/*아이디별시설조회*/
+		SELECT 
+			f.facility_cd 			AS	facilityCd
+			,f.facility_nm			AS  facilityNm
+		FROM 
+			facility AS f
+			left join
+			facility_user AS fu
+			on
+			f.facility_cd = fu.facility_cd
+		WHERE
+				fu.user_id = #{userId} AND fu.facility_approve_state = 'Y'OR f.user_id = #{userId}
+		GROUP BY
+			 f.facility_cd;
+	</select>
+	
+	<select id="getSportsList" resultType="Sports">
+	/*종목조회*/
+		SELECT 
+			sports_cd			AS	sportsCd
+			,sports_nm   		AS  sportsName
+		FROM 
+			sports
+	</select>
+	
+	
+	
+	<select id="getAdminStadiumListByCd"  parameterType="Stadium" resultMap="stadiumResultMap">
+	/*본인 시설 내 구장 조회*/
+		SELECT 
+			fs.facility_stadium_cd			
+			,fs.facility_goods_cd 			
+			,fs.facility_cd					
+			,f.facility_nm					
+			,fs.goods_ctg_cd				 
+			,fs.sports_cd					
+			,s.sports_nm 					
+			,fs.user_id						
+			,fs.facility_stadium_nm			
+			,fs.facility_stadium_reg_date	
+			,fs.facility_stadium_detail		
+			,sp.stadium_price_cd
+			,sp.day_price					
+			,sp.night_price					
+			,sp.hol_price					
+		FROM 
+			facility_stadium AS fs
+			INNER join
+			facility AS f
+			on
+			fs.facility_cd = f.facility_cd
+			INNER join
+			sports AS s
+			on
+			fs.sports_cd = s.sports_cd
+			INNER join
+			stadium_price AS sp
+			ON
+			fs.facility_stadium_cd = sp.facility_stadium_cd
+			LEFT join
+			facility_user AS fu
+			on
+			fs.facility_cd = fu.facility_cd
+		WHERE
+			fu.user_id = #{userId} AND fu.facility_approve_state = 'Y'OR f.user_id = #{userId}	
+		GROUP BY 
+			fs.facility_stadium_cd;
+	</select>
+	
+	<select id="getStadiumCount" resultType="int">
+			/*구장 목록 총 튜플 수*/
+			SELECT
+				COUNT(*)
+			FROM
+				facility_stadium;
+	</select>
+	
+	<select id="getAdminStadiumList" parameterType="map" resultType="map">
+	/*구장 조회 관리자*/
+		SELECT 
+			fs.facility_stadium_cd			AS facilityStadiumCd
+			,fs.facility_goods_cd 			AS facilityGoodsCd
+			,fs.facility_cd					AS facilityCd
+			,f.facility_nm					AS facilityNm
+			,fs.goods_ctg_cd				AS goodsCtgCd
+			,fs.sports_cd					AS sportsCd
+			,s.sports_nm 					AS sportsNm
+			,fs.user_id						AS userId
+			,fs.facility_stadium_nm			AS facilityStadiumNm
+			,fs.facility_stadium_reg_date	AS facilityStadiumRegDate
+			,fs.facility_stadium_detail		AS facilityStadiumDetail
+		FROM 
+			facility_stadium AS fs
+			INNER join
+			facility AS f
+			on
+			fs.facility_cd = f.facility_cd
+			INNER join
+			sports AS s
+			on
+			fs.sports_cd = s.sports_cd
+		LIMIT #{startRow}, #{rowPerPage};
+	</select>
+	
+	<select id="getStadiumPrice" resultType="StadiumPrice">
+		/*구장 가격 총 튜플 수*/
+		SELECT
+			stadium_price_cd 		 AS 	stadiumPriceCd
+			,facility_stadium_cd	 AS		facilityStadiumCd
+			,sports_cd				 AS		sportsCd
+			,day_price			   	 AS		dayPrice
+			,night_price			 AS 	nightPrice
+			,hol_price				 AS		holPrice
+		FROM
+			stadiumPrice;
+	</select>
+	
+	
+
+	
+
+</mapper>   

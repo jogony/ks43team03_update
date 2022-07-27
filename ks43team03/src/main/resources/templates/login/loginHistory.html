@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>	 
+	<th:block layout:fragment="customCss">
+		<style>
+			.pagination {
+				float: right;	
+			}
+		</style>
+	</th:block>	
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+
+	<div class="title_left" style="margin-top:80px; margin-bottom:30px">	
+		<h3>로그인 기록</h3>
+	</div>	
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12">	
+			<div class="x_panel">
+			<div class="x_title">
+				<h2>로그인 기록</h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">			
+				<div class="row">
+					<div class="col-sm-12"> 
+						<div class="card-box table-responsive">
+							<p class="text-muted font-13 m-b-30 text-center"> <!-- text-center 텍스트 중앙정렬 -->
+								회원의 로그인 기록을 볼 수 있습니다.
+							</p>
+							<table id="datatable" class="table jambo_table bulk_action table-bordered dt-responsive nowrap" cellspacing="0" style="width:100%">
+								<thead>
+									<tr>
+										<th>번호</th>
+										<th>로그인아이디</th>
+										<th>로그인날짜</th>
+										<th>로그아웃날짜</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:if="${not #lists.isEmpty(loginHistoryList)}" th:each="l:${loginHistoryList}">
+										<td th:text="${l.get('login_number')}"></td>
+										<td th:text="${l.get('user_id')}"></td>
+										<td th:text="${l.get('login_date')}"></td>
+										<td th:text="${l.get('logout_date')}"></td>
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(loginHistoryList)}">
+										<td colspan="4">조회된 내용이 없습니다.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>	
+		</div>
+	</div>
+
+</html>

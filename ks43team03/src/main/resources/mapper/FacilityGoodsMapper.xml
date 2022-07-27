@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.FacilityGoodsMapper">
+	<resultMap type="FacilityGoods" id="facilityGoodsResultMap">
+		<id 	column="facility_goods_cd" 			property="facilityGoodsCd"/>
+		<result column="facility_cd"				property="facilityCd"/>
+		<result column="goods_ctg_cd"  				property="goodsCtgCd"/>
+		<result column="sports_cd" 					property="sportsCd"/>
+		<result column="user_id" 					property="userId"/>
+		<result column="facility_goods_reg_date" 	property="facilityGoodsRegDate"/>
+		<result column="facility_goods_state" 		property="faclityGoodsState"/>
+		<association property="pass" javaType="Pass">
+			<id column="pass_cd" property="passCd"/>
+			<result column="facility_goods_cd" property="facilityGoodsCd"/>
+			<result column="facility_cd" property="facilityCd"/>
+			<result column="goods_ctg_cd" property="goodsCtgCd"/>
+			<result column="user_id" property="userId"/>
+			<result column="pass_nm" property="passNm"/>
+			<result column="pass_unit" property="passUnit"/>
+			<result column="pass_price" property="passPrice"/>
+			<result column="pass_state" property="passState"/>
+			<result column="pass_reg_date" property="passRegDate"/>
+			<result column="pass_end_days" property="passEndDate"/>
+		</association>
+		<association property="lesson" javaType="Lesson">
+			<id 	column="lesson_cd" 				property="lessonCd"/>
+			<result column="lesson_division" 		property="lessonDivision"/>
+			<result column="facility_goods_cd" 		property="facilityGoodsCd"/>
+			<result column="facility_cd" 			property="facilityCd"/>
+			<result column="goods_ctg_cd" 			property="goodsCtgCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="lesson_nm" 				property="lessonName"/>
+			<result column="lesson_detail" 			property="lessonDetail"/>		
+			<result column="lesson_total_member" 	property="lessonTotalMember"/>		
+	 		<result column="lesson_member" 			property="lessonMember"/>		 
+			<result column="lesson_start_date" 		property="lessonStartDate"/>		
+			<result column="lesson_end_date" 		property="lessonEndDate"/>		
+			<result column="lesson_price" 			property="lessonPrice"/>		
+			<result column="lesson_reg_date" 		property="lessonRegDate"/>		
+			<result column="lesson_state" 			property="lessonState"/>	
+		</association>
+		<association property="stadium" javaType="Stadium">
+			<id column="facility_stadium_cd" 			property="facilityStadiumCd"/>
+			<result column="facility_goods_cd" 			property="facilityGoodsCd"/>
+			<result column="facility_cd" 				property="facilityCd"/>
+			<result column="goods_ctg_cd" 				property="goodsCtgCd"/>
+			<result column="sports_cd" 					property="sportsCd"/>
+			<result column="user_id" 					property="userId"/>
+			<result column="facility_stadium_nm" 		property="facilityStadiumNm"/>
+			<result column="facility_stadium_reg_date"	property="facilityStadiumRegDate"/>
+			<result column="facility_stadium_detail"	property="facilityStadiumDetail"/>
+			<association property="stadiumPrice" javaType="StadiumPrice">
+				<id 	column="stadium_price_cd" 		property="stadiumPriceCd"/>
+				<result column="facility_stadium_cd"	property="facilityStadiumCd"/>
+				<result column="sports_cd"				property="sportsCd"/>
+				<result column="day_price"				property="dayPrice"/>
+				<result column="night_price"			property="nightPrice"/>
+				<result column="hol_price"				property="holPrice"/>
+			</association>
+		</association>
+		<association property="sports" javaType="Sports">
+			<id 	column="sports_cd"	property="sportsCd"/>
+			<result column="sports_nm" 	property="sportsName"/>
+		</association>
+		<association property="facility" javaType="Facility">
+			<id 	column="facility_cd" 			property="facilityCd"/>
+			<result column="main_ctg_cd"			property="mainCtgCd"/>
+			<result column="town_cd"  				property="townCd"/>
+			<result column="facility_use_cd" 		property="facilityUseCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="facility_nm" 			property="facilityNm"/>
+			<result column="facility_address" 		property="facilityAddr"/>
+			<result column="facility_tell" 			property="facilityTell"/>
+			<result column="facility_post_num" 		property="facilityPostNum"/>
+			<result column="business_number" 		property="businessNum"/>
+			<result column="facility_reg_date"		property="facilityRegDate"/>
+			<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+			<result column="area_cd"  				property="areaCd"/>
+			<result column="city_cd"  				property="cityCd"/>
+		</association>
+	</resultMap>
+	<!-- 
+	SELECT 
+	case
+	when COUNT(g.facility_goods_cd) = 0 then 'facility_goods_cd_001'
+	when (MAX(CAST(SUBSTRING_INDEX(g.facility_goods_cd,'goods',-1) AS UNSIGNED))<1000)
+	then
+		CONCAT('facility_goods_cd_', LPAD(MAX(CAST(SUBSTRING_INDEX(g.facility_goods_cd,'_',-1)AS UNSIGNED))+1,3,0))
+	else
+		CONCAT('facility_goods_cd_',MAX(CAST(SUBSTRING_INDEX(g.facility_goods_cd,'_',-1) AS UNSIGNED))+1)
+	end 
+FROM
+	facility_goods AS g;
+	
+	
+	
+	select
+			case
+			when COUNT(o.order_cd) = 0 
+			then 'order_cd_1'
+			else
+				CONCAT('order_cd_',MAX(CAST(SUBSTRING_INDEX(o.order_cd,'_',-1) AS UNSIGNED))+1)
+			end
+		FROM
+			goods_order AS o
+	 -->
+	<insert id="addFacilityGoods" parameterType="FacilityGoods">
+		<selectKey resultType="String" keyProperty="facilityGoodsCd" order="BEFORE">
+		SELECT 
+			CONCAT('facility_goods_cd_',MAX(CAST(SUBSTRING_INDEX(g.facility_goods_cd,'_',-1) AS UNSIGNED))+1)
+		FROM
+			facility_goods AS g
+		</selectKey>
+		INSERT INTO facility_goods(
+			facility_goods_cd, 
+			facility_cd, 
+			goods_ctg_cd, 
+			sports_cd, 
+			user_id, 
+			facility_goods_reg_date, 
+			facility_goods_state
+		)VALUES (
+			#{facilityGoodsCd}, 
+			#{facilityCd}, 
+			#{goodsCtgCd}, 
+			#{sportsCd}, 
+			#{userId}, 
+			NOW(), 
+			'Y'
+		)
+	</insert>
+	
+	<select id="getFacilityGoodsCd" parameterType="String" resultMap="facilityGoodsResultMap">
+		SELECT
+			g.facility_goods_cd
+			,g.facility_cd
+			,g.goods_ctg_cd
+			,g.sports_cd
+			,g.user_id
+			,g.facility_goods_reg_date
+			,g.facility_goods_state
+		FROM 
+			facility_goods AS g
+		WHERE
+			g.facility_goods_cd = #{facilityGoodsCd};
+	</select>
+	<select id="getFacilityGoodsPass" parameterType="String" resultType="FacilityGoods" resultMap="facilityGoodsResultMap">
+		SELECT
+			f.main_ctg_cd,
+			f.town_cd,
+			f.facility_use_cd,
+			f.facility_nm,
+			f.facility_address,
+			f.facility_tell,
+			f.business_number,
+			f.area_cd,
+			f.city_cd,
+			g.facility_goods_cd,
+			g.facility_cd,
+			g.goods_ctg_cd,
+			g.sports_cd,
+			g.user_id,
+			g.facility_goods_reg_date,
+			g.facility_goods_state,
+			p.pass_cd,
+			p.pass_nm,
+			p.pass_reg_date,
+			p.pass_unit,
+			p.pass_price,
+			p.pass_state,
+			p.pass_end_days,
+			fs.area_nm,
+			fs.city_nm,
+			fs.town_nm
+		FROM 
+			(
+			SELECT
+					f.facility_cd
+					,mc.main_ctg_nm
+					,fu.facility_use_nm
+					,a.area_nm
+					,ac.city_nm
+					,act.town_nm
+					,f.user_id
+					,f.facility_nm
+					,f.facility_address
+					,f.facility_detail_addr
+					,f.facility_tell
+					,f.business_number
+					,f.facility_reg_date
+					
+				FROM
+					facility AS f
+					INNER JOIN 
+					area AS a
+					ON 
+					f.area_cd = a.area_cd
+					INNER join
+					area_city AS ac
+					ON 
+					f.city_cd= ac.city_cd
+					INNER join
+					area_city_town AS act
+					on
+					f.town_cd = act.town_cd
+					INNER join
+					facility_use AS fu
+					ON 
+					f.facility_use_cd = fu.facility_use_cd
+					INNER join
+					main_ctg AS mc
+					ON 
+					f.main_ctg_cd = mc.main_ctg_cd
+			) AS fs
+			INNER join
+			facility AS f
+			ON 
+			fs.facility_cd = f.facility_cd
+			INNER JOIN 
+			facility_goods AS g
+			on
+			f.facility_cd = g.facility_cd
+			INNER join
+			facility_pass AS p 
+			on
+			g.facility_goods_cd = p.facility_goods_cd
+			and
+			g.facility_goods_cd = #{facilityGoodsCd};
+	</select>
+	<select id="getFacilityGoodsLesson" parameterType="String" resultMap="facilityGoodsResultMap">
+		SELECT
+			f.main_ctg_cd,
+			f.town_cd,
+			f.facility_use_cd,
+			f.facility_nm,
+			f.facility_address,
+			f.facility_tell,
+			f.business_number,
+			f.area_cd,
+			f.city_cd,
+			g.facility_goods_cd,
+			g.facility_cd,
+			g.goods_ctg_cd,
+			g.sports_cd,
+			g.user_id,
+			g.facility_goods_reg_date,
+			g.facility_goods_state,
+			l.lesson_cd,
+			l.lesson_division,
+			l.facility_goods_cd,
+			l.facility_cd,
+			l.goods_ctg_cd,
+			l.sports_cd,
+			l.user_id,
+			l.lesson_nm,
+			l.lesson_detail,
+			l.lesson_total_member,
+			l.lesson_price,
+			l.lesson_member,
+			l.lesson_start_date,
+			l.lesson_end_date,
+			l.lesson_start_time,
+			l.lesson_end_time,
+			l.lesson_count,
+			l.lesson_state,
+			l.lesson_reg_date
+		from
+			facility AS f
+			INNER join
+			facility_goods AS g
+			on
+			f.facility_cd= g.facility_cd
+			INNER join
+			lesson AS l
+			on
+			l.facility_goods_cd = g.facility_goods_cd
+			and
+			g.facility_goods_cd = #{facilityGoodsCd}
+	</select>
+	<select id="getFacilityGoodsStadium" parameterType="String" resultMap="facilityGoodsResultMap">
+		SELECT
+			f.main_ctg_cd,
+			f.town_cd,
+			f.facility_use_cd,
+			f.facility_nm,
+			f.facility_address,
+			f.facility_tell,
+			f.business_number,
+			f.area_cd,
+			f.city_cd,
+			g.facility_goods_cd,
+			g.facility_cd,
+			g.goods_ctg_cd,
+			g.sports_cd,
+			g.user_id,
+			g.facility_goods_reg_date,
+			g.facility_goods_state,
+			s.*,
+			p.*
+		FROM
+			facility AS f
+			INNER join
+			facility_goods AS g
+			on
+			f.facility_cd= g.facility_cd
+			INNER JOIN
+			facility_stadium AS s
+			on
+			s.facility_goods_cd = g.facility_goods_cd
+			INNER join
+			stadium_price AS p
+			on
+			p.facility_stadium_cd = s.facility_stadium_cd
+			and
+			g.facility_goods_cd = #{facilityGoodsCd}
+	</select>
+</mapper>

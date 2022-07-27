@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+
+
+
+<th:block layout:fragment="customJs">
+	<script type="text/javascript" charset="utf-8" th:src="@{/resource/textEditer/js/HuskyEZCreator.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+</th:block>
+<th:block layout:fragment="customCss">
+	<style>
+		.calendar {
+			width: 400px;
+			padding: 5px 20px 20px 20px;
+			box-sizing: border-box;
+			border: 1px solid;
+		}
+
+		.calendar>.header {
+			text-align: center;
+		}
+
+		.calendar>.header>.title {
+			width: 50%;
+			display: inline-block;
+		}
+
+		.calendar>.header>.calendar_btn {
+			width: 30px;
+			height: 30px;
+			border: none;
+			padding: 0;
+			background-color: #ffffff;
+			vertical-align: middle;
+			color: black;
+		}
+
+		.calendar>.day {
+			width: 100%;
+			display: table;
+			table-layout: fixed;
+		}
+
+		.calendar>.day>div {
+			display: table-cell;
+			text-align: center;
+			height: 50px;
+			vertical-align: middle;
+		}
+
+		.calendar>.day>div:first-child {
+			color: red;
+		}
+
+		.calendar>.day>div:last-of-type {
+			color: blue;
+		}
+
+		.calendar>.dates {
+			display: flex;
+			flex-wrap: wrap;
+			width: 100%;
+		}
+
+		.calendar>.dates>.date {
+			text-align: center;
+			width: calc(100%/7);
+			height: 50px;
+			box-sizing: border-box;
+			line-height: 3;
+			border-radius: 3px;
+		}
+
+		.calendar>.dates>.date:nth-child(7n) {
+			color: blue;
+		}
+
+		.calendar>.dates>.date:nth-child(7n+1) {
+			color: red;
+		}
+
+		.calendar>.dates>.last {
+			color: #c8c8c8 !important;
+		}
+
+		.calendar>.dates>.next {
+			color: #c8c8c8 !important;
+		}
+	</style>
+</th:block>
+
+<th:block layout:fragment="customTitle">
+	<title th:text="${title}"></title>
+
+</th:block>
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+
+
+
+	<div class="" th:if="${not #strings.isEmpty(session.SID)}">
+		[[${session.SID}]]
+
+
+
+		<div class="row">
+			<div class="col-md-12 col-sm-12">
+				<form method="post" id="offer-form">
+					<input type="hidden" th:value="${session.SID}">
+
+					<!--/* 시설을 관리자가 포함된 시설정보Select Box. */-->
+
+					<span class="section">레슨 구인 등록</span>
+					<!--/* 시설을 선택시 해당되는 시설 레슨정보로 변경됩니다. */-->
+					<div class="row">
+						<div class="col-sm-6 col-md-10 col-lg-12">
+							<div class="row form-group">
+								<div class="col-sm-12 col-md-12">
+									<div class="row">
+										<div class="col-sm-8 col-md-8">
+											<div class="row">
+												<div class="col-md-3 col-sm-3">
+													시설을 선택해주세요
+													<select class="form-control req" name="facility">
+														
+														<th:block th:if="${not #lists.isEmpty(facility)}">
+															<option value="none">::시설을 선택해주세요::</option>
+															<th:block  th:each="facility : ${facility}">
+																<option th:value="${facility.facilityCd}">[[${facility.facilityNm}]]</option>
+															</th:block>
+														</th:block>
+														<th:block th:unless="${not #lists.isEmpty(facility)}">
+															<option>회원님이 등록하신 시설이 없습니다.</option>
+														</th:block>
+													</select>
+												</div>
+												<div class="col-md-3 col-sm-3" id="lesson">
+													<span>레슨을 선택해주세요</span>
+												</div>
+												<div class="col-md-3 col-sm-3" id="sports">
+													<span>종목</span>
+												</div>
+											</div>
+										</div>
+
+
+										<div class="col-sm-4 col-md-4">
+											<div class="form-group offset-7">
+												<button id="register-btn" type="button" class="btn btn-primary">등록하기</button>
+												<button id="back-btn" type="button" class="btn btn-success">뒤로가기</button>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="row form-group">
+						<div class="col-sm-12 col-md-12 col-lg-12">
+							<div class="calendar">
+								<div class="header">
+									<button class="calendar_btn" onclick="preDate();">&lt;</button>
+									<div class="title"><span class="year"></span><span class="month"></span></div>
+									<button class="calendar_btn" onclick="nextDate();">&gt;</button>
+								</div>
+								<div class="day">
+									<div>S</div>
+									<div>M</div>
+									<div>T</div>
+									<div>W</div>
+									<div>T</div>
+									<div>F</div>
+									<div>S</div>
+								</div>
+								<div class="dates"></div>
+							</div>
+							<div class="form-group"></div>
+							<div class="col-sm-6 col-md-6">
+								<input class="form-control req" name="endDate" type="text" id="period_1">
+							</div>
+							<div class="col-sm-6 col-md-6">
+								<select class="form-control req" name="offerState">
+									<option value="모집중">모집중</option>
+									<option value="모집마감">모집마감</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="row form-group">
+						<div class="col-sm-12 col-md-12 col-lg-12">
+							<input class="form-control req" name="offerTitle" required="required" type="text"
+								placeholder="레슨구인 제목을 입력해주세요.">
+						</div>
+					</div>
+					<div class="row form-group">
+						<div class="col-sm-12 col-md-12">
+							<textarea class="form-control req" name="contents" id="contents"
+								style="width: 100%; height:500px;"></textarea>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+
+
+
+		<!-- <div class="field item form-group">
+						<label class="col-form-label col-md-3 col-sm-3  label-align">첨부파일 선택</label>
+						<div class="col-md-6 col-sm-6">
+							<div class="button">
+								<label for="chooseFile">
+									👉 CLICK HERE! 👈
+								</label>
+							</div>
+							<input type="file" id="chooseFile" name="chooseFile" accept="image/*" onchange="loadFile(this)">
+						</div>
+					</div> -->
+
+
+		<!--/* 디테일 등록하기 . */-->
+
+
+	</div>
+
+
+
+	<div th:unless="${not #strings.isEmpty(session.SID)}">
+		로그인이 필요한 서비스입니다.
+	</div>
+
+
+	<script>
+		let oEditors = []
+
+		smartEditor = function () {
+			console.log("plz")
+			nhn.husky.EZCreator.createInIFrame({
+				oAppRef: oEditors,
+				elPlaceHolder: "contents",
+				sSkinURI: "/resource/textEditer/SmartEditor2Skin.html",
+				fCreator: "createSEditor2",
+				htParams: {
+					// 툴바 사용 여부
+					bUseToolbar: true,
+					// 입력창 크기 조절바 사용 여부
+					bUseVerticalResizer: false,
+					// 모드 탭(Editor | HTML | TEXT) 사용 여부
+					bUseModeChanger: true,
+				},
+				
+			});
+		}
+
+		
+		  
+		
+		
+		$(document).ready(function () {
+			smartEditor();
+			readyCalender(); // 캘린더
+			readyAjax(); // Lesson ajax 
+			 // sports
+		});
+		
+		
+		/*
+			시설별 레슨종류 ajax ready
+		*/
+		
+		let lessonSelect;
+		
+		const sports = $('#sports');
+		function readyAjax(){
+			
+			const lesson = $('#lesson');
+			
+			
+			
+			lesson.css('display','none');
+			sports.css('display','none');
+			
+			const facility = $('select[name="facility"]')
+			
+			
+			
+			facility.on('change',function(){
+				
+				
+				
+				
+				const optionValue = facility.val()
+				const sportsList = [];
+				const spanLesson = $('#lesson span');
+ 				const spanSports = $('#sports span');
+ 				spanLesson.css('display', 'none');
+				spanSports.css('display', 'none');
+				if("none" == optionValue){
+					alert('시설을 선택해주세요');
+					return;
+				}
+				
+				$('select[name="lesson"]').remove();
+				
+				
+				$.ajax({
+					type : 'GET',
+					url: '/offer/lessonSelect',
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'JSON',
+					data : {
+						facilityCd : optionValue
+					}
+				}).done(function(data){
+					if(typeof 'undefinded'==data || data == null || data == ''){
+						alert('등록하신 레슨정보가 없습니다.');
+						return;
+					}else{
+						let html = `<select class="form-control req" name="lesson">`;
+							
+						let datas = '';
+						for(let i = 0; i < data.length; i++){
+							let sportsObj = new Object();
+							datas += '<option value=' + data[i].lessonCd +'>'+data[i].lessonName + '</option>';
+							sportsObj.sports = data[i].sports.sportsName;
+							sportsObj.lessonName = data[i].lessonName;
+							sportsObj.lessonCd= data[i].lessonCd;
+							sportsList.push(sportsObj);
+						}
+						
+						
+						lesson.append(html + datas);
+						lesson.append(`</select>`);
+						
+					
+						
+						
+						lessonSelect = $('#lesson select[name="lesson"]');
+						
+						
+						let sportsHTML = '';
+						
+						sportsHTML= `<input class="form-control req" name="sports" type="text" value=${data[0].sports.sportsName}>`;
+						sports.append(sportsHTML);
+					
+						
+						//readyLesson(lessonList,sportsList);
+						lesson.css('display','block');
+						spanLesson.css('display','block');
+						sports.css('display','block');
+						spanSports.css('display','block');
+						lessonOn(sportsList);
+					}
+					
+				}).fail(function(error){
+										
+				});
+
+			});
+			
+		}
+		
+		
+		function lessonOn(val){
+			lessonSelect.on('change',function(){
+				val.find(data => data.name === $(this).val());
+			})
+		}
+		
+		/*
+		
+			<input class="form-control" type="text" >
+			
+			lesson Ready
+		*/
+		
+
+		/*
+			Form Data
+			@author chanbokW	
+		*/
+		const offerForm = $('#offer-form');
+		
+		
+		const registerBtn = $('#register-btn');
+		const session = '[[${session.SID}]]';
+		
+		registerBtn.on('click', function(){
+			
+			
+			oEditors.getById["contents"].exec("UPDATE_CONTENTS_FIELD", [])
+			
+			$.each($('.req'),function(index,item){
+				if(typeof 'undefinded'==item.value || item.value == '' || item.value.trim() == ''){
+					alert('입력이 안된 폼이 있습니다.');
+					item.focus();
+					return;
+				}
+			})
+			
+			const data = {
+					facilityCd : $('select[name="facility"]').val(),
+					lessonCd : lessonSelect.val(),
+					userId : session,
+					lessonSports : $('input[name="sports"]').val(),
+					offerTitle : $('input[name="offerTitle"]').val(),
+					offerDetail : $('#contents').val(),
+					offerEndDate : $('input[name="endDate"]').val(),
+					offerState : $('select[name="offerState"]').val()
+			}
+			
+			
+			/*
+				ajax 통신 
+			*/
+			
+			$.ajax({
+				type: 'POST',
+				url: '/offer/addOffer',
+				dataType: 'JSON',
+				contentType: 'application/json; charset=utf-8',
+				data: JSON.stringify(data)
+			}).done(function(response){
+				console.log(response);
+			}).fail(function(error){
+				console.log(error,'응답요청에 실패 하였습니다.');
+			})	
+			
+		});
+		
+		
+		
+		
+		
+	/*
+		Calendar
+	*/
+		let calDate = new Date();
+		let today = new Date();
+		let check = 0;
+
+
+		const readyCalender = function () {
+			let htmlDates = '';
+			let prevLast = new Date(calDate.getFullYear(), calDate.getMonth(), 0); //지난달 마지막날
+			let thisFirst = new Date(calDate.getFullYear(), calDate.getMonth(), 1); //이번 달의 첫쨰 날
+			let thisLast = new Date(calDate.getFullYear(), calDate.getMonth() + 1, 0); //이번 달의 마지막 날
+			document.querySelector('.year').innerHTML = calDate.getFullYear() + '년'; // y
+			document.querySelector(".month").innerHTML = (calDate.getMonth() + 1) + "월";  //month에 월 출력
+			const dates = [];
+
+			if (thisFirst.getDay() != 0) {
+				for (let i = 0; i < thisFirst.getDay(); i++) {
+					dates.unshift(prevLast.getDate() - i); // 지난달 
+				}
+			}
+
+			for (let i = 1; i <= thisLast.getDate(); i++) {
+				dates.push(i);  
+			}
+			for (let i = 1; i <= 13 - thisLast.getDay(); i++) {
+				dates.push(i); 
+			}
+
+			for (let i = 0; i < 42; i++) {
+				if (i < thisFirst.getDay()) {
+					htmlDates += '<div class="date last">' + dates[i] + '</div>';
+				} else if (today.getDate() == dates[i] && today.getMonth() == calDate.getMonth() && today.getFullYear() == calDate.getFullYear()) {
+					htmlDates += '<div id="date_' + dates[i] + '" class="date today" onclick="selectedDay(' + dates[i] + ');">' + dates[i] + '</div>';
+				} else if (i >= thisFirst.getDay() + thisLast.getDate()) {
+					htmlDates += '<div class="date next">' + dates[i] + '</div>';
+				} else {
+					htmlDates += '<div id="date_' + dates[i] + '" class="date" onclick="selectedDay(' + dates[i] + ');">' + dates[i] + '</div>';
+				}
+			}
+			document.querySelector(".dates").innerHTML = htmlDates;
+
+		}
+
+
+		function preDate() {
+			calDate.setMonth(calDate.getMonth()-1); 
+			readyCalender();
+		}
+
+		function nextDate() {
+			calDate.setMonth(calDate.getMonth()+1);
+			readyCalender();
+		}
+
+
+		function selectedDay(date) {
+			let year = calDate.getFullYear();
+			let month = calDate.getMonth() + 1;
+			let date_txt = "";
+			if (calDate.getMonth + 1 < 10) {
+				month = "0" + (calDate.getMonth() + 1);
+			}
+			if (date < 10) {
+				date_txt = "0" + date;
+			}
+			console.log(check);
+			if (check == 0) {
+				$(".date").css("background-color", "");
+				$(".date").css("color", "");
+				$("#date_" + date).css("background-color", "red");
+				$("#date_" + date).css("color", "white");
+
+				$("#period_1").val(year + "-" + month + "-" + date);
+				//$("#period_2").val("");
+				check = date;
+			}
+			check = 0;
+		}
+		
+		
+		
+		
+	</script>
+</th:block>
+
+</html>

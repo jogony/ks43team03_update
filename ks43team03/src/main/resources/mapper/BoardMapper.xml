@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.BoardMapper">
+	<resultMap type="Board" 						id="boardResultMap">
+		<id column="board_post_cd"					property="boardPostCd"/>
+		<result column="board_ctg_cd"				property="boardCtgCd"/>
+		<result column="facility_cd"				property="facilityCd"/>
+		<result column="user_id"					property="userId"/>
+		<result column="board_post_title"			property="boardPostTitle"/>
+		<result column="board_post_content"			property="boardPostContent"/>
+		<result column="board_post_date"			property="boardPostDate"/>
+		<result column="board_post_comment_number"	property="boardPostCommentNum"/>
+		<result column="board_post_views"			property="boardPostViews"/>
+		<result column="board_post_state"			property="boardPostState"/>
+		<collection property="tFile" ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result column="re_file_name"			property="reFileName"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_date"			property="updatedDate"/>
+			<result	column="represent_img"		property="representImg"/>
+		</collection>
+	</resultMap>
+	<resultMap type="BoardCtgCd" 					id="BoardCtgCdResultMap">
+		<id column="board_ctg_cd"				property="boardCtgCd"/>
+		<result column="board_ctg_nm"				property="boardCtgNm"/>
+		<result column="board_ctg_rdg_date"			property="boardCtgRegDate"/>
+	</resultMap>
+	<resultMap type="BoardComment" 					id="boardCommentResultMap">
+		<id column="board_post_comment_cd"			property="boardPostCommentCd"/>
+		<result column="board_post_cd"				property="boardPostCd"/>
+		<result column="board_ctg_cd"				property="boardCtgCd"/>
+		<result column="user_id"					property="userId"/>
+		<result column="board_post_comment_detail"	property="boardPostContentDetail"/>
+		<result column="board_post_comment_date"	property="boardPostCommentDate"/>
+		<result column="board_post_comment_state"	property="boardPostCommentState"/>
+	</resultMap>
+	
+	
+	<!-- 게시글 전체 조회  -->
+	<select id="getBoardList" parameterType="map" resultType="map" resultMap="boardResultMap">
+		SELECT
+			b.board_post_cd					
+			,b.board_ctg_cd		
+			<!-- ,b.facility_cd -->			
+			,b.user_id						
+			,b.board_post_title				
+			,b.board_post_content			
+			,b.board_post_date				
+			,b.board_post_views				
+			,b.board_post_comment_number	
+			,b.board_post_state				
+		FROM
+			board_post AS b
+		LIMIT #{startRow}, #{rowPerPage};
+	</select>
+	
+	<!-- 게시글 총 튜플 수 -->
+	<select id="getBoardCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			board_post;
+	</select>
+	
+	<!-- 시설 내 게시글 목록 조회 -->
+	<select id="getBoardListByFacility" parameterType="map" resultType="map" resultMap="boardResultMap">
+		SELECT 
+			b.board_post_cd
+			, b.board_ctg_cd
+			, b.facility_cd
+			, b.user_id
+			, b.board_post_title
+			, b.board_post_content
+			, b.board_post_date
+			, b.board_post_views
+			, b.board_post_comment_number
+			, b.board_post_state
+		FROM 
+			board_post AS b
+		INNER JOIN 
+			facility AS f
+		ON
+			b.facility_cd = f.facility_cd
+		WHERE
+			b.facility_cd = #{facilityCd};
+	</select>
+	
+	<!-- 게시글 상세보기 -->
+	<select id="getBoardDetail" parameterType="String" resultMap="boardResultMap">
+		SELECT 
+			b.board_post_cd
+			, b.board_ctg_cd
+			<!-- , b.facility_cd -->
+			, b.user_id
+			, b.board_post_title
+			, b.board_post_content
+			, b.board_post_date
+			, b.board_post_views
+			, b.board_post_comment_number
+			, b.board_post_state
+			, sub.file_cd
+			, sub.original_file_nm
+			, sub.file_size
+			, sub.uploader_id
+			, sub.upload_date
+			, sub.updator_id
+			, sub.updated_datetime
+			, sub.represent_img
+			, sub.deleted_yn
+			, sub.re_file_name
+			, sub.board_post_cd
+		FROM 
+			board_post AS b
+		left JOIN
+			(select
+				st.file_cd
+				, st.original_file_nm
+				, st.file_size
+				, st.uploader_id
+				, st.upload_date
+				, st.updator_id
+				, st.updated_datetime
+				, st.represent_img
+				, st.deleted_yn
+				, st.re_file_name
+				, sr.board_post_cd
+			from
+				t_file AS st
+			INNER join
+				rel_file_with_board AS sr
+			ON
+				st.file_cd = sr.file_cd) AS sub
+		on
+			sub.board_post_cd = b.board_post_cd
+		<trim prefix="WHERE">
+			<if test="boardPostCd != null and boardPostCd != ''">
+				b.board_post_cd = #{boardPostCd}
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 게시글 작성 -->
+	<insert id="addBoard" parameterType="Board">
+		INSERT INTO board_post
+			(board_post_cd
+			, board_ctg_cd
+			<!-- , facility_cd -->
+			, user_id
+			, board_post_title
+			, board_post_content
+			, board_post_date
+			, board_post_views
+			, board_post_comment_number
+			, board_post_state)
+		VALUES(
+			#{boardPostCd}	
+			, #{boardCtgCd}
+			<!-- , #{facilityCd} -->
+			, #{userId}
+			, #{boardPostTitle}
+			, #{boardPostContent}
+			, NOW()
+			, #{boardPostViews}
+			, 0
+			, 'N')
+		<selectKey keyProperty="boardPostCd" resultType="String" order="BEFORE">
+			SELECT
+				CONCAT('board_post_', LPAD(MAX(CAST(SUBSTRING_INDEX(p.board_post_cd,'_',-1) AS UNSIGNED))+1,2,0))
+			FROM
+				board_post AS p
+		</selectKey>
+	</insert>
+	
+	<!-- 게시글 답글 등록 -->
+	<insert id="addBoardComment" parameterType="boardComment">
+		INSERT INTO board_post_comment
+		(		 board_post_comment_cd
+				,board_post_cd
+				,board_ctg_cd
+				,user_id
+				,board_post_comment_detail
+				,board_post_comment_state
+				,board_post_comment_date
+		)VALUES	(
+					(SELECT
+						CONCAT('board_post_comment_', LPAD(MAX(CAST(SUBSTRING_INDEX(p.board_post_comment_cd,'_',-1) AS UNSIGNED))+1,2,0))
+					FROM
+						board_post_comment AS p)	
+						
+				,#{boardPostCd}
+				,#{boardCtgCd}
+				,#{userId}
+				,#{boardPostContentDetail}
+				,'N'
+				,NOW()
+		);
+	</insert>
+	
+	<!-- 게시글 카테고리 조회 -->
+	<select id="getBoardCtgCd" parameterType="String" resultMap="BoardCtgCdResultMap">
+		SELECT 
+			bc.board_ctg_cd
+			, bc.board_ctg_nm
+			, bc.board_ctg_reg_date
+		FROM 
+			board_ctg AS bc;
+	</select>
+	
+	<!-- 게시글 조회수 업데이트 -->
+	<update id="boardViewUpdate" parameterType="String">
+		UPDATE 
+			board_post
+		SET
+			board_post_views = board_post_views+1
+		<trim prefix="WHERE">
+			<if test="boardPostCd != null and boardPostCd != ''">
+				board_post_cd = #{boardPostCd}
+			</if>
+		</trim>
+	</update>
+	
+	<!-- 게시글 댓글 수 업데이트 -->
+	<update id="commentCountUpdate" parameterType="String">
+		UPDATE
+			board_post AS p
+		SET
+			p.board_post_comment_number = ( SELECT
+												COUNT(*)
+											FROM
+												board_post_comment AS c
+											WHERE
+												c.board_post_cd = #{boardPostCd} ) +1
+		WHERE 
+			p.board_post_cd = #{boardPostCd};
+	</update>
+	
+	<!-- 게시글 수정 -->
+	<update id="modifyBoard" parameterType="Board">
+		UPDATE 
+			board_post
+		SET
+			board_post_cd=#{boardPostCd},
+			board_ctg_cd=#{boardCtgCd},
+			<!-- facility_cd=#{facilityCd}, -->
+			user_id=#{userId},
+			board_post_title=#{boardPostTitle},
+			board_post_content=#{boardPostContent},
+			board_post_date=NOW(),
+			board_post_views=#{boardPostViews},
+			board_post_comment_number=0,
+			board_post_state='N'
+		<trim prefix="WHERE">
+			<if test="boardPostCd != null and boardPostCd != ''">
+				board_post_cd = #{boardPostCd}
+			</if>
+		</trim>
+	</update>
+	
+	<!-- 게시글 답글 리스트 조회 -->
+	<select id="getBoardCommentList" parameterType="String" resultMap="boardCommentResultMap">
+		SELECT 
+			c.board_post_comment_cd
+			, c.board_post_cd
+			, c.board_ctg_cd
+			, c.user_id
+			, c.board_post_comment_detail
+			, c.board_post_comment_date
+			, c.board_post_comment_state
+		FROM 
+			board_post_comment AS c
+		INNER join
+			board_post AS p
+		ON
+			c.board_post_cd = p.board_post_cd
+		<trim prefix="WHERE">
+			<if test="boardPostCd != null and boardPostCd != ''">
+				p.board_post_cd = #{boardPostCd}
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 게시글 답글 삭제 -->
+	<delete id="removeComment" parameterType="String">
+		DELETE FROM 
+			board_post_comment 
+		WHERE 
+			board_post_comment_cd = #{boardPostCommentCd};
+	</delete>
+	
+	<!-- 게시글 댓글 수 삭제 업데이트 -->
+	<update id="commentCountMinusUpdate" parameterType="String">
+		UPDATE
+			board_post AS p
+		SET
+			p.board_post_comment_number = ( SELECT
+												COUNT(*)
+											FROM
+												board_post_comment AS c
+											WHERE
+												c.board_post_cd = #{boardPostCd} )
+		WHERE 
+			p.board_post_cd = #{boardPostCd};
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="removeCommentByPostCd" parameterType="String">
+		/* 게시글에 등록되있는 댓글 모두 삭제 */
+		DELETE 
+			bc
+		FROM 
+			board_post AS bp
+			INNER JOIN 
+			board_post_comment AS bc
+			ON 
+			bp.board_post_cd = bc.board_post_cd
+		WHERE
+			bc.board_post_cd = #{boardPostCd};
+	</delete>
+	<delete id="removeBoard" parameterType="String">
+		/* 게시글 삭제 */
+		DELETE
+		FROM
+			board_post
+		WHERE
+			board_post_cd = #{boardPostCd};
+	</delete>
+
+	
+</mapper>

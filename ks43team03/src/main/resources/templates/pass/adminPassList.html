@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>이용권 리스트 테이블 <small>관리자</small></h2>
+
+								<div class="clearfix"></div>
+							</div>
+
+							<div class="x_content">
+
+
+
+								<div class="table-responsive">
+									<table class="table jambo_table bulk_action">
+										<thead>
+											<tr class="headings">
+												
+												<th class="column-title" style="display: table-cell;">이용권 명</th>
+												<th class="column-title" style="display: table-cell;">이용권 시설</th>
+												<th class="column-title" style="display: table-cell;">이용권 등록자</th>
+												<th class="column-title" style="display: table-cell;">이용권 가격 </th>
+												<th class="column-title" style="display: table-cell;">이용권 등록일자</th>
+												<th class="column-title" style="display: table-cell;">이용권 상태</th>
+												<th class="column-title no-link last" style="display: table-cell;"><span
+														class="nobr">상세보기</span>
+												</th>
+												<th class="bulk-actions" colspan="7" style="display: none;">
+													<a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions (
+														<span class="action-cnt">1 Records Selected</span> ) <i
+															class="fa fa-chevron-down"></i></a>
+												</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											<tr class="" th:if="${not #lists.isEmpty(passList)}" th:each="pass : ${passList}">
+												<td class=" " th:text="${pass.passNm}"></td>
+												<td class=" " th:text="${pass.facility.facilityNm}">땡떙체육관</td>
+												<td class=" " th:text="${pass.userId}"> </td>
+												<td class=" " th:text="${pass.passPrice}"> <i class="success fa fa-long-arrow-up"></i></td>
+												<td class=" " th:text="${pass.passRegDate}"></td>
+												<td class=" " th:text="${pass.passState}"></td>
+												<td class="last"><a th:href="@{/pass/admin/passDetail(passCd=${pass.passCd},facilityGoodsCd=${pass.facilityGoodsCd})}">상세보기</a>
+												</td>
+											</tr>
+											<tr th:unless="${not #lists.isEmpty(passList)}">
+												<td colspan="7">이용권내용이 아직없습니다.</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+
+	</th:block>
+
+</html>

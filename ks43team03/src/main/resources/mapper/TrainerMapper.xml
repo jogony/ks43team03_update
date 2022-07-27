@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.TrainerMapper">
+	<resultMap type="TrainerProfile" id="trainerResultMap">
+		<id		column="trainer_cd"			property="trainerCd"></id>
+		<result column="user_id"			property="userId"></result>
+		<result column="trainer_nicknm"		property="trainerNickname"></result>
+		<result column="trainer_reg_date"	property="trainerRegDate"></result>
+		<association property="user" javaType="User">
+			<result column="user_level"			property="userLevel"/>
+			<result column="user_password"		property="userPw"/>
+			<result column="user_nm"			property="userName"/>
+			<result column="user_address"		property="userAddr"/>
+			<result column="user_birth"			property="userBirth"/>
+			<result column="user_email"			property="userEmail"/>
+			<result column="user_tell"			property="userTell"/>
+			<result column="user_gender"		property="userGender"/>
+			<result column="user_drop"			property="userDrop"/>
+			<result column="reg_path"			property="userRegPath"/>
+			<result column="user_terms"			property="userTerms"/>
+			<result column="user_reg_date"		property="userRegDate"/>
+			<result column="user_post_num"		property="userPostNum"/>
+			<result column="user_detail_addr"	property="userDetailAddr"/>
+		</association>
+		<collection property="trainerCareerList" ofType="TrainerCareer">
+			<id		column="trainer_career_cd"			property="trainerCareerCd"/>
+			<result	column="trainer_career_term"		property="trainerCareerTerm"/>
+			<result	column="trainer_career_center"		property="trainerCareerCenter"/>
+			<result	column="trainer_career_position"	property="trainerCareerPosition"/>
+			<result	column="trainer_career_work"		property="trainerCareerWork"/>
+			<result	column="trainer_career_file"		property="trainerCareerFile"/>
+			<result	column="trainer_career_reg_date"	property="trainerCareerRegDate"/>
+		</collection>
+		<collection property="trainerLicenseList" ofType="TrainerLicense">
+			<id		column="trainer_license_cd"			property="trainerLicenseCd"/>
+			<result	column="trainer_license"			property="trainerLicense"/>
+			<result	column="trainer_license_file"		property="trainerLicenseFile"/>
+			<result	column="trainer_license_reg_date"	property="trainerLicenseRegDate"/>
+		</collection>
+		<collection property="tFile" ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_datetime"		property="updatedDate"/>
+			<result	column="represent_img"			property="representImg"/>
+			<result column="re_file_name"			property="reFileName"/>
+		</collection>
+	</resultMap>
+	
+	<update id="modifyTrainerProfile" parameterType="TrainerProfile">
+		/* 트레이너 정보 수정 */
+		UPDATE trainer_profile
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="trainerNickname != null and trainerNickname != ''">
+				 trainer_nicknm = #{trainerNickname}
+			</if>
+		</trim>
+		WHERE
+			user_id = #{userId};
+	</update>
+	
+	<select id="getTrainerLicenseInfoByMap" parameterType="Map" resultMap="trainerResultMap">
+		/* Map로 트레이너 자격증 조회 */
+		SELECT
+			 t.trainer_cd
+			,t.user_id
+			,t.trainer_nicknm
+			,t.trainer_reg_date
+			,l.trainer_license_cd
+			,l.trainer_license
+			,l.trainer_license_file
+		FROM
+			trainer_profile AS t
+			LEFT JOIN
+			trainer_license AS l
+			on
+			t.trainer_cd = l.trainer_cd
+		<trim prefix="WHERE">
+			<if test="trainerCd != null and trainerCd != ''">
+				t.trainer_cd = #{trainerCd}
+			</if>
+			<if test="trainerLicenseCd != null and trainerLicenseCd != ''">
+				l.trainer_license_cd = #{trainerLicenseCd}
+			</if>
+			<if test="userId != null and userId != ''">
+				t.user_id = #{userId}
+			</if>
+		</trim>
+	</select>
+	<select id="getTrainerCareerInfoByMap" parameterType="Map" resultMap="trainerResultMap">
+		/* Map로 트레이너 경력 조회 */
+		SELECT
+			 t.trainer_cd
+			,t.user_id
+			,t.trainer_nicknm
+			,t.trainer_reg_date
+			,c.trainer_career_cd
+			,c.trainer_career_term
+			,c.trainer_career_center
+			,c.trainer_career_position
+			,c.trainer_career_work
+			,c.trainer_career_file
+		FROM
+			trainer_profile as t
+			LEFT join
+			trainer_career AS c
+			on
+			t.trainer_cd = c.trainer_cd
+		<trim prefix="WHERE">
+			<if test="trainerCd != null and trainerCd != ''">
+				t.trainer_cd = #{trainerCd}
+			</if>
+			<if test="trainerCareerCd != null and trainerCareerCd != ''">
+				c.trainer_career_cd = #{trainerCareerCd}
+			</if>
+			<if test="userId != null and userId != ''">
+				t.user_id = #{userId}
+			</if>
+		</trim>
+	</select>
+	<select id="getTrainerProfileInfoByMap" parameterType="Map" resultMap="trainerResultMap">
+		/* Map로 트레이너 정보 조회 */
+		SELECT
+			 t.trainer_cd
+			,t.user_id
+			,t.trainer_nicknm
+			,t.trainer_reg_date
+			,u.user_nm
+			,u.user_tell
+			,f.file_cd
+			,f.original_file_nm
+			,f.stored_file_path
+			,f.file_size
+			,f.uploader_id
+			,f.upload_date
+			,f.updator_id
+			,f.updated_datetime
+			,f.represent_img
+			,f.re_file_name
+		FROM
+			trainer_profile as t
+			INNER join
+			user AS u
+			on
+			t.user_id = u.user_id
+			LEFT JOIN
+			rel_file_with_trainer AS r
+			on
+			t.trainer_cd = r.trainer_cd
+			LEFT JOIN
+			t_file AS f
+			on
+			r.file_cd = f.file_cd
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="trainerCd != null and trainerCd != ''">
+				t.trainer_cd = #{trainerCd}
+			</if>
+			<if test="userId != null and userId != ''">
+				t.user_id = #{userId}
+			</if>
+		</trim>
+	</select>
+	
+	<select id="getTrainerList" parameterType="map" resultMap="trainerResultMap">
+		/* 트레이너 리스트 */
+		SELECT
+			 t.trainer_cd
+			,t.user_id
+			,t.trainer_nicknm
+			,t.trainer_reg_date
+			,tf.file_cd
+			,tf.original_file_nm
+			,tf.stored_file_path
+			,tf.file_size
+			,tf.uploader_id
+			,tf.upload_date
+			,tf.updator_id
+			,tf.updated_datetime
+			,tf.represent_img
+			,tf.re_file_name
+		FROM
+			trainer_profile AS t
+			LEFT JOIN
+				facility_user AS fu
+			ON
+				t.user_id = fu.user_id
+			LEFT JOIN
+				facility AS f
+			ON
+				f.facility_cd = fu.facility_cd
+			LEFT JOIN
+				area_city_town AS act
+			ON
+				act.town_cd = f.town_cd
+			LEFT JOIN
+				rel_file_with_trainer AS rf
+			ON
+				rf.trainer_cd = t.trainer_cd
+			LEFT JOIN
+				t_file AS tf
+			ON
+				tf.file_cd = rf.file_cd
+		WHERE
+			tf.represent_img = 'Y'
+			<if test="mainCtgCd != null and mainCtgCd != ''">
+			AND 
+				f.main_ctg_cd = #{mainCtgCd}
+				AND
+				fu.facility_user_level = '트레이너'
+			</if>
+			<if test="areaCd != null and areaCd != ''">
+			AND
+				act.area_cd = #{areaCd}
+			</if>
+	   		<if test="cityCd != null and cityCd != ''">
+			AND
+				f.city_cd LIKE CONCAT(#{cityCd}, '%')
+			</if>
+	   		<if test="searchValue != null and searchValue != '' ">
+			AND
+				t.trainer_nicknm LIKE CONCAT('%', #{searchValue}, '%')
+			</if>
+		GROUP BY t.trainer_cd
+		limit #{startRow}, #{rowPerPage};
+	</select>
+	
+	<select id="getTrainerCount" resultType="int">
+		/* 트레이너 총 행 수 */
+		SELECT
+			count(*)
+		FROM
+			trainer_profile
+	</select>
+	
+	<insert id="addTrainerLicense" parameterType="java.util.List">
+		/* 트레이너 자격증 등록 */
+		INSERT INTO trainer_license
+		(	 trainer_license_cd
+			,trainer_cd
+			,trainer_license
+			,trainer_license_file
+			,trainer_license_reg_date
+		)VALUES
+			<foreach collection="list" item="item" separator=",">
+				(
+					(SELECT
+						CONCAT('trainer_license_', LPAD(MAX(CAST(SUBSTRING_INDEX(l.trainer_license_cd,'_',-1) AS UNSIGNED))+1,2,0))
+					FROM
+						trainer_license AS l)
+					,#{item.trainerCd}
+					,#{item.trainerLicense}
+					,#{item.trainerLicenseFile}
+					,CURDATE()
+				)
+			</foreach>
+	</insert>
+	
+	<insert id="addTrainerCareer" parameterType="java.util.List">
+		/* 트레이너 경력 등록 */
+		INSERT INTO trainer_career
+		(	 trainer_career_cd
+			,trainer_cd
+			,trainer_career_term
+			,trainer_career_center
+			,trainer_career_position
+			,trainer_career_work
+			,trainer_career_file
+			,trainer_career_reg_date
+		)VALUES
+			<foreach collection="list" item="item" separator=",">
+				(
+					(SELECT
+						CONCAT('trainer_career_', LPAD(MAX(CAST(SUBSTRING_INDEX(c.trainer_career_cd,'_',-1) AS UNSIGNED))+1,2,0))
+					FROM
+						trainer_career AS c)
+					,#{item.trainerCd}
+					,#{item.trainerCareerTerm}
+					,#{item.trainerCareerCenter}
+					,#{item.trainerCareerPosition}
+					,#{item.trainerCareerWork}
+					,#{item.trainerCareerFile}
+					,CURDATE()
+				)
+			</foreach>
+	</insert>
+	
+	<insert id="addtrainer" parameterType="TrainerProfile">
+		/*트레이너 등록*/
+		INSERT INTO trainer_profile
+		(	 trainer_cd
+			,user_id
+			,trainer_nicknm
+			,trainer_reg_date
+		)VALUES (
+			(SELECT
+				CONCAT('trainer_', LPAD(MAX(CAST(SUBSTRING_INDEX(t.trainer_cd,'_',-1)AS UNSIGNED))+1,2,0))
+			FROM
+				trainer_profile AS t)
+			,#{userId}
+			,#{trainerNickname}
+			,CURDATE()
+		)
+		<selectKey keyProperty="trainerCd" resultType="String" order="AFTER">
+			SELECT
+				t.trainer_cd
+			FROM
+				trainer_profile AS t
+			WHERE
+				t.user_id = #{userId}
+		</selectKey>
+	</insert>
+	
+	<select id="isNicknameCheck" parameterType="String" resultType="boolean">
+		/* 트레이너 닉네임 중복 체크 */
+		SELECT
+			IF(COUNT(1) = 1, 0, 1)
+		FROM 
+		   trainer_profile AS t
+		WHERE 
+		   t.trainer_nicknm = #{trainerNickname};
+	</select>
+</mapper>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default.html}">
+<th:block layout:fragment="customJs">
+	<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+</th:block>
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+	<!-- 이런식으로 넣으면 되겠죠? -->
+	
+	
+	<div class="row">
+		<div class="col-sm-3 col-lg-6 offset-6">
+			<span>아이디</span>
+			<input type="hidden" id="userId" value="id002">
+			<span >id002</span>
+		</div>
+	</div>
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12 col-lg-12">
+				<div>
+					<span>상품</span>
+					<input type="hidden" id=facilityGoodsCd value="id002">
+					<span>ss_35011740_01_lesson_01</span>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<button id="save-btn" type="button" class="btn btn-primary">구매하기</button>
+	
+	<script>
+		const userId = document.querySelector('#userId');
+		const facilityGoodsCd = document.querySelector('#facilityGoodsCd');
+		const btn = document.querySelector('#save-btn');
+		
+		
+		btn.addEventListener('click', function(){
+			data = {
+				userId : userId.value,
+				facilityGoodsCd : facilityGoodsCd.value
+			}
+			Window.location.href='/order/addOrder?userId='+data.userId+'facilityGoodsCd='+data.facilityGoodsCd;
+			
+		});
+	</script>
+	
+	</th:block>
+
+</html>

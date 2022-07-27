@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+<th:block layout:fragment="customJs">
+	<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+</th:block>
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+
+
+	<div class="page-title">
+		<div class="title_left">
+			<h3>이용권등록</h3>
+		</div>
+		<div class="title_right">
+			<div class="col-md-5 col-sm-5  form-group pull-right top_search">
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Search for...">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">Go!</button>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+
+
+
+
+	<div class="row" id="goods-re">
+		<div class="col-md-12 col-sm-12 ">
+			<div class="x_panel">
+				<div class="x_title">
+					<h2>이용권등록</h2>
+
+					<div class="clearfix"></div>
+				</div>
+				<div class="x_content">
+					<br>
+					<form th:action="@{/pass/addPass}" method="post"  id="pass-form" data-parsley-validate="" class="form-horizontal form-label-left" novalidate="">
+						<br>
+						<div class="item form-group">
+							<label for="facilityCd" class="col-form-label col-md-3 col-sm-3 label-align">시설대표코드<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<input type="text" class="form-control pass-input" id="facilityCd" data-parsley-id="5"
+									name="facilityCd" value="ss_35011770_03" required/>
+							</div>
+						</div>
+						
+								<input type="hidden" class="form-control pass-input" name="goodsCtgCd" value="pass" required/>
+							
+						<div class="item form-group">
+							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">종목<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<select class="custom-select pass-input" id="sportCtg" name="sportsCd" required>
+									<option value="">:: 시설에서 운영하는 종목을 선택해주세요::</option>
+									<option value="sp01">축구</option>
+									<option value="sp02">수영</option>
+									<option value="sp03">배드민턴</option>
+									<option value="sp04">배구</option>
+									<option value="sp05">클라이밍</option>
+									<option value="sp06">헬스</option>
+								</select>
+							</div>
+						</div>
+						<div class="item form-group">
+							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">아이디<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="userId" value="id002" required/>
+							</div>
+						</div>
+						<div class="item form-group">
+							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">이용권명<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passNm" value="헬스장 이용권" required/>
+							</div>
+						</div>
+						<div class="item form-group">
+							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">단위<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passUnit" value="20" required/>
+							</div>
+						</div>
+						<div class="item form-group">
+							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">이용권단가<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passPrice" value="30000" required/>
+							</div>
+						</div>
+						<div class="item form-group">
+							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">유효일수<span
+									class="required">*</span></label>
+							<div class="col-md-6 col-sm-6">
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passEndDate" value="365" required/>
+							</div>
+						</div>
+						
+					</form>
+					<div class="ln_solid"></div>
+						<div class="item form-group">
+							<div class="col-md-6 col-sm-6 offset-md-3">
+								<button id="pass-btn" class="btn btn-success pass-button" type="button">등록</button>
+								<button type="button" class="btn btn-primary pass-button">취소하기</button>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	
+
+
+
+
+	<script>
+
+		const passBtn = document.querySelector('#pass-btn');
+		const goodsCtg = document.querySelector('input[name="goodsCtgCd"]');
+		const passForm = document.querySelector('#pass-form');
+
+		const inputs = document.querySelectorAll('.pass-input');
+		
+		passBtn.addEventListener('click', e =>{
+			let flag = true;
+			inputs.forEach(event => {
+				if(event.value == null || event.value  == ''|| event.value.trim()===''){
+					//event.focus();
+					event.focus();
+					e.preventDefault();
+					flag = false;
+					return flag;
+				}
+			});
+			submitCheck(flag);
+			
+			
+		});
+
+
+		const submitCheck = (val) =>{
+			if(val){
+				passForm.submit();
+			}else{
+				alert('등록이 안된 폼이 있습니다.');
+			}
+		}
+	</script>
+</th:block>
+
+</html>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="ks43team03.mapper.CommonMapper">
+  
+	<select id="goodsOrderCheck" parameterType="Map" resultType="Order">
+	SELECT
+		go.order_cd as orderCd
+	FROM
+		goods_order AS go
+	WHERE
+		go.user_id = #{userId}
+		and
+		go.facility_goods_cd = #{facilityGoodsCd}
+		and
+		go.order_del_yn = 'N'
+	</select>
+	
+	<insert id="setReservation" parameterType="Map">
+		INSERT INTO reservation
+		(
+			reservation_cd, 
+			reservation_ctg,
+			facility_goods_cd, 
+			reservation_id, 
+			reservation_date, 
+			reservation_start_time, 
+			reservation_end_time, 
+			reservation_cancel, 
+			reservation_reg_date
+		)
+			VALUES 
+		(
+			sf_new_reservation_code(),
+			#{reservationCtg},
+			#{facilityGoodsCd},
+			#{userId},
+			#{reservationDate},
+			#{reservationStartTime},
+			#{reservationEndTime},
+			'N',
+			now()
+		)
+	</insert>
+  	
+  	<select id="reservationCheck" parameterType="String" resultType="String">
+  		SELECT
+			reservation_cd
+		FROM
+			reservation
+		WHERE
+			(
+				reservation_date = '2022-07-25'
+				and
+				reservation_start_time BETWEEN #{reservationStartTime} and #{reservationEndTime}
+				and
+				reservation_end_time BETWEEN #{reservationStartTime} and #{reservationEndTime}
+			)
+			or
+			(
+				<![CDATA[reservation_start_time < #{reservationStartTime}]]>
+				AND
+				<![CDATA[reservation_end_time   > #{reservationEndTime}]]>
+			)
+	</select>
+  	
+  	
+  	<select id="createNewCode" parameterType="String" resultType="String">
+  		SELECT
+		      CASE
+		      WHEN COUNT(1)=0 THEN CONCAT(#{column},'_1')
+		      ELSE
+		         CONCAT(#{column},'_',MAX(CAST(SUBSTRING_INDEX(${column},'_',-1) AS UNSIGNED))+1)
+		      END
+		FROM
+		      ${tableName}; 
+  	</select>
+  	
+  	<select id="getSportsList" resultType="Sports">
+  		SELECT
+			sports_cd	as sportsCd
+			,sports_nm	as sportsName
+		FROM
+			sports
+	</select>
+	<select id="getAreaCityList" parameterType="String" resultType="AreaCity">
+		SELECT
+			ac.city_cd		AS cityCd
+			,ac.area_cd		AS areaCd
+			,ac.city_nm		AS cityNm
+		FROM
+			area_city AS ac
+		WHERE
+			ac.area_cd = #{areaCd}
+	</select>
+	<select id="getAreaList" parameterType="String" resultType="Area">
+		SELECT
+			ac.area_cd		AS areaCd
+			,ac.area_nm		AS areaNm
+		FROM
+			area AS ac
+	</select>
+</mapper>

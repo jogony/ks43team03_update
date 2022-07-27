@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>이용권 수정<small>시설 관리자</small></h2>
+
+								<div class="clearfix"></div>
+							</div>
+
+							<div class="x_content">
+
+								<div class="row">
+									<div class="col-sm-6 col-lg-6 offset-3">
+										<form id="modify-form" method="post" th:action="@{/pass/modifyPass}">
+											<input type="hidden" name="passCd" th:value="${pass.passCd}">
+											<div class="table-responsive">
+												<table class="table jambo_table bulk_action">
+													<tbody>
+														<tr class="even pointer">
+															<td class=" ">이용권명</td>
+															<td>
+																<div class="form-group">
+    																<input type="text" class="form-control" th:value="${pass.passNm}" name="passNm" >
+    															</div>
+															</td>
+														</tr>
+														<tr class="even pointer">
+															<td class=" ">이용권 등록자</td>
+															<td>
+																<div class="form-group">
+    																<input type="text" class="form-control" th:value="${pass.userId}" name="userId" >
+    															</div>
+    														</td>
+														</tr>
+														<tr class="even pointer">
+															<td class=" ">이용권 가격</td>
+															<td>
+																<div class="form-group">
+    																<input type="text" class="form-control" th:value="${pass.passPrice}" name="passPrice" >
+    															</div>
+															</td>
+														</tr>
+														<tr class="even pointer">
+															<td class=" ">이용권 유효일수</td>
+															<td>
+																<div class="form-group">
+    																<input type="text" class="form-control" th:value="${pass.passEndDate}" name="passEndDate" >
+    															</div>
+															</td>
+														</tr>
+														<tr class="even pointer">
+															<td class=" ">이용권 단위</td>
+															<td>
+																<div class="form-group">
+    																<input type="text" class="form-control" th:value="${pass.passUnit}" name="passUnit" >
+    															</div>
+															</td>
+														</tr>
+														<tr class="even pointer">
+															<td class=" ">이용권 상태</td>
+															<td>
+																<div class="form-group">
+    																<input type="text" class="form-control" th:value="${pass.passState}" disabled name="passState" >
+    															</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</form>		
+										<div>
+											<div class="col-sm-6 col-lg-6 offset-4">
+												<button class="sub-btn btn btn-primary" type="button">수정하기</button>
+												<button class="sub-btn btn btn-primary" type="button">뒤로가기</button>
+											</div>	
+										</div>
+									</div>
+										
+								</div>
+
+							</div>
+						</div>
+					</div>
+		<script>
+			const submitButton = document.querySelectorAll('.sub-btn');
+			const modifyForm = document.querySelector('#modify-form');
+			for(let i = 0; i < submitButton.length; i++){
+				submitButton[i].addEventListener('click', e => {
+					console.log(e.target.innerHTML);
+					const value = e.target.innerHTML;
+					
+					if(value == '수정하기'){
+						modifyForm.submit();
+						
+					}else if(value == '뒤로가기'){
+						location.href='/pass/passList';
+					}
+						
+				});
+			}
+		</script>
+	</th:block>
+
+</html>

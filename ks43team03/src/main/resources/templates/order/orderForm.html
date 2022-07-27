@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default.html}">
+
+	<th:block layout:fragment="customJs">
+		<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+
+	</th:block>
+
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+	<!-- 이런식으로 넣으면 되겠죠? -->
+		<script src="https://js.tosspayments.com/v1"></script>
+	<div class="breadcrumb-option">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3">
+					<h2>주문/결제</h2>
+				</div>
+				<div class="col-lg-2 offset-7">
+					<div class="breadcrum__links">
+						<span> <i class="bi bi-cart-check"></i> 주문하기 > </span>
+						<span>주문정보</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<form id="orderForm" method="post" class="form-group">
+			<div class="row">
+				<div class="col-sm-12">
+					hello world
+				</div>
+			</div>
+
+			<div class="card row">
+				<div class="card-header col-sm-12">
+					구매자정보
+				</div>
+			</div>
+			<div class="row">
+				<table class="table table-bordered">
+					<tr>
+						<td style="width: 16.66%">아이디</td>
+						<td style="width: 83.33%" th:text="${session.SID}">id001</td>
+					</tr>
+					<tr>
+						<td>연락처</td>
+						<td th:text="${user.userTell}">010-9999-1111</td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="card row">
+				<div class="card-header col-sm-12">
+					상품정보
+				</div>
+			</div>
+			<input type="hidden" name="userId" th:value="${session.SID}">
+			<input type="hidden" name="facilityGoodsCd" th:value="${goods.facilityGoods.facilityGoodsCd}">
+			<input type="hidden" name="goodsCtgCd" th:value="${goods.facilityGoods.goodsCtgCd}">
+			<input type="hidden" name="goodsName" th:value="${goods.goodsName}"> 
+			<div class="row">
+				<table class="table table-bordered">
+					<tr>
+						<td style="width: 16.66%">상품코드</td>
+						<td style="width: 83.33%"th:text="${goods.facilityGoods.facilityGoodsCd}">ss_35011740_01_lesson_01</td>
+					</tr>
+					<tr>
+						<td>시설명</td>
+						<td th:text="${goods.facilityGoods.facility.facilityNm}">어디어디체육관</td>
+					</tr>
+					<tr>
+						<td>주소</td>
+						<td th:text="${goods.facilityGoods.facility.facilityAddr}">서울시 여러분</td>
+					</tr>
+					<tr>
+						<td>카테고리</td>
+						<td th:text="${goods.facilityGoods.goodsCtgCd}">레슨</td>
+					</tr>
+				</table>
+			</div>
+
+
+			<input type="hidden" name="price" th:value="${goods.price}">
+			<div class="card row">
+				<div class="card-header col-sm-12">
+					결제정보
+				</div>
+			</div>
+			<div class="row">
+				<table class="table table-bordered">
+					<tr>
+						<td style="width: 16.66%">가격</td>
+						<td style="width: 83.33%" th:text="${goods.price}">500000</td>
+					</tr>
+					<tr>
+						<td>사용 가능 포인트</td>
+						<td><input type="text" name="userPoint" class="form-control col-sm-4" value="50000" id="userPoint" disabled></td>
+					</tr>
+					<tr>
+						<td>남은 포인트</td>
+						<td><input type="text" class="form-control col-sm-4" id="remPoint" value="50000" disabled></td>
+					</tr>
+					<tr>
+						<td>포인트 사용</td>
+						<td>
+							<div class="col-sm-8">
+								<div class="row">
+									<input type="text" name="usedPoint" class="form-control col-sm-6" id="usedPoint" value="0">
+									<span class="col-sm-3"><button type="button" class="btn btn-primary" id="point-btn">사용하기</button></span>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>총 결제 금액</td>
+						<td><input type="text" class="form-control col-sm-4" id="sum-pay" th:value="${goods.price}" disabled></td>
+					</tr>
+				</table>
+
+			</div>
+			<!-- input tag hidden -->
+			<div class="card row">
+				<div class="card-header col-sm-12">
+					결제수단
+				</div>
+			</div>
+			<div class="row">
+				<table class="table table-bordered">
+					<tr>
+						<td style="width: 16.66%">결제수단</td>
+						<td style="width: 83.33%">
+							<div class="col-sm-8">
+								<div class="row">
+									<th:block th:each="pay : ${T(ks43team03.dto.type.PayType).values()}">
+										<div class="col-sm-3 ">
+											<label for="card"> 
+												<input type="radio" name="method" class="form-control btn btn-primary" th:text="${pay.name}" th:value="${pay}" >
+											</label>
+										</div>
+									</th:block>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>총 결제 금액</td>
+						<td><input type="text" class="form-control col-sm-4" id="order-price" th:value="${goods.price}" disabled></td>
+					</tr>
+				</table>
+			</div>
+			<br />
+			<br />
+			<div class="row">
+				<div class="col-sm-4 offset-5"><button type="button" class="btn btn-primary" id="pay-btn">결제하기</button></div>
+			</div>
+		</form>
+	</div>
+	<script>
+		const pattern_num = /[0-9]/;	// 숫자 
+		const pattern_eng = /[a-zA-Z]/;	// 문자 
+		const pattern_spc = /[~!@#$%^&*()_+|<>?:{}]/; // 특수문자
+		const pattern_kor = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; // 한글체크
+		//버튼 
+		const payBtn = $('#pay-btn'); //document.querySelector('#pay-btn');
+		const pointBtn = $('#point-btn'); //document.querySelector('#point-btn');
+
+		const userId = $('input[name=userId]'); //document.querySelector('input[name="userId"]');
+		const facilityGoodsCd = $('input[name=facilityGoodsCd]'); //document.querySelector('input[name="facilityGoodsCd"]');
+
+		//주문 폼
+		const orderForm = $('#orderForm');  //document.querySelector('#orderForm');
+
+		//포인트 사용후 총결제금액 
+		let sumPay = $('#sum-pay'); //document.querySelector('#sum-pay')
+
+		//결제금액 
+		let orderPrice = $('#order-price'); //document.querySelector('#order-price');
+
+		//사용포인트
+		let usedPoint = $('#usedPoint'); //document.querySelector('#usedPoint');
+		//남은 포인트
+		let remPoint = $('#remPoint'); //document.querySelector('#remPoint');
+		//사용자의 포인트
+		let userPoint =  $('#userPoint'); //document.querySelector('#userPoint');
+		//상품가격
+		let price = $('input[name="price"]'); //document.querySelector('input[name="price"]');
+		
+		let tempPoint = userPoint.val();
+
+		pointBtn.click(function(){
+			let usedPointValue = usedPoint.val();
+			let rem = Number(tempPoint);
+			if(pattern_num.test(usedPointValue) && !pattern_eng.test(usedPointValue) && !pattern_kor.test(usedPointValue) && !pattern_spc.test(usedPointValue)){
+				
+				// 포인트 초과및 사용포인트 계산
+				// 첫번재 , 두번째 회원포인트 남은포인트 사용포인트
+				let goodsPrice = Number(price.val());
+				
+				
+				pointAndPriceValidation(goodsPrice, rem, Number(usedPointValue));
+			
+			}else{
+				alert('숫자를 입력하십시오.');
+				return;
+			}
+		});
+			
+		
+
+
+		function pointAndPriceValidation(price, rem, used){
+			console.log(price, rem , used);
+			//console.log(remPoint);
+			if(used < 0 ){
+				alert('0보다 큰 숫자를 입력해주세요');
+				return;
+			}
+			
+			
+			if(rem < used){
+				alert('사용한 포인트가 보유한 포인트보다 많이 사용하였습니다.')
+				return;
+			}
+			
+			if(used > price){
+				used = price; 
+				orderPrice.val(0);
+				sumPay.val(0);
+				remPoint.val(rem - used);
+				usedPoint.val(userPoint.val() - remPoint.val());
+			}else{
+				remPoint.val(rem - used);
+				//price = order - used;
+				orderPrice.val(price - used);
+				sumPay.val(price - used);
+			}
+			
+		}
+
+		
+		const clientKey = "[[${@environment.getProperty('test.client.api.key')}]]";
+		//const clientKey = 'test_ck_jkYG57Eba3GoelzLmLQ3pWDOxmA1';
+		const tossPayments = TossPayments(clientKey)
+		//let orderId = 'order_' + new Date().getTime();
+		//[[${@environment.getProperty('kakao.authorize.redirect.url')}]]
+  
+
+		payBtn.click(function(){
+			let method = document.querySelector('input[name=method]:checked').value; // "카드" 혹은 "가상계좌"
+
+			const data = {
+					userId : $('input[name="userId"]').val(),
+					facilityGoodsCd : $('input[name="facilityGoodsCd"]').val(),
+					goodsCtgCd : $('input[name="goodsCtgCd"]').val(),
+					orderPrice : $('input[name="price"]').val(),
+					goodsName : $('input[name="goodsName"]').val(),
+					userPoint : $('input[name="userPoint"]').val(),
+					usedPoint : $('input[name="usedPoint"]').val(),
+					orderPayPrice : $('#sum-pay').val(),
+					payType : $('input[name=method]:checked').val()
+			};
+			
+			
+			console.log(data);
+			$.ajax({
+					type: 'POST',
+					url: '/order/addOrder',
+					dataType: 'JSON',
+					contentType: 'application/json; charset=utf-8',
+					data: JSON.stringify(data)
+				}).done(function (data) {
+					console.log(data);
+					//window.location.href = '/order/orderDetail/' + data.orderCd;
+					requestTossData(data);
+				}).fail(function (error) {
+					console.log(error);
+				});
+			
+			
+    	});
+			
+		const checkPayAndOrder = (data) => {
+			
+			for(value in data){
+				if(typeof 'undefinded' == value || value == '' || value == null){
+					return true;
+				}
+				return false;
+			}
+		}
+		
+		
+		function requestTossData(data){
+			const orderUUID = data.orderUUID;
+			let method = data.payName;
+			const paymentData = {
+				amount: data.orderPayPrice,
+				orderId: data.orderUUID,
+				orderName: data.goodsName,
+				customerName: data.userName,
+				method : data.payName,
+				successUrl: window.location.origin + "/pay/success",
+				failUrl: window.location.origin + "/pay/fail",
+			};
+			if (method === '가상계좌') {
+				paymentData.virtualAccountCallbackUrl = window.location.origin + '/virtual-account/callback'
+			}
+
+				tossPayments
+					.requestPayment(method, paymentData)
+					.catch(function(error){
+						removeOrderData(orderUUID);
+						if(error.code == 'USER_CANCEL'){
+							alert('결제를 취소하였습니다.');
+							return;
+						}
+						console.log('why???????' , error);
+						alert('결제에 실패하였습니다.');
+						
+					});
+		}
+		
+		
+		function removeOrderData(value){
+			
+			console.log('remove data : ' + value);
+			$.ajax({
+				type: 'POST',
+				url: '/order/removeOrder',
+	   		   	dataType : 'JSON',
+				data:{
+					orderUUID : value
+				}
+			}).done(function (data) {
+				console.log(data);
+			}).fail(function (error) {
+				console.log(error);
+			});
+		}
+
+		
+	</script>
+</th:block>
+
+</html>

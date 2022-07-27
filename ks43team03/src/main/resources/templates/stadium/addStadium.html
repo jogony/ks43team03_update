@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{margin-top:10px;}
+		</style>
+	</th:block>	
+	
+	<!-- 사용자 정의 Js 파일-->
+		<th:block layout:fragment="customJs">
+			<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	
+			<script>
+			$(function(){
+			
+				function validationCheck(data){
+					if(typeof data == 'undefined' || data == '' || data == null){
+						return false;
+					}
+					return true;
+				}
+				
+				/* 구장 등록시 유효성 검사 */
+				$('#addStadiumBtn').click(function(){
+					var isSubmit = true;
+					var inputObj = $('#addStadiumForm').find('input');
+					
+					$.each(inputObj, function(){
+						var inputData = $(this).val();
+						var result = validationCheck(inputData);
+						
+						// 사용자가 입력하지 않은 경우
+						if(!result){
+							$(this).focus();
+							alert('필수 항목입니다. 입력해주세요.');
+							isSubmit = false;
+							return false;
+						}
+					});
+				console.log('유효여부 폼전송할건지?' + isSubmit )
+				
+				if(isSubmit) $('#addStadiumForm').submit();
+			});
+				/**
+				 *  다중 파일 업로드
+				 **/
+				var fileInput = 1;
+				var maxFileNum = 4;
+				var minFileNum = 0;
+				//추가
+				$('#plus-button').on('click', function() {
+					if(fileInput < maxFileNum) {
+						var newLi = $(this).parent().clone(true);
+						newLi.children('.stadium-img').val('');
+						$(this).parent().parent().append(newLi);
+						
+						fileInput++;
+					} else {
+						alert("최대 올릴 수 있는 이미지의 개수는 4개입니다.");
+					}
+				});
+				//제거
+				$('#minus-button').on('click', function() {
+					if(fileInput > 1) {
+						$(this).parent().remove()
+						
+						fileInput--;
+					} else {
+						alert("더이상 지울 수 없습니다.");
+					}
+				});
+		});	
+	
+	</script>		
+	</th:block>
+
+
+
+
+
+<!-- 사용자 정의Contents -->
+	<th:block layout:fragment="customContents">
+	<div class="title_left">
+		<h3>구장등록</h3>
+	</div>
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12">
+			<div class="x_panel">
+			<div class="x_title">
+				<h2>구장정보등록 </h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+			<form id="addStadiumForm"  data-parsley-validate class="form-horizontal form-label-left"  enctype="multipart/form-data" name="multiPart" th:action="@{/stadium/addStadium}" method="post">
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="facilityCd">시설명<span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+						<select class="select2_single form-control" tabindex="-1"  name="facilityCd" id="facilityCd">
+							<option value=""> ::  시설선택   ::</option>
+							<th:block th:if="${not #lists.isEmpty(facilityListById)}" th:each="l:${facilityListById}">
+								<option th:value="${l.facilityCd}">[[${l.facilityNm}]]</option>
+							</th:block>
+						</select>
+					</div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="goodsCtgCd">카테고리코드 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="goodsCtgCd" value = "stadium" data-validate-minmax="10,100" readonly="readonly"></div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="sportsCd">종목<span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+						<select class="select2_single form-control" tabindex="-1" name="sportsCd" id="sportsCd">
+							<option value = "">:: 종목 선택 ::</option>
+							<th:block th:if="${not #lists.isEmpty(sportsList)}" th:each="l:${sportsList}">
+							<option th:value="${l.sportsCd}">[[${l.sportsName}]]</option>
+						</th:block>
+						</select>
+					</div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="userId">등록자아이디 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="userId" value="id002"  readonly="readonly" data-validate-minmax="10,100" ></div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="facilityStadiumNm">구장명 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="facilityStadiumNm" data-validate-minmax="10,100" ></div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="facilityDetail">상세정보 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+						<textarea class="form-control" rows="3"name="facilityStadiumDetail"></textarea>
+					</div>				
+				</div>
+				<div class="item form-group">
+					<div class="col-form-label col-md-3 col-sm-3 label-align" id="stadium-img-label">구장 사진</div>
+					<div class="col-md-6 col-sm-6 ">
+						<ul class="stadium-file-line" style = "list-style:none;">
+							<li>
+								<input type="file" name="stadiumImgFile" class="stadium-img" accept="image/*" multiple>
+								<button type="button" id="plus-button">플러스</button>
+								<button type="button" id="minus-button">마이너스</button>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="ln_solid">
+					<div class="form-group">
+						<div class="col-md-6 offset-md-3">
+							<button type='reset' class="btn btn-primary">취소</button>
+							<button type="button" id="addStadiumBtn" class="btn btn-success" >다음</button>
+						</div>
+					</div>
+				</div>
+			</form>
+			</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+	  
+	  
+				
+</html>

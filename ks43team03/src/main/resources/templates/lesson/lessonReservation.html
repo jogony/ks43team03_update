@@ -1,0 +1,535 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{layout/default.html}">
+
+   
+   <th:block layout:fragment="customCss">
+		
+		<link rel="stylesheet" th:href="@{/calendar/css/fullcalendar.min.css}" />
+	    <link rel="stylesheet" th:href="@{/calendar/css/bootstrap.min.css}">
+	    <link rel="stylesheet" th:href="@{/calendar/css/select2.min.css}" />
+	    <link rel="stylesheet" th:href="@{/calendar/css/bootstrap-datetimepicker.min.css}" />
+	
+	    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,500,600">
+	    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	    
+		<style>
+			.none-display {
+				display: none;
+			}
+			
+	        #calendar {
+	            clear: both;
+	        }
+	        #calendar th {
+	            height: 50px;
+	            width: 70px;
+	            background-color:  #EBFBFF;
+	            text-align: center;
+	        }
+	        #calendar td {
+	            text-align: center;
+	            height: 50px;
+	            width: 70px;
+	            background-color: #EBFBFF;  
+	        }
+	        #calendar input {
+	            height: 50px;
+	            width: 70px;
+	            border: none;
+	            background-color:  #EBFBFF;
+	            font-size: 30px;
+	        }
+	        #calendar .year_mon{
+	            font-size: 25px;
+	        }
+	        #calendar .colToday{
+	            background-color: #EBFBFF;
+	        }
+	        .possible {
+	        	background-color: #BEEFFF;
+	        }
+	        .reservation-possible {
+	        	background-color: #BEEFFF;
+	        }
+									    
+		</style>
+	
+	</th:block>
+   
+   <!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+   <!-- Product Details Section Begin -->
+  
+
+	<section class="product-details spad" th:fragment="productDetailsFragment">
+		<div class="container">
+			<div class="row">
+
+				<div class="product__details__text col-lg-12">
+				   <h3>[[${lesson.lessonName}]]</h3>
+				</div>
+				<div class="col-lg-7">
+					<div class="product__details__pic">
+						<div class="product__details__pic__left product__thumb nice-scroll">
+							<th:block th:if="${not #lists.isEmpty(lesson.tFile)}" th:each="t, i : ${lesson.tFile}">
+								<a class="pt" th:data-img="${t.representImg}" th:href="@{#product-} + ${i.index+1}">
+									<img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+								</a>
+							</th:block>
+						</div>
+						<div class="product__details__slider__content">
+							<div class="product__details__pic__slider owl-carousel">
+								<th:block  th:if="${not #lists.isEmpty(lesson.tFile)}" th:each="t, i : ${lesson.tFile}">                           
+									<img th:data-hash="@{product-} + ${i.index+1}" class="product__big__img" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+								</th:block>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="product__details__widget col-lg-5" style="padding: 0px;">
+					<table class="table table-striped table-bordered" border="1">
+						<tr>
+							<td>레슨 구분</td>
+							<td th:text="${lesson.lessonDivision}"></td>
+						</tr>
+						<tr>
+							<td>종목</td>
+							<td th:text="${lesson.sports.sportsName}"></td>
+						</tr>
+						<tr>
+							<td>시설 이름</td>
+							<td th:text="${lesson.facility.facilityNm}"></td>
+						</tr>
+						<tr>
+							<td>시설 주소</td>
+							<td th:text="${lesson.facility.facilityAddr}"></td>
+						</tr>
+						<tr>
+							<td>시설 번호</td>
+							<td th:text="${lesson.facility.facilityTell}"></td>
+						</tr>
+						<tr>
+							<td>레슨 정원</td>
+							<td th:text="${lesson.lessonTotalMember}"></td>
+						</tr>
+						<tr>
+							<td>레슨 시작 날짜</td>
+							<td th:text="${lesson.lessonStartDate}"></td>
+						</tr>
+						<tr>
+							<td>레슨 종료 날짜</td>
+							<td th:text="${lesson.lessonEndDate}"></td>
+						</tr>
+					</table>
+				</div>
+				<div class="offset-lg-7 col-lg-5">
+					<div class="product__details__text">      
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<span>( 138 reviews )</span>
+						</div>
+						<div class="product__details__price">$ [[${lesson.lessonPrice}]]</div>
+						<div class="product__details__button">   
+							<ul>
+								<li>
+								   <a href="#">
+								      <span class="icon_heart_alt"></span>
+								   </a>
+								</li>
+								<li>
+								   <a href="#">
+								      <span class="icon_adjust-horiz"></span>
+								   </a>
+								</li>
+								<li>
+								   <button type="button" class="cart-btn">
+								      주문하기
+								   </button>
+								</li>
+							</ul>
+         				</div>      
+					</div>
+				</div>
+				<div class="col-lg-12">
+					<div class="product__details__tab">
+						<ul class="nav nav-tabs" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">Description</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">Specification</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">Reviews ( 2 )</a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="tabs-1" role="tabpanel">
+								<h6>Description</h6>
+								<p th:text="${lesson.lessonDetail}"></p>
+								<p>
+								   Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+								   dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
+								   nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium
+								   quis, sem.
+								</p>
+							</div>
+							<div class="tab-pane" id="tabs-2" role="tabpanel">
+								<h6>Specification</h6>
+							      
+								<div class="container">
+									<input type="hidden" id="facilityGoodsCd" th:value="${lesson.facilityGoodsCd}">
+									<div class="row">
+										<table id="calendar">
+										    <thead>
+										        <tr>
+										            <th><input name="preMon" type="button" value="<"></th>
+										            <th colspan="5" class="year_mon"></th>
+										            <th><input name="nextMon" type="button" value=">"></th>
+										        </tr>
+										        <tr>
+										            <th>일</th>
+										            <th>월</th>
+										            <th>화</th>
+										            <th>수</th>
+										            <th>목</th>
+										            <th>금</th>
+										            <th>토</th>
+										        </tr>
+										    </thead>
+										    <tbody>
+										    </tbody>
+										</table>
+										<!-- 일자 클릭시 메뉴오픈 -->
+								        <div id="contextMenu" class="dropdown clearfix col-md-3">
+								            <ul class="dropdown-menu dropNewEvent" role="menu" aria-labelledby="dropdownMenu"
+								                style="display:block;position:static;margin-bottom:5px;">
+								                <li><button type="button" tabindex="-1">예약확인하기</button></li>
+								                <li class="divider"></li>
+								                <li><a tabindex="-1" href="#" data-role="close">Close</a></li>
+								            </ul>
+								       	</div>
+								        <!-- 일정 추가 MODAL -->
+								        <div class="modal fade" tabindex="-1" role="dialog" id="eventModal">
+								            <div class="modal-dialog" role="document">
+								                <div class="modal-content" style="width: 580px;">
+									                <form action="calendar/reservation" id="reservationData">
+									                    <div class="modal-header">
+									                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+									                                aria-hidden="true">&times;</span></button>
+									                        <h4 class="modal-title"></h4>
+									                    </div>
+									                    <div class="modal-body">						
+									                        <div class="row">
+									                            <div class="col-md-12">
+									                                <table border="1" id="reSchedule">
+									                                	<tbody>
+									                                		<tr>
+																				<td><input class="lessonTime" type="button" value="09:00"></td>
+																				<td><input class="lessonTime" type="button" value="10:00"></td>
+																				<td><input class="lessonTime" type="button" value="11:00"></td>
+																				<td><input class="lessonTime" type="button" value="12:00"></td>
+																				<td><input class="lessonTime" type="button" value="13:00"></td>
+																				<td><input class="lessonTime" type="button" value="14:00"></td>
+																				<td><input class="lessonTime" type="button" value="15:00"></td>
+																				<td><input class="lessonTime" type="button" value="16:00"></td>
+									                                		</tr>
+									                                		<tr>
+																				<td><input class="lessonTime" type="button" value="17:00"></td>
+																				<td><input class="lessonTime" type="button" value="18:00"></td>
+																				<td><input class="lessonTime" type="button" value="19:00"></td>
+																				<td><input class="lessonTime" type="button" value="20:00"></td>
+																				<td><input class="lessonTime" type="button" value="21:00"></td>
+																				<td><input class="lessonTime" type="button" value="22:00"></td>
+																				<td><input class="lessonTime" type="button" value="23:00"></td>
+																				<td><input class="lessonTime" type="button" value="24:00"></td>
+									                                		</tr>
+									                                	</tbody>
+									                                </table>
+									                            </div>
+									                        </div>
+									                        <div class="row">
+									                            <div class="col-xs-12">
+									                                <label class="col-xs-4" for="edit-start">시작</label>
+									                                <!-- 30분 단위로 되게끔 수정 -->
+									                                <input class="inputModal lesson" type="text" name="reservationStartTime" id="edit-start" readonly="readonly"/>
+									                            </div>
+									                        </div>
+									                        <div class="row">
+									                            <div class="col-xs-12">
+									                                <label class="col-xs-4" for="edit-end">끝</label>
+									                                <!-- 30분 단위로 되게끔 수정 -->
+									                                <input class="inputModal lesson" type="text" name="reservationEndTime" id="edit-end" readonly="readonly"/>
+									                            </div>
+									                        </div>
+									                        <div class="row">
+									                            <div class="col-xs-12">
+									                                <label class="col-xs-4" for="edit-desc">설명</label>
+									                                <textarea rows="4" cols="50" class="inputModal" name="edit-desc"
+									                                    id="edit-desc" readonly="readonly">
+																		간단한 레슨 설명?
+																	</textarea>
+									                            </div>
+									                        </div>
+									                    </div>
+									                    <div class="modal-footer modalBtnContainer-modifyEvent">
+									                        <button type="button" class="btn btn-primary" id="updateEvent">예약하기</button>
+									                    </div>
+								                    </form>
+								                </div><!-- /.modal-content -->
+								            </div><!-- /.modal-dialog -->
+								        </div><!-- /.modal -->
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane" id="tabs-3" role="tabpanel">
+							   <h6>Reviews ( 2 )</h6>
+							   <p>
+							      Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed
+							      quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt loret.
+							      Neque porro lorem quisquam est, qui dolorem ipsum quia dolor si. Nemo enim ipsam
+							      voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed quia ipsu
+							      consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Nulla
+							      consequat massa quis enim.
+							   </p>
+							   <p>
+							      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+							      dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
+							      nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium
+							      quis, sem.
+							   </p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+			   <div class="col-lg-12 text-center">
+			      <div class="related__title">
+			         <h5>RELATED PRODUCTS</h5>
+			      </div>
+			   </div>
+			   <div class="col-lg-3 col-md-4 col-sm-6">
+			      <div class="product__item">
+			         <div class="product__item__pic set-bg" data-setbg="">
+			            <div class="label new">New</div>
+			            <ul class="product__hover">
+			               <li>
+			                  <a href="#" class="image-popup">
+			                     <span class="arrow_expand"></span>
+			                  </a>
+			               </li>
+			               <li>
+			                  <a href="#">
+			                     <span class="icon_heart_alt"></span>
+			                  </a>
+			               </li>
+			               <li>
+			                  <a href="#">
+			                     <span class="icon_bag_alt"></span>
+			                  </a>
+			               </li>
+			            </ul>
+			         </div>
+			         <div class="product__item__text">
+			            <h6>
+			               <a href="#">Buttons tweed blazer</a>
+			            </h6>
+			            <div class="rating">
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			            </div>
+			            <div class="product__price">$ 59.0</div>
+			         </div>
+			      </div>
+			   </div>
+			   <div class="col-lg-3 col-md-4 col-sm-6">
+			      <div class="product__item">
+			         <div class="product__item__pic set-bg" data-setbg="">
+			            <ul class="product__hover">
+			               <li>
+			                  <a href="#" class="image-popup">
+			                     <span class="arrow_expand"></span>
+			                  </a>
+			               </li>
+			               <li>
+			                  <a href="#">
+			                     <span class="icon_heart_alt"></span>
+			                  </a>
+			               </li>
+			               <li>
+			                  <a href="#">
+			                     <span class="icon_bag_alt"></span>
+			                  </a>
+			               </li>
+			            </ul>
+			         </div>
+			         <div class="product__item__text">
+			            <h6>
+			               <a href="#">Flowy striped skirt</a>
+			            </h6>
+			            <div class="rating">
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			               <i class="fa fa-star"></i>
+			            </div>
+			            <div class="product__price">$ 49.0</div>
+			         </div>
+			      </div>
+			   </div>
+			   <div class="col-lg-3 col-md-4 col-sm-6">
+			      <div class="product__item">
+			         <div class="product__item__pic set-bg" data-setbg="">
+			            <div class="label stockout">out of stock</div>
+			               <ul class="product__hover">
+			                  <li>
+			                     <a href="#" class="image-popup">
+			                        <span class="arrow_expand"></span>
+			                     </a>
+			                  </li>
+			                  <li>
+			                     <a href="#">
+			                        <span class="icon_heart_alt"></span>
+			                     </a>
+			                  </li>
+			                  <li>
+			                     <a href="#">
+			                        <span class="icon_bag_alt"></span>
+			                     </a>
+			                  </li>
+			               </ul>
+			            </div>
+			            <div class="product__item__text">
+			               <h6>
+			                  <a href="#">Cotton T-Shirt</a>
+			               </h6>
+			               <div class="rating">
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			               </div>
+			               <div class="product__price">$ 59.0</div>
+			            </div>
+			         </div>
+			      </div>
+			      <div class="col-lg-3 col-md-4 col-sm-6">
+			         <div class="product__item">
+			            <div class="product__item__pic set-bg" data-setbg="#">
+			               <ul class="product__hover">
+			                  <li>
+			                     <a href="#" class="image-popup">
+			                        <span class="arrow_expand"></span>
+			                     </a>
+			                  </li>
+			                  <li>
+			                     <a href="#">
+			                        <span class="icon_heart_alt"></span>
+			                     </a>
+			                  </li>
+			                  <li>
+			                     <a href="#">
+			                        <span class="icon_bag_alt"></span>
+			                     </a>
+			                  </li>
+			               </ul>
+			            </div>
+			            <div class="product__item__text">
+			               <h6>
+			                  <a href="#">Slim striped pocket shirt</a>
+			               </h6>
+			               <div class="rating">
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			                  <i class="fa fa-star"></i>
+			               </div>
+			               <div class="product__price">$ 59.0</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+   </section>
+   <!-- Product Details Section End -->
+   
+		<div class="modal" tabindex="-1" role="dialog" id="reservationModal" aria-labelledby="reservationModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="reservationModalLabel">Modal title</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class='col-md-3 col-xs-4 resDate'>
+						    날짜 : <input type="date">
+						</div>
+						<div class='col-md-3 col-xs-4 resTime'>
+							시간 : <input type="time">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary"    data-dismiss="modal" id="regist">등록</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal" tabindex="-1" role="dialog" id="reservationModalCheck" aria-labelledby="reservationModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="reservationModalLabel">Modal title</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<table border="1" >
+							<thead>
+								<tr>
+									<th>
+										예약 시간
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td th:each="num : ${#numbers.sequence(1,9)}" class="col-sm-1">
+										[[${num * 2 + 4}]]~[[${num * 2 + 6}]]
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary"    data-dismiss="modal" id="regist">등록</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+   		<script th:src="@{/calendar/js/jquery.min.js}"></script>
+		<script th:src="@{/resource/js/lesson/detailLessonForUser.js}"></script>
+		<script th:src="@{/calendar/js/bootstrap.min.js}"></script>
+		<script th:src="@{/calendar/js/moment.min.js}"></script>
+		<script th:src="@{/calendar/js/bootstrap-datetimepicker.min.js}"></script>
+		<script th:src="@{/calendar/js/select2.min.js}"></script>
+		<script th:src="@{/calendar/js/customJs.js}"></script>
+		<script th:src="@{/calendar/js/addLesson.js}"></script>
+   </th:block>
+</html>

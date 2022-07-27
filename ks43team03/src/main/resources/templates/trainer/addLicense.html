@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">	
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{margin-top: 30px;}
+		</style>
+	</th:block>
+	
+	<!-- 사용자 정의 Js 파일-->
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+		
+		<script>
+		$(function(){
+			
+			function validationCheck(data){
+				if(typeof data == 'undefined' || data == '' || data == null){
+					return false;
+				}
+				return true;
+			}
+		
+			/* 자격증 추가 시 유효성 검사 */
+			$('#addLicenseBtn').click(function(){
+				var isSubmit = true;
+				var inputObj = $('#plusUl').find('input').not('input[type="file"]');
+				
+				$.each(inputObj, function(){
+					var inputData = $(this).val();
+					var result = validationCheck(inputData);
+					
+					// 사용자가 입력하지 않은 경우
+					if(!result){
+						alert('필수 항목입니다. 입력해주세요.');
+						$('#licenseNotice').text('자격증이 없을 경우 취소 버튼을 눌러주세요.');
+						$(this).focus();
+						isSubmit = false;
+						
+						return false;
+					}
+				});
+				/* 여러 li list 형태로 보내기 formdata */
+				if(isSubmit){
+					var trainerLicenseList = [];
+					var licenseNum = $('#plusUl li').length;
+					
+					//FormData : 가상의 <form> 태그
+					//Ajax를 이용하는 파일 업로드는 FormData를 이용
+					var formData = new FormData();
+					
+					for(var i=0; i<licenseNum; i++){
+						
+						formData.append('trainerLicenseList['+i+'].trainerCd',			$('input[name="trainerCd"]').val());
+						formData.append('trainerLicenseList['+i+'].trainerLicense',		$('input[name="trainerLicense"]').eq(i).val());
+						
+						//첨부파일 없다면 담지 않는다
+						if($('input[type="file"]')[i].files[0]){
+							formData.append('trainerLicenseList['+i+'].trainerLicenseFiles', $('input[type="file"]')[i].files[0]);
+						}
+					}
+					
+						//FormData 객체란 단순한 객체가 아니며 XMLHttpRequest 전송을 위하여 설계된 특수한 객체 형태입니다.
+						//그러기에 문자열 화할 수 없는 객체이며 Console.log를 사용하여 확인이 불가능합니다.
+						for (var pair of formData.entries()) {
+							console.log(pair[0]+ ', ' + pair[1]); 
+						}
+
+					$.ajax({
+						 url: '/trainer/addLicense'
+						,type: 'POST'
+						,processData: false
+						,contentType: false
+						,data: formData
+						,success: function(data){
+							console.log(data);
+							if(data) $(location).attr('href','/');
+						}
+					});
+				}
+			});
+			
+		});				
+			
+		// 최대 li 개수
+		var maxLiNum = 50;
+		</script>
+		<script th:src="@{/resource/js/listUpdate.js}"></script>
+	</th:block>
+	
+	 
+	<th:block layout:fragment="customContents">
+	
+		<!-- Breadcrumb Begin -->
+		<div class="breadcrumb-option">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="breadcrumb__links">
+							<a th:href="@{/user}">
+								<i class="fa fa-home"></i>
+								Home
+							</a>
+							<span>addLicense</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+	
+		<!-- 자격증 등록 -->
+		<div class="container" th:if="${#strings.isEmpty(session.SID)}">
+			<h4>로그인이 필요한 서비스입니다.</h4>
+		</div>
+		<div class="container" th:unless="${#strings.isEmpty(session.SID)}">
+			<span id="licenseNotice" style="color: red;">
+			</span>
+			<input type="hidden" class="form-control" name="trainerCd" th:value="${trainerCd}">
+			<ul class="list-group list-group-flush" id="plusUl">
+				<li class="list-group-item a">
+					<div class="row">
+						<div class="col-sm-3">
+							<span>자격증</span>
+						</div>
+						<div class="col-sm-2">
+							<button type="button" class="btn btn-secondary btn-sm" id="addLi">추가</button>
+							<button type="button" class="btn btn-secondary btn-sm" id="delLi">삭제</button>
+						</div>
+					</div>
+					<div class="row">
+						<label class="control-label col-md-3 col-sm-3" for="trainerLicense">자격증
+							<span class="required">*</span>
+						</label>
+						<div class="col-md-6 col-sm-6">
+							<input type="text" class="form-control" name="trainerLicense">
+						</div>
+					</div>
+					<div class="row">
+						<label class="control-label col-md-3 col-sm-3" for="trainerLicenseFile">자격증 파일
+							<span class="required"></span>
+						</label>
+						<div class="col-md-9 col-sm-9 ">
+							<input type="file" class="form-control" name="trainerLicenseFile" 
+								accept=".doc, .docx, .xml, .pdf, .hwp">
+						</div>
+					</div>
+				</li>
+			</ul>
+			<div class="row pt-2">
+				<div class="col-md-8 col-sm-8  offset-md-4">
+					<a th:href="@{/trainer/trainerDetail(trainerCd=${trainerCd})}">
+						<button type="button" class="btn btn-primary">취소</button>
+					</a>
+					<button type="button" id="addLicenseBtn" class="btn btn-success">등록</button>
+				</div>
+			</div>
+		</div>
+	</th:block>
+</html>

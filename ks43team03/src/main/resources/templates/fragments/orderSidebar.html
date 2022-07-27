@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<div class="col-lg-3 col-md-3" th:fragment="orderSidebarFragment">
+		<div class="shop__sidebar">
+			<div class="sidebar__categories">
+				<div class="section-title">
+					<h4>My 쇼핑</h4>
+				</div>
+				<div class="categories__accordion">
+					<div class="accordion" id="mypagelink">
+						<div class="card">
+							<div class="card-heading">
+								<a data-toggle="collapse" data-target="#collapseOne" class="collapsed"
+									aria-expanded="false">My주문</a>
+							</div>
+							<div id="collapseOne" class="collapse" data-parent="#mypagelink">
+								<div class="card-body">
+									<ul>
+										<li><a th:href="@{/order/orders/{id}(id=${session.SID})}">주문목록/주문조회</a></li>
+										<li><a href="#">취소/환불내역</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-heading">
+								<a data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
+									class="collapsed">My예약</a>
+							</div>
+							<div id="collapseTwo" class="collapse" data-parent="#mypagelink">
+								<div class="card-body">
+									<ul>
+										<li><a href="#">나의 대관 예약 정보</a></li>
+										<li><a href="#">나의 레슨 예약정보</a></li>
+
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-heading">
+								<a data-toggle="collapse" data-target="#collapseThree" aria-expanded="false"
+									class="collapsed">My 활동</a>
+							</div>
+							<div id="collapseThree" class="collapse" data-parent="#mypagelink">
+								<div class="card-body">
+									<ul>
+										<li><a href="#">문의하기</a></li>
+										<li><a href="#">문의내역 조회</a></li>
+										<li><a href="#">리뷰관리</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-heading">
+								<a data-toggle="collapse" data-target="#collapseFour" aria-expanded="false"
+									class="collapsed">My 정보</a>
+							</div>
+							<div id="collapseFour" class="collapse" data-parent="#mypagelink">
+								<div class="card-body">
+									<ul>
+										<li><a th:href="@{/user/userDetail}">개인정보 확인</a></li>
+										<li><a href="#">결제 수단 관리</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</html>

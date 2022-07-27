@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+<th:block layout:fragment="customTitle">
+	<title th:text="${title}"></title>
+</th:block>
+<th:block layout:fragment="customJs">
+	<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+
+</th:block>
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+
+	<div th:if="${not #strings.isEmpty(session.SID)}">
+
+
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="x_panel">
+				<div class="x_title">
+					<h2>주문 리스트 테이블 <small>관리자</small></h2>
+
+					<div class="clearfix"></div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+						<div class="card card-warning">
+							<div class="card-header">
+								<h3 class="card-title">
+									<b>주문 조회</b>
+								</h3>
+							</div>
+							<div class="card-body">
+								<div
+									th:if="${not #strings.isEmpty(session.SLEVEL)} and ${#strings.equals(session.SLEVEL,'2') or #strings.equals(session.SLEVEL,'3') or #strings.equals(session.SLEVEL,'4')}">
+									<div class="input-group-prepend">
+										<p>시설을 선택해주세요</p>
+									</div>
+									<div class="form row">
+										<div class="form-group col-12">
+											<th:block th:if="${not #lists.isEmpty(facility)}">
+												
+								
+												<div class="input-group">
+													<div class="input-group-prepend">
+														<span class="input-group-text" id="basic-addon1" style="font-size: 14px;">시설명</span>
+													</div>
+													<select class="form-control" id="facility-select" name="searchKey"
+														style="font-size: 14px;">
+														<th:block th:each="facility : ${facility}">
+															<option th:value="${facility.facilityCd}">
+																[[${facility.facilityNm}]]</option>
+														</th:block>
+													</select>
+												</div>
+											</th:block>
+											<th:block th:unless="${not #lists.isEmpty(facility)}">
+												회원님이 등록된 시설이 없습니다.
+											</th:block>
+										</div>
+									</div>
+								</div>
+
+							<form id="search-form">	
+									<div class="form row">
+										<div class="form-group col-12">
+											
+											<div class="form row">
+												<div class="form-group col-12">
+												
+												</div>
+											</div>
+											<div class="input-group">
+												<div class="input-group-prepend">
+														<input type="date" id="date-after" name="date-after" class="form-control" style="font-size: 14px; display: inline;">
+														~
+														<input type="date" id="date-before" name="date-before" class="form-control" style="font-size: 14px; display: inline;">
+														
+													<select class="form-control" id="exampleFormControlSelect1"
+														name="searchKey" style="font-size: 14px;">
+														<option value="ldgAddr">주문상태</option>
+														<option value="ldgName">상품명</option>
+													</select>
+												</div>
+												<div class="input-group-prepend">
+													<button type="button" id="search-btn" class="btn btn-outline-danger"
+														style="font-size: 14px; background: #ec5552; color: #fff;">검색</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									</form>
+								</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12 col-md-12 col-lg-12">
+						<div class="card-body">
+
+
+
+							<div class="table-responsive row" id="orderList">
+								<table class="table jambo_table bulk_action">
+									<thead>
+										<tr class="headings">
+											<th class="column-title" style="display: table-cell;">no.</th>
+											<th class="column-title" style="display: table-cell;">주문일시</th>
+											<th class="column-title" style="display: table-cell;">결제일시</th>
+											<th class="column-title" style="display: table-cell;">주문번호 </th>
+											<th class="column-title" style="display: table-cell;">주문상태</th>
+											<th class="column-title" style="display: table-cell;">구매자명</th>
+											<th class="column-title" style="display: table-cell;">결제액</th>
+											<th class="column-title" style="display: table-cell;">결제수단</th>
+											<th class="column-title" style="display: table-cell;">구매상품</th>
+											<th class="column-title no-link last" style="display: table-cell;"><span
+													class="nobr">상세보기</span>
+											</th>
+											<th class="bulk-actions" colspan="7" style="display: none;">
+												<a class="antoo" style="color:#fff; font-weight:500;">Bulk Actions (
+													<span class="action-cnt">1 Records Selected</span> ) <i
+														class="fa fa-chevron-down"></i></a>
+											</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										<tr th:if="${not #lists.isEmpty(orderList)}"
+											th:each="order,idx : ${orderList}">
+											<td th:text="${idx.count}"></td>
+											<td th:text="${order.orderRegDate}"></td>
+											<td th:text="${order.pay.payRegDate}"></td>
+											
+											<td th:text="${order.orderCd}"> </td>
+											<td th:text="${order.orderPayState}"> </td>
+											<td th:text="${order.userId}"> </td>
+											<td th:text="${order.orderPayPrice}"></td>
+											<td th:text="${order.payType.name}"></td>
+											<td th:text="${order.facility.facilityNm}">땡떙체육관</td>
+											<td class=" last"><a
+													th:href="@{/admin/order/orderDetail(orderCd=${order.orderCd},goodsCtgCd=${order.goodsCtgCd})}">상세보기</a>
+											</td>
+										</tr>
+										<tr th:unless="${not #lists.isEmpty(orderList)}">
+											<td colspan="11">주문내역이 아직없습니다.</td>
+										</tr>
+									</tbody>
+								</table>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+	<div th:unless="${not #strings.isEmpty(session.SID)}">
+		로그인이 필요한 서비스입니다.
+	</div>
+	<script>
+		$(document).ready(function () {
+
+			readAjax();
+			
+
+		});
+
+		const checkId = '[[${session.SID}]]';
+		const level = '[[${session.SLEVEL}]]';
+
+		const data = { 
+				facilityCd :$('#facility-select').val(),
+				level : level,
+				
+			}
+		function readAjax() {
+
+
+			if (typeof 'undefinded' == checkId || checkId != null && checkId != '') {
+				/* let data = {
+					level: level
+				}; */
+				if (level == '2' || level == '3' || level == '4') {
+					 console.log($('#facility-select').val());
+					//$('#orderList');
+					data.facilityCd = $('#facility-select').val()
+				}
+
+
+				searchajax(data);
+
+
+			} else {
+				alert('로그인이 필요한 서비스입니다.');
+				location.href = window.location.origin + '/login';
+			}
+		}
+
+		function selectFacility() {
+			if (level == '2' || level == '3' || level == '4') {
+				$('#facility-select').on('change', onChangeOption);
+			}
+
+			console.log('selectFacility');
+
+		}
+
+
+		function onChangeOption() {
+			readAjax();
+			console.log('selectFacility');
+		}
+
+
+		const searchajax = (data) =>{
+			console.log(data);
+			$.ajax({
+				type: 'GET',
+				url: '/admin/order/search',
+				data: data,
+			}).done(function (data) {
+				$('#orderList').replaceWith(data);
+			}).fail(function (error) {
+				console.log(JSON.stringify(error));
+			})
+		}
+		
+		
+		$('#search-btn').on('click',function(){
+			data.dateAfter = $('#date-after').val();
+			data.dateBefore = $('#date-before').val();
+			
+			
+			console.log(data);
+			
+			searchajax(data);
+			
+		});
+		
+		selectFacility();
+
+	</script>
+
+
+</th:block>
+
+</html>

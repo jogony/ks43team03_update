@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default.html}">
+  	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	
+	<!-- 사용자 정의 css -->
+	<th:block layout:fragment="customCss">
+	    
+		<style>
+			.table{
+				text-align: center;
+			}
+			
+			#boardBody{
+				cursor: pointer;
+				
+			}
+			
+			#addBoardBtn{
+				padding-top: 20px;
+			}
+		</style>
+	</th:block>
+	
+	
+	<th:block layout:fragment="customContents">	
+		
+	<!-- Breadcrumb Begin -->
+	    <div class="breadcrumb-option">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <div class="breadcrumb__links">
+	                        <a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+	                        <span>게시판</span>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	<!-- Breadcrumb End -->
+	
+		<section class="shop-cart spad">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="shop__cart__table">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th id="boardPostTitle">제목</th>
+										<th id="boardPostDate">등록일</th>
+										<th id="boardPostViews">조회수</th>
+										<th id="boardPostCommentNum">댓글 수</th>
+										<th id="userId">작성자</th>
+									</tr>
+								</thead>
+								<tbody id="boardBody">
+									<!-- tr안에 넣는 방법 
+											onClick="location.href='http://localhost/board/boardDetail'" -->
+									<!-- onclick 빼고 td 안에 넣는 방법 
+											<a th:href="@{/board/boardDeail(boardPostCd=${l.boardPostCd})}" th:text="${l.boardPostTitle}"></a> -->
+									<tr th:if="${not #lists.isEmpty(boardList)}" th:each="l : ${boardList}">
+										<input type="hidden" th:value="${l.boardPostCd}">
+										<td th:text="${l.boardPostTitle}"></td>
+										<td th:text="${l.boardPostDate}"></td>
+										<td th:text="${l.boardPostViews}"></td>
+										<td th:text="${l.boardPostCommentNum}"></td>
+										<td th:text="${l.userId}"></td>
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(boardList)}">
+										<td colspan="6">조회된 내용이 없습니다.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- paging -->
+			<div class="col-lg-12 text-center">
+				<div class="pagination__option">
+					<a th:if="${currentPage > 1}" th:href="@{/board/boardList(currentPage=${currentPage - 1})}"><i class="fa fa-angle-left"></i></a>
+					<th:block th:each="num : ${#numbers.sequence(startPageNum,endPageNum)}">
+						<label th:if="${currentPage eq num}" th:text="${(num<10) ? '0' + num  :  num }"></label>
+						<a th:unless="${currentPage eq num}" th:href="@{/board/boardList(currentPage=${num})}" th:text="${(num<10) ? '0' + num  :  num }"></a>
+					</th:block>
+					<a th:if="${currentPage < lastPage}" th:href="@{/board/boardList(currentPage=${currentPage + 1})}"><i class="fa fa-angle-right"></i></a>
+				</div>
+			</div>
+			<!-- paging end -->
+			
+				<div class="row" id="addBoardBtn">
+					<div class="col-lg-6 col-md-6 col-sm-6">
+						<div class="cart__btn update__btn">
+							<a th:href="@{/board/addBoard}" 
+							   th:if="${session.SLEVEL =='1'or session.SLEVEL =='2' or session.SLEVEL =='3' or session.SLEVEL =='4' or session.SLEVEL =='5'}">
+								게시글 작성하기
+							</a>
+						</div>
+					</div>
+				</div>
+		</section>
+	
+	</th:block>
+	
+	<!-- 사용자 정의 Js 파일-->
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+		
+		<script>
+			$(function(){
+				var $boardTr = $('#boardBody tr');
+
+				$boardTr.click(function(){
+					console.log(this);
+  
+					var boardPostCd = $(this).find('input').val();
+					console.log(boardPostCd);
+						
+					$(location).attr('href','/board/boardDetail?boardPostCd='+boardPostCd);
+				});
+			});
+		</script>
+	</th:block>
+
+</html>

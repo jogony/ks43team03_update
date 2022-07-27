@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.BoomkMapper">  
+	<resultMap type="Boomk" id="boomkFacilityResultMap">
+		<id column="boomk_facility_cd"				property="boomkFacilityCd"/>
+		<result column="facility_cd"				property="facilityCd"/>
+		<result column="user_id"					property="userId"/>
+		<result column="boomk_reg_date"				property="boomkRegDate"/>
+		<result column="boomk_facility_state"		property="boomkFacilityState"/>
+		<result column="boomk_update_date"			property="boomkUpdateDate"/>
+	<!-- </resultMap> -->
+	
+	<association property="facility" javaType="Facility">
+		<id column="facility_cd"					property="facilityCd"/>
+		<result column="main_ctg_cd"				property="mainCtgCd"/>
+		<result column="facility_use_cd"			property="facilityUseCd"/>
+		<result column="town_cd"					property="townCd"/>
+		<result column="user_id"					property="userId"/>
+		<result column="facility_nm"				property="facilityNm"/>
+		<result column="facility_address"			property="facilityAddr"/>
+		<result column="facility_tell"				property="facilityTell"/>
+		<result column="business_number"			property="businessNum"/>
+		<result column="facility_reg_date"			property="facilityRegDate"/>
+		<result column="facility_post_num"			property="facilityPostNum"/>
+		<result column="facility_detail_addr"		property="facilityDetailAddr"/>
+		<result column="area_cd"					property="areaCd"/>
+		<result column="city_cd"					property="cityCd"/>			
+	</association>
+	</resultMap>
+
+<!-- id="boomkFacilityResultMap"와 resultMap="boomkFacilityResultMap"는 같아야 한다. -->
+	<select id="getBoomkList" parameterType="String" resultMap="boomkFacilityResultMap">
+		/*아이디로  즐겨찾기 정보 조회 Y(즐겨찾기) 조회*/
+		SELECT
+			 b.boomk_update_date
+			,b.user_id
+			,b.boomk_facility_cd
+			,f.facility_cd	
+			,f.facility_nm
+			,f.facility_address
+			,f.facility_detail_addr
+			,f.facility_tell
+		FROM 
+			boomk_facility AS b
+			INNER JOIN 
+			facility AS f
+			ON 
+			b.facility_cd = f.facility_cd
+		WHERE 
+			b.user_id = #{userId} AND b.boomk_facility_state = 'Y';
+	</select>	
+
+
+	<insert id="addBoomk" parameterType="Boomk">
+		/*즐겨찾기 등록*/
+		INSERT INTO boomk_facility(
+			boomk_facility_cd, 
+			facility_cd, 
+			user_id, 
+			boomk_reg_date, 
+			boomk_facility_state, 
+			boomk_update_date
+		)VALUES (
+			sf_new_boomk_facility_cd(), 
+			#{facilityCd}, 
+			#{userId}, 
+			NOW(), 
+			'Y', 
+			NOW()
+		)
+
+	</insert>
+
+	<delete id="removeBoomk" parameterType="Boomk">
+		/*즐겨찾기 삭제*/
+		DELETE 
+		FROM 
+			boomk_facility
+		WHERE 
+			user_id = #{userId}
+		AND 
+			facility_cd = #{facilityCd};	
+	</delete>
+
+
+<!-- 
+	<update id="modifyBoomk" parameterType="Boomk">
+		즐겨찾기 취소 Y(즐겨찾기)->N(즐겨찾기 취소)		
+		UPDATE boomk_facility	
+		SET 
+			boomk_facility_state = 'N', boomk_update_date = NOW()
+		WHERE 
+			user_id = #{userId}	
+		AND 
+			facility_cd = #{facilityCd};		
+	</update>
+
+
+	<update id="modifyBoomk2" parameterType="Boomk">
+		즐겨찾기 추가 Y(즐겨찾기)
+		UPDATE boomk_facility	
+		SET 
+			boomk_facility_state = 'Y', boomk_update_date = NOW()
+		WHERE 
+			user_id = #{userId}		
+		AND 
+			facility_cd = #{facilityCd};	
+	</update>
+ -->
+ 
+  
+</mapper>  

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<!-- Product Section Begin -->
+<section class="product" th:fragment="productFragment">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-lg-4 col-md-4">
+				<div class="section-title">
+					<h4>전체 시설</h4>
+				</div>
+			</div>
+			<div class="col-lg-8 col-md-8">
+				<ul class="filter__controls">
+					<li class="active" data-filter="*">전체 시설</li>
+					<li data-filter=".swimmingpool">수영장</li>
+					<li data-filter=".stadium">구장</li>
+					<li data-filter=".gym">체육관</li>
+					<li data-filter=".fitnesscenter">헬스장</li>
+					<li data-filter=".climbing">클라이밍</li>
+				</ul>
+			</div>
+		</div>
+		<div class="row property__gallery">
+			<div class="col-lg-3 col-md-4 col-sm-6 mix swimmingpool">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/고고1831346970305100.jpg">
+						<div class="label sale">수영장</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/고고1831346970305100.jpg" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/facility/facilityDetail?facilityCd=ss_35011740_01}">고고스위밍</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix stadium">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/stadium1832069839071400.png">
+						<div class="label stockout">구장</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/stadium1832069839071400.png" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/stadium/stadiumDetail?facilityStadiumCd=stadium_02&facilityGoodsCd=gg_35011750_02_stadium_06}">배드민턴 구장</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix gym">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/화산체육관1827051845832700.jpg">
+						<div class="label sale">체육관</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/화산체육관1827051845832700.jpg" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/facility/facilityDetail?facilityCd=facility_05}">화산체육관</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix fitnesscenter">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/헬스장1831407946354900.JPG">
+						<div class="label sale">헬스장</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/헬스장1831407946354900.JPG" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/facility/facilityDetail?facilityCd=ss_35011770_03}">원휘트니스</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix stadium">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/qorn1832872922743900.jpg">
+						<div class="label stockout">구장</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/qorn1832872922743900.jpg" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/stadium/stadiumDetail?facilityStadiumCd=stadium_05&facilityGoodsCd=gg_35011750_02_stadium_07}">배구구장</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix swimmingpool">
+				<div class="product__item sale">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/완산수영장1827272033222400.jpg">
+						<div class="label sale">수영장</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/완산수영장1827272033222400.jpg" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/facility/facilityDetail?facilityCd=facility_06}">완산수영장</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix swimmingpool">
+				<div class="product__item">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/수영장1827272038422000.jpg">
+						<div class="label sale">수영장</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/수영장1827272038422000.jpg" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/facility/facilityDetail?facilityCd=facility_06}">완산수영장</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6 mix climbing">
+				<div class="product__item sale">
+					<div class="product__item__pic set-bg" data-setbg="images/20220725/클라이밍11831312727340500.jpg">
+						<div class="label">클라이밍</div>
+						<ul class="product__hover">
+							<li>
+								<a href="images/20220725/클라이밍11831312727340500.jpg" class="image-popup">
+									<span class="arrow_expand"></span>
+								</a>
+							</li>
+							<li>
+								<a href="#">
+									<span class="icon_heart_alt"></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div class="product__item__text">
+						<h6>
+							<a th:href="@{/facility/facilityDetail?facilityCd=ss_35011600_04}">하드락클라이밍 카페</a>
+						</h6>
+						<div class="rating">
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+							<i class="fa fa-star"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- Product Section End -->
+
+</html>

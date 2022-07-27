@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault}">
+	  	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>	 
+	<th:block layout:fragment="customCss">
+		<style>
+			.pagination {
+				float: right;	
+			}
+		</style>
+	</th:block>		
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+
+	<div class="title_left" style="margin-top:80px; margin-bottom:30px">	
+		<h3>안전점검 등록 시설 목록</h3>
+	</div>	
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12">	
+			<div class="x_panel">
+			<div class="x_title">
+				<h2>등록된 내 시설 목록</h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">			
+				<div class="row">
+					<div class="col-sm-12"> 
+						<div class="card-box table-responsive">
+							<p class="text-muted font-13 m-b-30 text-center"> <!-- text-center 텍스트 중앙정렬 -->
+								자율안전점검 결과를 등록한 나의 시설을 볼 수 있습니다.
+							</p>
+							<table id="datatable" class="table jambo_table bulk_action table-bordered dt-responsive nowrap" cellspacing="0" style="width:100%">
+								<thead>
+									<tr>
+										<th>체육시설명</th>
+										<th>안전점검 결과 첨부 파일</th>
+										<th>안전 점검일</th>
+										<th>안전 점검 등록일</th>
+										<th>수정</th>
+										<th>삭제</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:if="${not #lists.isEmpty(safetyListById)}" th:each="safety:${safetyListById}">
+										<td th:text="${safety.facilityNm}"></td>
+										<td th:text="${safety.safetyCheckFile}"></td>
+										<td th:text="${safety.safetyCheckDate}"></td>
+										<td th:text="${safety.safetyCheckRegDate}"></td>
+										<td>
+											<a th:href="@{/safety/modifySafety(safetyCheckCd=${safety.safetyCheckCd},userId=${safety.userId})}">
+												<button type="button" class="btn btn-primary btn-sm">수정</button>
+											</a>
+										</td>
+										<td>
+											<a th:href="@{/safety/removeSafety2(safetyCheckCd=${safety.safetyCheckCd})}">
+												<button type="button" class="btn btn-danger btn-sm">삭제</button>
+											</a>
+										</td>										
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(safetyListById)}">
+										<td colspan="6">조회된 내용이 없습니다.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>	
+		</div>
+	</div>
+
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	
+	<div th:fragment="adminSearchFacilityFragment">
+		<form th:action="@{/adminFacility/adminFacilityList}" method="post">
+			<select name="searchKey">
+			    <option value="facilityNm">시설명</option>
+			    <option value="userId">아이디</option>
+			    <option value="areaNm">지역(시도)</option>
+			    <option value="cityNm">지역(시군구)</option>
+			    <option value="townNm">지역(읍면동)</option>
+			</select>
+			<input type="text" name="searchValue"/>
+			<input type="submit" value="검색버튼"/>
+		</form>
+	</div>
+	
+	
+	
+	
+</html>

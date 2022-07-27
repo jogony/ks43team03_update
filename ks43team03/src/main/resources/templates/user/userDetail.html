@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">	
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{margin-top: 30px;}
+		</style>
+	</th:block>
+	
+	<!-- 사용자 정의 Js 파일-->
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+		<!-- 주소검색 API -->
+		<script th:src="@{//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js}"></script>
+		<script th:src="@{/resource/js/searchAddr.js}"></script>	
+		<script>
+			$(function(){
+				
+				/* 삭제 모달 비밀번호 체크 */
+				var $removeForm = $('#removeForm');
+				
+				function validationCheck(data){
+					if(typeof data == 'undefined' || data == '' || data == null){
+						return false;
+					}
+					return true;
+				}
+				
+				$removeForm.on('click','#removeBtn',function(){
+					console.log('test');
+					
+					var userId = $('input[name="userId"]').val();
+					var userPw = $('input[name="userPw"]').val();
+					
+					console.log(userId);
+					console.log(userPw);
+					
+					var vCheck = validationCheck(userPw);
+					
+					if(vCheck){
+						$.ajax({
+							 url: '/user/pwCheck'
+							,type: 'POST'
+							,data: {'userId' : userId, 'userPw' : userPw}
+							,dataType: 'json'
+							,success: function(data){
+								console.log(data);
+								// 화면에서 맨처음 아이디를 제외한 모든 입력하는 요소는 비활성화 (HTML 속성 추가 disabled="disabled") 
+								// 아이디 중복이 발생 않은 경우(회원가입 O) 입력하는 요소는 활성화
+								if(data){
+									$removeForm.attr('action','/user/removeUser').submit();
+								}else{
+									alert("비밀번호가 일치하지 않습니다.");
+								}
+							}
+						});
+					}else{
+						alert("비밀번호를 입력해주세요.");
+					}
+				});
+				
+				/* 성별 db 값으로 체크 */
+				var userGender = $('div[data-gender]').attr('data-gender');
+				console.log(userGender);
+				$('input[value=' + userGender + ']').attr('checked', 'checked');
+			});
+		</script>
+	</th:block>
+	
+	 
+	<th:block layout:fragment="customContents">
+	
+		<!-- Breadcrumb Begin -->
+		<div class="breadcrumb-option">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="breadcrumb__links">
+							<a th:href="@{/user}">
+								<i class="fa fa-home"></i>
+								Home
+							</a>
+							<span>userDetail</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Breadcrumb End -->
+	
+		<!-- 회원 정보 -->
+		<div class="container" th:if="${#strings.isEmpty(session.SID)}">
+			<h4>로그인이 필요한 서비스입니다.</h4>
+		</div>
+		<div class="container" th:unless="${#strings.isEmpty(session.SID)}">
+			<h4 style="display: inline;">[[${user.userName}]]<small>님의 마이페이지</small></h4>
+			<th:block th:if="${user.userLevel eq '4'}">
+				<a th:href="@{/trainer/modifyTrainer}">
+					<button class="btn btn-info">트레이너 정보 수정</button>
+				</a>
+			</th:block>
+			<th:block th:unless="${user.userLevel eq '4'}">
+				<a th:href="@{/trainer/addTrainer}">
+					<button class="btn btn-info">트레이너 등록</button>
+				</a>
+			</th:block>
+			<div class="clearfix"></div>
+			<form th:action="@{/user/modifyUser}" method="post">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th scope="col" style="width: 13%;">#</th>
+							<th scope="col">내 정보 관리</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">회원 정보</th>
+							<td>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userId">아이디</label>
+									</div>
+									<div class="col-md-7 col-sm-7 ">
+										<input type="text" class="form-control" name="userId" th:value="${user.userId}" readonly="readonly">
+									</div>
+								</div>
+								<div class="col-md-4 col-sm-4 offset-md-2 offset-sm-2">
+									<a th:href="@{/user/modifyUserPw(userId=${user.userId})}">
+										<button type="button" class="btn btn-info" id="modifyUserPwButton">비밀번호 변경</button>
+									</a>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="levelName">권한</label>
+									</div>
+									<div class="col-md-7 col-sm-7">
+										<input type="text" class="form-control" name="levelName" th:value="${user.levelInfo.levelName}" readonly="readonly">
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userName">회원이름</label>
+									</div>
+									<div class="col-md-7 col-sm-7">
+										<input type="text" class="form-control" name="userName" th:value="${user.userName}">
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userGender">성별</label>
+									</div>
+									<div class="col-md-7 col-sm-7" th:data-gender="${user.userGender}">
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="userGender" id="inlineRadio1" value="남">
+											<label class="form-check-label" for="inlineRadio1">남</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="userGender" id="inlineRadio2" value="여">
+											<label class="form-check-label" for="inlineRadio2">여</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userBirth">생년월일</label>
+									</div>
+									<div class="col-md-7 col-sm-7">
+										<input type="text" class="form-control" name="userBirth" th:value="${user.userBirth}">
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userEmail">이메일</label>
+									</div>
+									<div class="col-md-7 col-sm-7">
+										<input type="text" class="form-control" name="userEmail" th:value="${user.userEmail}">
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userPostNum">회원 주소</label>
+									</div>
+									<div class="col-md-4 col-sm-4">
+										<input type="text" class="form-control" name="userPostNum" id="userPostNum" th:value="${user.userPostNum}" readonly>
+									</div>
+									<div class="col-md-4 col-sm-4">
+										<button type="button" class="btn btn-info" id="postNum" onclick="searchAddForm()">우편번호찾기</button>
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-7 offset-md-2">
+										<input type="text" class="form-control" id="userAddr" name="userAddr"  th:value="${user.userAddr}" readonly>
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-7 offset-md-2">
+										<input type="text" class="form-control" name="userDetailAddr" id="userDetailAddr" th:value="${user.userDetailAddr}">
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-2 col-sm-2">
+										<label class="control-label" for="userTell">휴대전화</label>
+									</div>
+									<div class="col-md-7 col-sm-7">
+										<input type="text" class="form-control" name="userTell" th:value="${user.userTell}">
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="form-group">
+					<div class="col-md-8 col-sm-8 offset-md-4">
+						<a th:href="@{/}">
+							<button type="button" class="btn btn-primary" id="cancelButton">취소</button>
+						</a>
+						<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#removeModal">삭제</button>
+						<button type="submit" class="btn btn-info">저장</button>
+					</div>
+				</div>
+			</form>
+			
+			<!-- Modal -->
+			<div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<form id="removeForm" method="post">
+					<div class="modal-dialog" role="document">
+				 		<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="exampleModalLabel">회원 정보 삭제</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								정말 삭제하시겠습니까?
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-3">
+										<label class="control-label" for="userId">아이디</label>
+									</div>
+									<div class="col-md-9 col-sm-9">
+										<input type="text" class="form-control" name="userId" th:value="${user.userId}" readonly="readonly">
+									</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-3">
+										<label class="control-label" for="userPw">비밀번호</label>
+									</div>
+									<div class="col-md-9 col-sm-9">
+										<input type="password" class="form-control" name="userPw" placeholder="비밀번호 입력">
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<div class="form-group">
+									<button type="button" class="btn btn-primary" data-dismiss="modal">취소</button>
+									<button type="button" class="btn btn-danger" id="removeBtn">삭제</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			
+		</div>
+	</th:block>
+</html>

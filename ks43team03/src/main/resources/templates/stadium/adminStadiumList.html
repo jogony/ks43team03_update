@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault}">
+  <!-- 사용자 정의 title -->
+  <th:block layout:fragment="customTitle">
+     <title th:text="${title}"></title>
+  </th:block>
+
+<!-- 사용자 정의Contents -->
+<th:block layout:fragment="customContents">
+	<div class="col-md-12 col-sm-12">
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>전체 구장 목록 조회</h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+							<a class="dropdown-item" href="#">Settings 1</a>
+							<a class="dropdown-item" href="#">Settings 2</a>
+						</div>
+					</li>
+					<li><a class="close-link"><i class="fa fa-close"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="card-box table-responsive">
+							<table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="width:100%">
+								<thead>
+									<tr>
+										<th>시설명</th>
+										<th>구장명</th>
+										<th>종목</th>
+										<th>등록자 아이디</th>
+										<th>구장상세정보</th>
+										<th>등록 일자</th>
+										<th>삭제</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:if="${not #lists.isEmpty(adminStadiumList)}" th:each="l:${adminStadiumList}">
+										<td th:text ="${l.get('facilityNm')}"></td>
+										<td th:text ="${l.get('facilityStadiumNm')}"></td>
+										<td th:text ="${l.get('sportsNm')}"></td>
+										<td th:text ="${l.get('userId')}"></td>
+										<td th:text ="${l.get('facilityStadiumDetail')}"></td>
+										<td th:text ="${l.get('facilityStadiumRegDate')}"></td>
+										<td>
+											<a href="#" >										
+												<input type="button" class="btn btn-danger btn-sm" value="삭제">
+											</a>
+										</td>
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(adminStadiumList)}">
+										<td colspan="9">조회된 내용이 없습니다.</td>
+									</tr>
+								</tbody>
+								<!-- <tfoot>
+									<tr>
+										<td colspan="14" style="text-align: center;">
+											<a th:href="@{/stadium/adminStadiumList}">[맨처음]</a>
+											<a th:if="${currentPage > 1}" th:href="@{/stadium/adminStadiumList(currentPage=${currentPage - 1})}">[이전]</a>
+											<th:block th:each="num : ${#numbers.sequence(startPageNum,endPageNum)}">
+												<label th:if="${currentPage eq num}" th:text="${(num<10) ? '[0' + num +']' : '[' + num +']'}"></label>
+												<a th:unless="${currentPage eq num}" th:href="@{/stadium/adminStadiumList(currentPage=${num})}" th:text="${(num<10) ? '[0' + num +']' : '[' + num +']'}"></a>
+											</th:block>
+											<a th:if="${currentPage < lastPage}" th:href="@{/stadium/adminStadiumList(currentPage=${currentPage + 1})}">[다음]</a>
+											<a th:href="@{/stadium/adminStadiumList(currentPage=${lastPage})}">[마지막]</a>
+										</td>
+									</tr>
+								</tfoot> -->
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+	
+	</th:block>
+
+</html>	
+	

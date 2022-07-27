@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">
+
+<!-- 사용자 정의 title -->
+<th:block layout:fragment="customTitle">
+   <title th:text="${title}"></title>
+</th:block>
+
+<!-- 사용자 정의 css 선언 -->
+	<th:block layout:fragment="customCss">
+		<link rel="stylesheet" th:href="@{/resource/css/mapOverlay.css}" type="text/css">
+		<link rel="stylesheet" th:href="@{/resource/css/star.css}" type="text/css">
+		<style>
+		.pre{
+			font-size: 15px;
+			font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+			color: #000000;
+			font-weight: 400;
+			line-height: 24px;
+			margin: 0 0 15px 0;
+		}
+		
+		</style>
+		
+	</th:block>
+
+
+<!-- 사용자 정의 Js 파일-->
+<th:block layout:fragment="customJs">
+	<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+ 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9c5dbc5a281ccc90ee278e75316bee9c&libraries=services,clusterer,drawing"></script>
+	<script>
+		 $(function(){
+			var $addForm = $('#addForm');
+			function validationCheck(data1, date2){
+				if((typeof data1 == 'undefined' || data1 == '' || data1 == null) 
+						&& (typeof data2 == 'undefined' || data2 == '' || data2 == null)){
+					return false;
+				}
+				return true;
+			}
+			
+			$addForm.on('click','#addBtn',function(){
+				
+				var facilityCd = $('input[name="facilityCd"]').val();
+				var userId = $('input[name="userId"]').val();
+				console.log(facilityCd);
+				console.log(userId);
+				
+				var vCheck = validationCheck(facilityCd, userId);
+				console.log(vCheck);
+				
+				if(vCheck){
+					$.ajax({
+						 url: '/facility/userCheck'
+						,type: 'POST'
+						,data: {'facilityCd' : facilityCd, 'userId' : userId}
+						,dataType: 'json'
+						,success: function(data){
+							console.log(data);
+							if(data){
+								alert("시설 승인 후 이용가능합니다.")
+								$addForm.attr('action','/facility/addFacilityUser').submit();
+							}else{
+								alert("이미 가입된 시설입니다.");
+							}
+						}
+					});
+				}
+			})
+		});
+		 $(function(){
+			var $reviewForm = $('#reviewForm');
+			function validationCheck(data1, date2){
+				if((typeof data1 == 'undefined' || data1 == '' || data1 == null) 
+						&& (typeof data2 == 'undefined' || data2 == '' || data2 == null)){
+					return false;
+				}
+				return true;
+			}
+			
+			$reviewForm.on('click','#reviewBtn',function(){
+				
+				var userId = $('input[name="userId"]').val();
+				var facilityCd = $('input[name="facilityCd"]').val();
+				console.log(userId);
+				console.log(facilityCd);
+				
+				var vCheck = validationCheck(userId, facilityCd);
+				console.log(vCheck);
+				
+				if(vCheck){
+					$.ajax({
+						 url: '/review/orderCheck'
+						,type: 'POST'
+						,data: {'userId' : userId, 'facilityCd' : facilityCd}
+						,dataType: 'json'
+						,success: function(data){
+							console.log(data);
+							if(data){
+								$reviewForm.attr('action','/review/addReview').submit();
+								alert("후기가 등록되었습니다.")
+							}else{
+								alert("구매 후 등록이 가능합니다.");
+							}
+						}
+					});
+				}
+			})
+		});
+		 
+		 $(function(){
+				function validationCheck(data1){
+					if(typeof data1 == 'undefined' || data1 == '' || data1 == null){ 
+						return false;
+					}
+					return true;
+				}
+				$('.removeReview').click(function(){
+					var isSubmit = true;
+					var sid = $('input[name="sId"]').val();
+					var userId = $('input[name="userId"]').val();
+					console.log(sid);
+					console.log(userId);
+					
+					if(sid == ''){
+						alert("로그인이 필요합니다.");
+						return false;
+					}else if(sid != userId){
+						alert("본인 후기만 삭제 가능합니다.");
+						return false;
+					}else{
+						alert("후기가 삭제되었습니다.");					
+					}
+				});
+		 });
+		 $(function(){
+			if($('#sList').hasClass('sList') == true){
+				$('.sName').text('구장');
+			}
+			if($('#lList').hasClass('lList') == true){
+				$('.lName').text('레슨');
+			}
+			
+		 });
+		 
+		 //게시판
+		 $(function(){
+			var $boardTr = $('#boardBody tr');
+
+			$boardTr.click(function(){
+				console.log(this);
+
+				var boardPostCd = $(this).find('input').val();
+				console.log(boardPostCd);
+					
+				$(location).attr('href','/board/boardDetail?boardPostCd='+boardPostCd);
+			});
+		});
+		 
+	</script>
+ 
+</th:block>
+
+
+
+<th:block layout:fragment="customContents">
+
+  <div class="breadcrumb-option">
+  <th:block th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l : ${facilityDetail}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+                        <a href="#">shop</a>
+                        <span><a th:text="${l.facilityNm}"></a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+  	</th:block>
+    </div>
+
+<!-- Product Details Section Begin -->
+    <section class="product-details spad">
+        <div class="container">
+            <div class="row">
+             <th:block th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l : ${facilityDetail}">
+                <div class="col-lg-6">
+                    <div class="product__details__pic">
+                        <div class="product__details__pic__left product__thumb nice-scroll">
+                        	<th:block th:if="${not #lists.isEmpty(l.tFile)}" th:each="t, i : ${l.tFile}">
+	                            <a class="pt active" th:data-img="${t.representImg}" th:href="@{#product-} + ${i.index+1}">
+	                                <img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+	                            </a>
+                            </th:block>
+                        </div>
+                        <div class="product__details__slider__content">
+                            <div class="product__details__pic__slider owl-carousel">
+                            	<th:block th:if="${not #lists.isEmpty(l.tFile)}" th:each="t, i : ${l.tFile}">
+		                                <img th:data-hash="@{product-} + ${i.index+1}" class="product__big__img" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+		                        </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product__details__text">
+                        <h3 th:text="${l.facilityNm}"></h3>
+                        <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        
+                        <p th:text="${l.facilityAddr}" style="font-size : medium; margin: 0px;" ></p>
+	                    <p class="fa fa-phone" th:text="' '+${l.facilityTell}"></p>	
+                        <div class="product__details__button" style="margin-top: 20px;">
+                            <a data-toggle="modal" data-target="#addModal" class="cart-btn"><span class="icon_bag_alt"></span>시설가입</a> 
+                            <ul>
+                                <li><a th:if="${session.SLEVEL == '5'}" th:href="@{/boomk/addBoomk(facilityCd=${l.facilityCd},userId=${session.SID})}"><span class="icon_heart_alt"></span></a></li>
+                                <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
+                            </ul>
+                        </div>
+                      
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="product__details__tab">
+	                        <ul class="nav nav-tabs" role="tablist">
+	                            <li class="nav-item">
+	                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">상세정보</a>
+	                            </li>
+	                            <li class="nav-item">
+	                                <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab" id="mapTab">위치안내</a>
+	                            </li>
+	                            <li class="nav-item">
+	                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">게시판</a>
+	                            </li>
+	                            <li class="nav-item">
+	                                <a class="nav-link" data-toggle="tab" href="#tabs-4" role="tab" th:text="'후기(' + ${reviewCount} + ')'"></a>
+	                            </li>
+	                        </ul>
+	                        <div class="tab-content">
+	                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
+	                                <h6>상세정보</h6>
+	                                <pre class="pre" th:text="${l.facilityDetail}" style="border-bottom: 1px solid #e1e1e1; padding-bottom: 20px;"></pre>                                
+		                                <h6 class="sName"></h6>		                                                
+	                               		<section class="trend spad" style="padding: 10px; margin-bottom: 10px;">
+									    <div class="container">
+									        <div class="row">
+			                               	<th:block th:if="${not #lists.isEmpty(stadiumList)}" th:each="l : ${stadiumList}">
+									            <div class="col-lg-6 col-md-6 col-sm-12 sList" id="sList" th:if="${not #lists.isEmpty(l.tFile)}" th:each=" t : ${l.tFile}">
+												<div th:if="${t.representImg == 'Y'}">
+									                <div class="trend__content">				
+									                    <div class="trend__item">
+									                        <div class="trend__item__pic set-bg" th:data-setbg="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}"
+																										style="background-image: url(&quot;img/shop/shop-1.jpg&quot;);">
+																<img style="width: 90px;" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+									                        </div>
+									                        <div class="trend__item__text">
+									                            <h6 ><a th:href="@{/stadium/stadiumDetail(facilityStadiumCd=${l.facilityStadiumCd})}" th:text="${l.facilityStadiumNm}" style="color: black;"></a></h6>
+									                            <div class="rating">
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                            </div>
+									                        </div>
+									                    </div>
+									                </div>
+									            </div>
+									            </div>
+									            <div class="col-lg-6 col-md-6 col-sm-12 sList" id="sList"th:unless="${not #lists.isEmpty(l.tFile)}">
+									                <div class="trend__content">				
+									                    <div class="trend__item">
+									                        <div class="trend__item__pic set-bg " th:data-setbg="@{/images/notImage.jfif}"
+																											style="background-image: url(&quot;img/shop/shop-1.jpg&quot;);">
+									                        </div>
+									                        <div class="trend__item__text">
+									                            <h6 ><a th:href="@{/stadium/stadiumDetail(facilityStadiumCd=${l.facilityStadiumCd})}" th:text="${l.facilityStadiumNm}" style="color: black;"></a></h6>
+									                            <div class="rating">
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                            </div>
+									                        </div>
+									                    </div>
+									                </div>
+									            </div>
+			                               	</th:block>
+									        </div>
+									    </div>
+										</section>
+		                                <h6 class="lName"></h6>		                                                
+	                               		<section class="trend spad" style="padding: 10px; margin-bottom: 10px;">
+									    <div class="container">
+									        <div class="row">
+			                               	<th:block th:if="${not #lists.isEmpty(lessonList)}" th:each="l : ${lessonList}">
+									            <div class="col-lg-6 col-md-6 col-sm-12 lList" id="lList" th:if="${not #lists.isEmpty(l.tFile)}" th:each=" t : ${l.tFile}">
+												<div th:if="${t.representImg == 'Y'}">
+									                <div class="trend__content">				
+									                    <div class="trend__item">
+									                        <div class="trend__item__pic set-bg" th:data-setbg="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}"
+																										style="background-image: url(&quot;img/shop/shop-1.jpg&quot;);">
+																<img style="width: 90px;" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+									                        </div>
+									                        <div class="trend__item__text">
+									                            <h6 ><a th:href="@{/lesson/detailLessonForUser(lessonCd=${l.lessonCd})}" th:text="${l.lessonName}" style="color: black;"></a></h6>
+									                            <div class="rating">
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                            </div>
+									                        </div>
+									                    </div>
+									                </div>
+									            </div>
+									            </div>
+									            <div class="col-lg-6 col-md-6 col-sm-12 lList" id="lList" th:unless="${not #lists.isEmpty(l.tFile)}">
+									                <div class="trend__content">				
+									                    <div class="trend__item">
+									                        <div class="trend__item__pic set-bg " th:data-setbg="@{/images/notImage.jfif}"
+																											style="background-image: url(&quot;img/shop/shop-1.jpg&quot;);">
+																
+									                        </div>
+									                        <div class="trend__item__text">
+									                            <h6 ><a th:href="@{/lesson/detailLessonForUser(lessonCd=${l.lessonCd})}" th:text="${l.lessonName}" style="color: black;"></a></h6>
+									                            <div class="rating">
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                                <i class="fa fa-star"></i>
+									                            </div>
+									                        </div>
+									                    </div>
+									                </div>
+									            </div>
+			                               	</th:block>
+									        </div>
+									    </div>
+									</section>
+                         
+	                            </div>
+	                            <div class="tab-pane" id="tabs-2" role="tabpanel">
+	                                <h6><i class="fa fa-map-marker"></i>위치정보</h6>
+	                                <p th:text="${l.facilityAddr} + ' ' + ${l.facilityDetailAddr}" ></p>
+                             		<div class="x_content">
+										<div class="table-responsive">
+											<th:block th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l:${facilityDetail}">
+												<input type="hidden" th:value ="${l.facilityAddr}" class="placeAddr">
+												<input type="hidden" th:value ="${l.facilityNm}" class="placeName">
+												<input type="hidden" th:value ="${l.facilityCd}" class="placeCode">
+											</th:block>
+										</div>
+									</div>
+	                                <div>
+										<p style="margin-top:-12px">
+											<em class="link">
+												<a href="javascript:void(0);" onclick="window.open('http://fiy.daum.net/fiy/map/CsGeneral.daum', '_blank', 'width=981, height=650')">
+													혹시 주소 결과가 잘못 나오는 경우에는 여기에 제보해주세요.
+												</a>
+											</em>
+										</p>
+										<div id="map" style="width:100%; height:500px;"></div>
+									</div>
+	                            </div>
+	                            <div class="tab-pane" id="tabs-3" role="tabpanel">
+	                                <h6>게시판</h6>
+	                                <table class="table table-sm">
+										<thead>
+											<tr id="tableHead">
+												<th id="boardPostTitle">제목</th>
+												<th id="boardPostDate">등록일</th>
+												<th id="boardPostViews">조회수</th>
+												<th id="boardPostCommentNum">댓글 수</th>
+												<th id="userId">작성자</th>
+											</tr>
+										</thead>
+										<tbody id="boardBody">
+											<tr th:if="${not #lists.isEmpty(boardListByFacility)}" th:each="l : ${BoardListByFacility}">
+												<input type="hidden" th:value="${l.boardPostCd}">
+												<td th:text="${l.boardPostTitle}"></td>
+												<td th:text="${l.boardPostDate}"></td>
+												<td th:text="${l.boardPostViews}"></td>
+												<td th:text="${l.boardPostCommentNum}"></td>
+												<td th:text="${l.userId}"></td>
+											</tr>
+											<tr th:unless="${not #lists.isEmpty(boardListByFacility)}">
+												<td colspan="5">조회된 내용이 없습니다.</td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="cart__btn update__btn">
+	                                <a th:href="@{/board/addBoard(facilityCd=${facilityCd})}" 
+									   	th:if="${session.SLEVEL =='1'or session.SLEVEL =='2' or session.SLEVEL =='3' or session.SLEVEL =='4' or session.SLEVEL =='5'}">
+									   	게시글 등록</a>
+									</div>
+	                            </div>
+	                            <div class="tab-pane" id="tabs-4" role="tabpanel">
+							    	<div class="board__details__comment">
+			                            <h5 th:text="${reviewCount} + ' REVIEW'"></h5>
+			                            <a data-toggle="modal" data-target="#reviewModal" class="leave-btn">후기 등록</a>
+			                            <div class="board__comment__item" th:if="${not #lists.isEmpty(reviewList)}" th:each="l:${reviewList}">
+			                                <div class="board__comment__item__pic">
+			                                    <img src="img/board/details/comment-1.jpg" alt="">
+			                                </div>
+			                                <div class="board__comment__item__text">
+			                                    <h6 th:text="${l.userId}"></h6>
+			                                    <p th:text="${l.reviewDetail}"></p>
+			                                    <ul>
+			                                        <li><i class="fa fa-clock-o"></i><a th:text="${l.reviewRegDate}"></a></li>
+			                                        <li><i class="fa fa-heart-o"></i> 12</li>
+			                                        <li id="removeComment">
+														<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="#CA1515" class="bi bi-trash3" viewBox="0 0 16 16">
+														  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+														</svg>
+																<a class="removeReview" th:href="@{/review/reviewRemove(reviewCd = ${l.reviewCd}, userId = ${session.SID}, facilityCd = ${facilityDetail.facilityCd})}">
+																	<input type="hidden" id="sId" name="sId" th:value="${session.SID}">
+																	<input type="hidden" id="userId" name="userId" th:value="${l.userId}">
+																	삭제
+																</a>
+														
+													</li>
+			                                    </ul>
+			                                </div>
+			                            </div>
+										<div class="board__comment__item text-center" th:unless="${not #lists.isEmpty(reviewList)}" >
+											<a>후기가 없습니다.</a>
+										</div>
+									</div>
+	                            </div>
+	                        </div>
+                   	 	</div>
+                    </div>
+                </th:block>    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg" data-setbg="img/product/related/rp-1.jpg">
+                            <ul class="product__hover">
+                                <li><a href="img/product/related/rp-1.jpg" class="image-popup"><span class="arrow_expand"></span></a></li>
+                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                <li><a href="#"><span class="icon_bag_alt"></span></a></li>
+                            </ul>
+                        </div>
+                        <div class="product__item__text">
+                            <h6><a href="#">Buttons tweed blazer</a></h6>
+                            <div class="rating">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+    <!-- Product Details Section End -->
+
+	<!-- 시설 가입 Modal -->
+	<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<form id="addForm" method="post">
+			<div class="modal-dialog" role="document">
+		 		<div class="modal-content">
+					<div class="modal-header">
+						<th:block th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l : ${facilityDetail}">
+							<h5 class="modal-title" id="facilityCd" th:value="${l.facilityCd}" th:text="${l.facilityNm}"></h5>
+							<input type="hidden" class="form-control" name="facilityCd" readonly="readonly" th:value="${l.facilityCd}">
+						</th:block>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group row">
+							<div class="col-md-9 col-sm-9">
+								<label class="control-label" for="userLevel">권한을 선택해주세요</label>
+								<input type="hidden" class="form-control" name="userId" readonly="readonly" th:value="${session.SID}">
+							</div>
+							<div class="col-md-9 col-sm-9" style="padding-top: 5px;">
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="facilityUserLevel" id="inlineRadio1" value="일반회원" checked>
+									<label class="form-check-label" for="inlineRadio1">일반회원</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="facilityUserLevel" id="inlineRadio2" value="트레이너">
+									<label class="form-check-label" for="inlineRadio2">트레이너</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="facilityUserLevel" id="inlineRadio2" value="대리인">
+									<label class="form-check-label" for="inlineRadio2">대리인</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="form-group">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">취소</button>
+							<button type="button" class="btn btn-info" id="addBtn">가입</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<!-- modal -->
+	<div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<form id="reviewForm" method="post">
+			<div class="modal-dialog" role="document">
+		 		<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">후기 작성</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group row" style="margin-bottom: 0px;">
+							<div class="col-md-3 col-sm-3">								 
+								<input type="hidden" name="payCd" value="pay_cd_3"> 
+								<input type="hidden" name="goodsCtgCd" value="lesson"> 
+								<input type="hidden" name="userId" th:value="${session.SID}">								
+								<th:block  th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l : ${facilityDetail}">								
+									<input type="hidden" name="facilityCd" th:value="${l.facilityCd}">							
+								</th:block>
+								<label class="control-label">평점</label>
+							</div>
+							<div class="mb-3" id="myform">
+								<fieldset>
+									<input type="radio" name="reviewScore" value="5" id="rate1"><label
+										for="rate1">★</label>
+									<input type="radio" name="reviewScore" value="4" id="rate2"><label
+										for="rate2">★</label>
+									<input type="radio" name="reviewScore" value="3" id="rate3"><label
+										for="rate3">★</label>
+									<input type="radio" name="reviewScore" value="2" id="rate4"><label
+										for="rate4">★</label>
+									<input type="radio" name="reviewScore" value="1" id="rate5"><label
+										for="rate5">★</label>
+								</fieldset>
+							</div>			
+						</div>
+						<div class="form-group row">
+							<div class="col-md-12 col-sm-12">
+								<textarea class="form-control" rows="3"  name="reviewDetail" placeholder="후기를 입력해주세요."></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="form-group">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">취소</button>
+							<button type="button" class="btn btn-info" id="reviewBtn">저장</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<!-- modal end -->
+
+
+<script th:src="@{/resource/js/map.js}"></script>
+</th:block>	  
+	  
+</html>

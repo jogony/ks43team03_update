@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+	<div class="">
+		<div class="page-title">
+			<div class="title_left">
+				<h3 th:text="${lesson.lessonName}"></h3>
+			</div>
+
+			<div class="title_right">
+				<div class="col-md-5 col-sm-5  form-group pull-right top_search">
+					<div class="input-group">
+						<input type="text" class="form-control"placeholder="Search for...">
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button">Go!</button>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="clearfix"></div>
+
+		<div class="row">
+			<div class="col-md-12 col-sm-12 ">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2>E-commerce page design</h2>
+						<ul class="nav navbar-right panel_toolbox">
+							<li>
+								<a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+							</li>
+							<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<a class="dropdown-item" href="#">Settings 1</a>
+									<a class="dropdown-item" href="#">Settings 2</a>
+								</div>
+							</li>
+							<li><a class="close-link"><i class="fa fa-close"></i></a></li>
+						</ul>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+
+						<div class="col-md-7 col-sm-7 " >
+							<!-- db에서 저장된 사진 불러오기 -->
+							<div th:if="${not #lists.isEmpty(lesson.tFile)}" th:each="t : ${lesson.tFile}">
+								<div class="product-image" th:if="${t.representImg eq 'Y'}">
+									<img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="..." />
+								</div>
+							
+								<div class="product_gallery" th:unless="${t.representImg eq 'Y'}">
+									<a><img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="..." /></a>
+								</div>
+							<!-- db에서 저장된 사진 불러오기 -->
+							</div>
+							<div th:unless="${not #lists.isEmpty(lesson.tFile)}">
+								<!-- 저장된 사진 없음 -->
+								<a><img th:src="@{/images/notImage.jfif}" alt="..." /></a>
+							</div>
+						</div>
+						<div class="col-md-5 col-sm-5">
+							<div class="x_panel">
+								<div class="x_title">
+									<h2>
+										Stripped table <small>Stripped table subtitle</small>
+									</h2>
+									<ul class="nav navbar-right panel_toolbox">
+										<li>
+											<a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+										</li>
+										<li class="dropdown">
+											<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+											<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+												<a class="dropdown-item" href="#">Settings 1</a>
+												<a class="dropdown-item" href="#">Settings 2</a>
+											</div>
+										</li>
+									</ul>
+									<div class="clearfix"></div>
+								</div>
+								<div class="x_content">
+					
+									<table class="table table-striped">
+										<tbody>
+											<tr>
+												<td>강좌명</td>
+												<td th:text="${lesson.lessonName}"></td>
+											</tr>
+											<tr>
+												<td>정원</td>
+												<td>[[${lesson.lessonTotalMember}]]</td>
+											</tr>
+											<tr>
+												<td>교육기간</td>
+												<td>[[${lesson.lessonStartDate}]] ~ [[${lesson.lessonEndDate}]]</td>
+											</tr>
+											<tr>
+												<td>교육시간</td>
+												<td></td>
+											</tr>
+											<tr>
+												<td>문의전화</td>
+												<td th:text="${lesson.facility.facilityTell}"></td>
+											</tr>
+											<tr>
+												<td>위치</td>
+												<td>[[ ${lesson.facility.facilityAddr}]]/[[${lesson.facility.facilityNm}]]</td>
+											</tr>
+											<tr>
+												<td>레슨구분</td>
+												<td th:text="${lesson.lessonDivision}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12 col-sm-12" style="border: 0px solid #e5e5e5;">
+								<div class="col-md-12 col-sm-12">
+									<h3 class="prod_title" th:text="${lesson.lessonName}"></h3>
+		
+									<p th:text="${lesson.lessonDetail}"></p>
+									<br/>
+								</div>
+	
+								
+								<div class="col-md-4 col-sm-4 offset-md-8 offset-sm-8">
+									<div class="">
+										<div class="product_price">
+											<h1 class="price" th:text="${lesson.lessonPrice}"></h1>
+										</div>
+									</div>
+		
+									<div class="">
+										<a th:href="@{/lesson/modifyLesson(lessonCd=${lesson.lessonCd})}">수정하기</a>
+									</div>
+		
+									<div class="product_social">
+										<ul class="list-inline display-layout">
+											<li>
+												<a href="#"><i class="fa fa-facebook-square"></i></a>
+											</li>
+											<li>
+												<a href="#"><i class="fa fa-twitter-square"></i></a></li>
+											<li>	
+												<a href="#"><i class="fa fa-envelope-square"></i></a>
+											</li>
+											<li>
+												<a href="#"><i class="fa fa-rss-square"></i></a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						
+						<div class="col-md-12">
+
+							<ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+								<li class="nav-item"><a class="nav-link active"
+									id="home-tab" data-toggle="tab" href="#home" role="tab"
+									aria-controls="home" aria-selected="true">Home</a></li>
+								<li class="nav-item"><a class="nav-link" id="profile-tab"
+									data-toggle="tab" href="#profile" role="tab"
+									aria-controls="profile" aria-selected="false">Profile</a></li>
+								<li class="nav-item"><a class="nav-link" id="contact-tab"
+									data-toggle="tab" href="#contact" role="tab"
+									aria-controls="contact" aria-selected="false">Contact</a></li>
+							</ul>
+							<div class="tab-content" id="myTabContent">
+								<div class="tab-pane fade show active" id="home" role="tabpanel"
+									aria-labelledby="home-tab">Raw denim you probably haven't
+									heard of them jean shorts Austin. Nesciunt tofu stumptown
+									aliqua, retro synth master cleanse. Mustache cliche tempor,
+									williamsburg carles vegan helvetica. Reprehenderit butcher
+									retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi,
+									qui irure terr.</div>
+								<div class="tab-pane fade" id="profile" role="tabpanel"
+									aria-labelledby="profile-tab">Food truck fixie locavore,
+									accusamus mcsweeney's marfa nulla single-origin coffee squid.
+									Exercitation +1 labore velit, blog sartorial PBR leggings next
+									level wes anderson artisan four loko farm-to-table craft beer
+									twee. Qui photo booth letterpress, commodo enim craft beer
+									mlkshk aliquip</div>
+								<div class="tab-pane fade" id="contact" role="tabpanel"
+									aria-labelledby="contact-tab">xxFood truck fixie
+									locavore, accusamus mcsweeney's marfa nulla single-origin
+									coffee squid. Exercitation +1 labore velit, blog sartorial PBR
+									leggings next level wes anderson artisan four loko
+									farm-to-table craft beer twee. Qui photo booth letterpress,
+									commodo enim craft beer mlkshk</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+</html>

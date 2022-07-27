@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.PointMapper">
+	<resultMap	type="Point" 					id="pointResultMap">
+		<id 	column="apply_point_cd" 		property="pointCd" />
+		<result column="user_id" 				property="userId" /> 			
+		<result column="pay_cd" 				property="payCd" /> 			
+		<result column="point_amount" 			property="pointAmount" /> 		
+		<result column="point_event_date"		property="pointEventDate" /> 	
+		<result column="point_save_date" 		property="pointSaveDate" /> 			
+		<result column="point_end_date"			property="pointEndDate" /> 	
+		<result column="point_how_get"			property="pointHowGet" /> 	
+		<result column="goods_nm"				property="goodsNm" /> 	
+		<!-- pay, goods_order, lesson, facility_stadium, facility_pass -->
+		<result column="order_cd"				property="orderCd"/>
+		<result column="facility_goods_cd"		property="facilityGoodCd"/>
+		<result column="facility_stadium_cd"	property="facilityStadiumCd"/>
+		<result column="facility_stadium_nm"	property="facilityStadiumNm"/>
+		<result column="pass_cd"				property="passCd"/>
+		<result column="pass_nm"				property="passNm"/>
+		<result column="lesson_cd"				property="lessonCd"/>
+		<result column="lesson_nm"				property="lessonNm"/>
+		<association property="pay" 			javaType="Pay">
+			<result column="pay_cd"				property="payCd"/>
+			<result column="user_id" 			property="userId"/>
+			<result column="pay_price" 			property="payPrice"/>
+			<result column="pay_reg_date" 		property="payRegDate"/>
+			<result column="pay_state" 			property="payState"/>
+		</association>
+	</resultMap>
+	
+	<!-- 회원 포인트 조회 -->
+	<select id="getPointList" parameterType="String" resultMap="pointResultMap">
+		SELECT
+			pt.point_cd
+			, pt.user_id
+			, pt.pay_cd
+			, pt.point_amount
+			, pt.point_event_date
+			, pt.point_save_date
+			, pt.point_end_date
+			, pt.point_how_get
+			, (case
+					when
+						l.lesson_nm IS NOT NULL
+					then
+						l.lesson_nm
+					when
+						s.facility_stadium_nm IS NOT NULL
+					then
+						s.facility_stadium_nm
+					else
+						fp.pass_nm
+					end) AS goods_nm
+		FROM
+			point AS pt
+		LEFT JOIN
+			pay AS p
+		ON
+			pt.pay_cd = p.pay_cd
+		LEFT JOIN
+			goods_order AS g
+		ON
+			p.order_cd = g.order_cd
+		LEFT JOIN
+			lesson AS l
+		ON
+			l.facility_goods_cd = g.facility_goods_cd
+		LEFT JOIN
+			facility_stadium AS s
+		ON
+			g.facility_goods_cd = s.facility_goods_cd
+		LEFT JOIN
+			facility_pass AS fp
+		ON
+			g.facility_goods_cd = fp.facility_goods_cd
+		WHERE
+			pt.user_id = #{userId};
+		<trim prefix="WHERE">
+			<if test="userId != null and userId != ''">
+				pt.user_id = #{userId}
+			</if>
+		</trim>
+	</select>
+	
+	<!-- 포인트 합계 -->
+	<select id="getTotalPoint" resultType="String">
+		SELECT 
+			sum(point_amount)
+		FROM 
+			point
+		WHERE
+			user_id = #{userId};
+	</select>
+	
+	<!-- 결제 포인트 적립 -->
+	<insert id="payPointGet">
+		INSERT INTO point
+			(point_cd
+			, user_id
+			, pay_cd
+			, point_amount
+			, point_event_date
+			, point_save_date
+			, point_end_date
+			, point_how_get)
+		VALUES
+			( (SELECT
+					CONCAT('point_', LPAD(MAX(CAST(SUBSTRING_INDEX(p.point_cd,'_',-1) AS UNSIGNED))+1,2,0))
+				FROM
+					point AS p)
+			, #{userId}
+			, #{payCd}
+			, #{payPrice}
+			, #{payRegDate}
+			, #{payRegDate}+7
+			, #{payRegDate}+365
+			, 'N')
+	</insert>
+	
+	<!-- 리뷰 포인트 적립 -->
+	<insert id="reviewPointGet">
+		
+	</insert>
+	
+</mapper>

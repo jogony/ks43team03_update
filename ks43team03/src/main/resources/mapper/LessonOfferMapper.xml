@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.LessonOfferMapper">
+	<resultMap type="LessonOffer" id="lessonOfferResultMap">
+		<id 	column="lesson_offer_cd" 			property="lessonOfferCd"/>
+		<result column="facility_cd"			property="facilityCd"/>
+		<result column="lesson_cd"  				property="lessonCd"/>
+		<result column="user_id" 		property="userId"/>
+		<result column="lesson_sports" 				property="lessonSports"/>
+		<result column="offer_title" 			property="offerTitle"/>
+		<result column="offer_detail" 		property="offerDetail"/>
+		<result column="offer_file" 			property="offerFile"/>
+		<result column="offer_end_date" 		property="offerEndDate"/>
+		<result column="offer_state" 		property="offerState"/>
+		<result column="offer_reg_date"		property="offerRegDate"/>
+		<result column="offer_update_date"		property="offerUpdateDate"/>
+		<association property="lesson">
+			<id 	column="lesson_cd" 				property="lessonCd"/>
+			<result column="lesson_division" 		property="lessonDivision"/>
+			<result column="facility_goods_cd" 		property="facilityGoodsCd"/>
+			<result column="facility_cd" 			property="facilityCd"/>
+			<result column="goods_ctg_cd" 			property="goodsCtgCd"/>
+			<result column="sports_cd" 				property="sportsCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="lesson_nm" 				property="lessonName"/>
+			<result column="lesson_detail" 			property="lessonDetail"/>		
+			<result column="lesson_total_member" 	property="lessonTotalMember"/>		
+	 		<result column="lesson_member" 			property="lessonMember"/>		 
+			<result column="lesson_start_date" 		property="lessonStartDate"/>		
+			<result column="lesson_end_date" 		property="lessonEndDate"/>		
+			<result column="lesson_start_time" 		property="lessonStartTime"/>		
+			<result column="lesson_end_time" 		property="lessonEndTime"/>
+			<result column="lesson_count" 			property="lessonCount"/>
+			<result column="lesson_price" 			property="lessonPrice"/>		
+			<result column="lesson_reg_date" 		property="lessonRegDate"/>		
+			<result column="lesson_state" 			property="lessonState"/>		
+		</association>
+		<association property="facility">
+			<id 	column="facility_cd" 			property="facilityCd"/>
+			<result column="main_ctg_cd"			property="mainCtgCd"/>
+			<result column="town_cd"  				property="townCd"/>
+			<result column="facility_use_cd" 		property="facilityUseCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="facility_nm" 			property="facilityNm"/>
+			<result column="facility_address" 		property="facilityAddr"/>
+			<result column="facility_tell" 			property="facilityTell"/>
+			<result column="facility_post_num" 		property="facilityPostNum"/>
+			<result column="business_number" 		property="businessNum"/>
+			<result column="facility_reg_date"		property="facilityRegDate"/>
+			<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+			<result column="area_cd"  				property="areaCd"/>
+			<result column="city_cd"  				property="cityCd"/>
+			<result column="facility_detail"  		property="facilityDetail"/>
+		</association>
+	</resultMap>
+	
+	<select id="getOfferList" resultMap="lessonOfferResultMap">
+		SELECT
+			a.area_nm,
+			f.facility_nm,
+			f.facility_address,
+			l.lesson_cd,
+			l.facility_goods_cd,
+			ofe.lesson_offer_cd,
+			ofe.facility_cd,
+			ofe.lesson_sports,
+			ofe.offer_detail,
+			ofe.offer_title,
+			ofe.offer_state, 
+			ofe. offer_file,
+			ofe.offer_end_date,
+			ofe.offer_update_date
+		FROM
+			area AS  a
+			INNER join
+			facility AS f
+			on
+			a.area_cd = f.area_cd
+			INNER JOIN 
+			lesson AS l
+			on
+			f.facility_cd = l.facility_cd
+			INNER join
+			lesson_offer AS ofe
+			on
+			ofe.lesson_cd = l.lesson_cd
+	</select>
+	
+	<select id="getLessonOfferCityOrSports" parameterType="String" resultMap="lessonOfferResultMap">
+		SELECT
+			o.lesson_offer_cd,
+			o.facility_cd,
+			o.lesson_cd,
+			o.user_id,
+			o.lesson_sports,
+			o.offer_title,
+			o.offer_detail,
+			o.offer_file,
+			o.offer_end_date,
+			o.offer_state,
+			o.offer_reg_date,
+			o.offer_update_date,
+			f.facility_nm
+		FROM
+			lesson_offer AS o
+			INNER JOIN 
+			facility AS f
+			ON 
+			o.facility_cd = f.facility_cd
+			INNER join
+			area AS a
+			ON 
+			a.area_cd = f.area_cd
+		<trim prefix="WHERE" prefixOverrides="and || or">
+			<if test="areaCd != null and areaCd != ''">
+				a.area_cd = #{areaCd}
+			</if>
+			<if test="sportsName != null and sportsName != ''">
+				and o.lesson_sports = #{sportsName}
+			</if>
+		</trim>
+	</select>
+	<insert id="addLessonOffer" parameterType="LessonOffer">
+		<selectKey keyProperty="lessonOfferCd" resultType="String" order="BEFORE">
+			SELECT
+				case
+				when COUNT(o.lesson_offer_cd) = 0 
+				then 'lesson_offer_cd_1'
+				else
+					CONCAT('lesson_offer_cd_',MAX(CAST(SUBSTRING_INDEX(o.lesson_offer_cd,'_',-1) AS UNSIGNED))+1)
+				END
+			FROM
+				lesson_offer AS o						
+		</selectKey>
+		INSERT INTO lesson_offer
+			(
+			lesson_offer_cd
+			, facility_cd
+			, lesson_cd
+			, user_id
+			, lesson_sports
+			, offer_title
+			, offer_detail
+			, offer_file
+			, offer_end_date
+			, offer_state
+			, offer_reg_date
+			, offer_update_date
+			)
+			VALUES (
+			#{lessonOfferCd}
+			,#{facilityCd}
+			,#{lessonCd}
+			,#{userId}
+			,#{lessoSports}
+			,#{offerTitle}
+			,#{offerDetail}
+			,#{offerFile}
+			,NOW()
+			,#{offerState}  
+			,NOW()
+			,NOW()
+			)
+	</insert>
+	<!-- lessonOffer 수정 -->
+	<update id="modifyLessonOffer" parameterType="LessonOffer">
+		UPDATE lesson_offer
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="lessoSports != null and lessoSports !=''">
+				lesson_sports=#{lessoSports},
+			</if>
+			<if test="offerTitle != null and offerTitle !=''">
+				offer_title=#{offerTitle},
+			</if>
+			<if test="offerDetail != null and offerDetail !=''">
+				offer_detail=#{offerDetail},
+			</if>
+			<if test="offerFile != null and offerFile !=''">
+				offer_file=#{offerFile},
+			</if>
+			<if test="offerEndDate != null and offerEndDate !=''">
+				offer_end_date=#{offerEndDate},
+			</if>
+			<if test="offerState != null and offerState !=''">
+				offer_state=#{offerState},
+			</if>
+			offer_update_date=NOW()
+		</trim>
+		WHERE
+			lesson_offer_cd=#{lessonOfferCd}
+	</update>
+	<!-- lessonOffer 삭제  -->
+	<delete id="removeLessonOffer" parameterType="String">
+		DELETE
+		FROM
+			lesson_offer
+		WHERE
+			lesson_offer_cd==#{lessonOfferCd}
+	</delete>
+	<!-- 레슨_offer lesson_offer_cd로조회 -->
+	<select id="getLessonOfferByLessonOfferCd" parameterType="String" resultMap="lessonOfferResultMap">
+		SELECT 
+			o.lesson_offer_cd
+			,o.facility_cd
+			,o.lesson_cd
+			,o.user_id
+			,o.lesson_sports
+			,o.offer_title
+			,o.offer_detail
+			,o.offer_file
+			,o.offer_end_date
+			,o.offer_state
+			,o.offer_reg_date
+			,o.offer_update_date
+		FROM
+			 lesson_offer AS o
+		WHERE
+			o.lesson_offer_cd=#{lessonOfferCd}
+	</select>
+</mapper>
+

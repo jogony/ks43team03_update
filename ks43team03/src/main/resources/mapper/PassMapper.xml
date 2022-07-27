@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="ks43team03.mapper.PassMapper">
+ 	<resultMap type="Pass" id="PassResultMap">
+ 		<id column="pass_cd" property="passCd"/>
+		<result column="facility_goods_cd" property="facilityGoodsCd"/>
+		<result column="facility_cd" property="facilityCd"/>
+		<result column="goods_ctg_cd" property="goodsCtgCd"/>
+		<result column="user_id" property="userId"/>
+		<result column="pass_nm" property="passNm"/>
+		<result column="pass_unit" property="passUnit"/>
+		<result column="pass_price" property="passPrice"/>
+		<result column="pass_state" property="passState"/>
+		<result column="pass_reg_date" property="passRegDate"/>
+		<result column="pass_end_days" property="passEndDate"/>
+		<association property="facility" javaType="Facility">
+			<id 	column="facility_cd" 			property="facilityCd"/>
+			<result column="main_ctg_cd"			property="mainCtgCd"/>
+			<result column="town_cd"  				property="townCd"/>
+			<result column="facility_use_cd" 		property="facilityUseCd"/>
+			<result column="user_id" 				property="userId"/>
+			<result column="facility_nm" 			property="facilityNm"/>
+			<result column="facility_address" 		property="facilityAddr"/>
+			<result column="facility_tell" 			property="facilityTell"/>
+			<result column="facility_post_num" 		property="facilityPostNum"/>
+			<result column="business_number" 		property="businessNum"/>
+			<result column="facility_reg_date"		property="facilityRegDate"/>
+			<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+			<result column="area_cd"  				property="areaCd"/>
+			<result column="city_cd"  				property="cityCd"/>
+		</association>
+ 	</resultMap>
+ 	
+ 	
+ 	<insert id="addPass" parameterType="Pass">
+ 	
+ 		<selectKey keyProperty="passCd" resultType="String" order="BEFORE">
+		 select
+			case
+			when COUNT(p.pass_cd) = 0 
+			then 'pass_cd_1'
+			else
+				CONCAT('pass_cd_',MAX(CAST(SUBSTRING_INDEX(p.pass_cd,'_',-1) AS UNSIGNED))+1)
+			end
+		FROM
+			facility_pass AS p
+ 		</selectKey>
+	 	INSERT INTO facility_pass
+		(
+			 pass_cd
+			,facility_goods_cd
+			,facility_cd
+			,goods_ctg_cd
+			,user_id
+			,pass_nm
+			,pass_reg_date
+			,pass_unit
+			,pass_price
+			,pass_state
+			,pass_end_days
+		)
+		VALUES (
+			 #{passCd}
+			,#{facilityGoodsCd}
+			,#{facilityCd}
+			,#{goodsCtgCd}
+			,#{userId}
+			,#{passNm}
+			, NOW()
+			,#{passUnit}
+			,#{passPrice}
+			,'Y'
+			,#{passEndDate}
+		)
+ 	</insert>
+ 	
+ 	<select id="getPassAll" resultMap="PassResultMap">
+		SELECT
+			 p.pass_cd
+			,p.facility_goods_cd
+			,p.facility_cd
+			,p.goods_ctg_cd
+			,p.user_id
+			,p.pass_nm
+			,p.pass_reg_date
+			,p.pass_unit
+			,p.pass_price
+			,p.pass_state
+			,p.pass_end_days
+			,f.facility_cd
+			,f.facility_nm
+			,f.facility_address
+			,f.main_ctg_cd
+			,f.town_cd
+			,f.facility_use_cd
+			,f.facility_tell
+		FROM
+			facility_pass AS p
+			INNER join
+			facility AS f
+			on
+			p.facility_cd = f.facility_cd
+		WHERE
+			pass_state = 'Y'
+ 	</select>
+ 	
+ 	<select id="getPassDetail" parameterType="String" resultMap="PassResultMap">
+		SELECT
+			 p.pass_cd
+			,p.facility_goods_cd
+			,p.facility_cd
+			,p.goods_ctg_cd
+			,p.user_id
+			,p.pass_nm
+			,p.pass_reg_date
+			,p.pass_unit
+			,p.pass_price
+			,p.pass_state
+			,p.pass_end_days
+			,f.facility_cd
+			,f.facility_nm
+			,f.facility_address
+			,f.main_ctg_cd
+			,f.town_cd
+			,f.facility_use_cd
+			,f.facility_tell
+		FROM
+			facility_pass AS p
+			INNER join
+			facility AS f
+			on
+			p.facility_cd = f.facility_cd
+		WHERE
+			p.pass_cd = #{passCd}
+			and
+			p.facility_goods_cd = #{facilityGoodsCd}
+			AND
+			pass_state = 'Y'
+ 	</select>
+ 	
+ 	<select id="getPassListOfFacility" parameterType="String" resultMap="PassResultMap">
+	 	SELECT
+			 p.pass_cd
+			,p.facility_goods_cd
+			,p.facility_cd
+			,p.goods_ctg_cd
+			,p.user_id
+			,p.pass_nm
+			,p.pass_reg_date
+			,p.pass_unit
+			,p.pass_price
+			,p.pass_state
+			,p.pass_end_days
+		FROM
+			facility_pass AS p
+		WHERE
+			p.facility_cd=#{facilityCd}
+			AND
+			pass_state = 'Y'
+ 	</select>
+ 	
+ 	<select id="getPassByPassCd" parameterType="String" resultMap="PassResultMap">
+ 		SELECT
+			 p.pass_cd
+			,p.facility_goods_cd
+			,p.facility_cd
+			,p.goods_ctg_cd
+			,p.user_id
+			,p.pass_nm
+			,p.pass_reg_date
+			,p.pass_unit
+			,p.pass_price
+			,p.pass_state
+			,p.pass_end_days
+		FROM
+			facility_pass AS p
+		WHERE
+			p.pass_cd = #{passCd}
+			AND
+			pass_state = 'Y'
+ 	</select>
+ 	<update id="modifyPass" parameterType="Pass">
+		UPDATE 
+			facility_pass
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="userId != null and userId != ''">
+				user_id= #{userId}
+			</if>
+			<if test="passNm != null and passNm !=''">
+				,pass_nm=#{passNm} 
+			</if>
+			<if test="passUnit != null and passUnit !=''">
+				,pass_unit=#{passUnit} 
+			</if>
+			<if test="passPrice != null and passPrice !=''">
+				,pass_price=#{passPrice} 
+			</if>
+			<if test="passState != null and passState !=''">
+				,pass_state=#{passState} 
+			</if>
+			<if test="passEndDate != null and passEndDate !=''">
+				,pass_end_days=#{passEndDate} 
+			</if>
+		</trim>
+		WHERE 
+			pass_cd=#{passCd}
+ 	</update>
+ 	
+ 	<update id="removePass" parameterType="String">
+	 	UPDATE 
+			facility_pass
+		SET
+			pass_state='N'
+		WHERE 
+			pass_cd=#{passCd}
+ 	</update>
+ </mapper>

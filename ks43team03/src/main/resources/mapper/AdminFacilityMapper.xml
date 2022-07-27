@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.AdminFacilityMapper">
+	<resultMap type="Facility" 					id="facilityResultMap">
+		<id 	column="facility_cd" 			property="facilityCd"/>
+		<result column="main_ctg_cd"			property="mainCtgCd"/>
+		<result column="town_cd"  				property="townCd"/>
+		<result column="facility_use_cd" 		property="facilityUseCd"/>
+		<result column="user_id" 				property="userId"/>
+		<result column="facility_nm" 			property="facilityNm"/>
+		<result column="facility_address" 		property="facilityAddr"/>
+		<result column="facility_tell" 			property="facilityTell"/>
+		<result column="facility_post_num" 		property="facilityPostNum"/>
+		<result column="business_number" 		property="businessNum"/>
+		<result column="facility_reg_date"		property="facilityRegDate"/>
+		<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+		<result column="area_cd"  				property="areaCd"/>
+		<result column="city_cd"  				property="cityCd"/>
+		<result column="facility_detail"  		property="facilityDetail"/>
+		<association property="mainCtg" 		javaType="MainCtg">
+			<id 	column="main_ctg_cd" 		property="mainCtgCd"/>
+			<result column="main_ctg_nm" 		property="mainCtgNm"/>
+		</association>
+		<association property="facilityUse" 	javaType="FacilityUse">
+			<id 	 column="facility_use_cd" 	property="facilityUseCd"/>
+			<result  column="facility_use_nm" 	property="facilityUseNm"/>
+		</association>
+		<association property="area" 	javaType="Area">
+			<id 	 column="area_cd" 	property="areaCd"/>
+			<result  column="area_nm" 	property="areaNm"/>
+		</association>	
+		<association property="areaCity" 	javaType="AreaCity">
+			<id 	 column="city_cd" 		property="cityCd"/>
+			<result  column="area_cd" 		property="areaCd"/>
+			<result  column="city_nm" 		property="cityNm"/>
+		</association>	
+		<association property="areaCityTown" 	javaType="AreaCityTown">
+			<id 	 column="town_cd" 			property="townCd"/>
+			<result  column="city_cd" 			property="cityCd"/>
+			<result  column="area_cd" 			property="areaCd"/>
+			<result  column="town_nm" 			property="townNm"/>
+		</association>	
+		<collection property="facilityUser" javaType="FacilityUser">
+		<id column="facility_cd"				property="facilityCd"/>
+		<result column="user_id"				property="userId"/>
+		<result column="facility_user_level"	property="facilityUserLevel"/>
+		<result column="facility_approve_state"	property="facilityApproveState"/>
+		<result column="facility_approve_id"	property="facilityApproveId"/>
+		<result column="facility_approve_date"	property="facilityApproveDate"/>
+		<result column="facility_reg_date"		property="facilityRegDate"/>
+		</collection>
+		<collection property="relFileWithFacility" ofType="Map">
+			<result	column="facility_cd"	property="facilityCd"/>
+			<result	column="file_cd"			property="fileCd"/>
+		</collection>
+		<collection property="tFile" ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result column="re_file_name"			property="reFileName"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_date"			property="updatedDate"/>
+			<result	column="represent_img"		property="representImg"/>
+		</collection>
+	</resultMap>
+	
+		<select id="getSearchFacilityList" fetchSize="10" parameterType="map" resultType="map">
+			/*시설검색*/
+			SELECT
+				f.facility_cd 			AS facilityCd
+				,f.main_ctg_cd 			AS mainCtgCd
+				,fu.facility_use_nm 	AS facilityUseNm
+				,a.area_nm 				AS areaNm
+				,ac.city_nm				AS cityNm
+				,act.town_nm 			AS townNm
+				,f.user_id 				AS userId
+				,f.facility_nm 			AS facilityNm
+ 				,f.facility_address 	AS facilityAddr
+				,f.facility_detail_addr AS facilityDetailAddr
+				,f.facility_tell 		AS facilityTell
+				,f.business_number		AS businessNum
+				,f.facility_reg_date 	AS facilityRegDate
+				,f.facility_detail		AS facilityDetail
+			FROM
+				facility AS f
+				INNER JOIN 
+				area AS a
+				ON 
+				f.area_cd = a.area_cd
+				INNER join
+				area_city AS ac
+				ON 
+				f.city_cd= ac.city_cd
+				INNER join
+				area_city_town AS act
+				on
+				f.town_cd = act.town_cd
+				INNER join
+				facility_use AS fu
+				ON 
+				f.facility_use_cd = fu.facility_use_cd
+			<trim prefix="WHERE" prefixOverrides="AND |OR ">
+				<if test="searchValue != null and searchValue != ''">
+					${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+				</if>
+			</trim>
+			LIMIT #{startRow}, #{rowPerPage};
+		</select>
+
+
+
+	
+		<delete id="removeFacilityById" parameterType="String">
+			/* 판매자가 등록한 시설 삭제*/
+			DELETE 
+			FROM 
+				facility
+			WHERE 
+				user_id = #{userId};
+		</delete>
+	
+
+	
+		<update id="modifyFacility" parameterType="Facility" >
+		/*시설수정*/
+			UPDATE facility
+			<trim prefix="SET" prefixOverrides=",">
+				<if test="mainCtgCd != null and mainCtgCd != ''">
+					main_ctg_cd = 			#{mainCtgCd},
+				</if>	
+				<if test="townCd != null and townCd != ''">
+					town_cd = 				#{townCd},
+				</if>
+				<if test="facilityUseCd != null and facilityUseCd != ''">
+					facility_use_cd = 		#{facilityUseCd},
+				</if>
+				<if test="userId != null and userId != ''">
+					user_id = 				#{userId},
+				</if>
+				<if test="facilityNm != null and facilityNm != ''">		
+					facility_nm =			#{facilityNm},
+				</if>
+				<if test="facilityAddr != null and facilityAddr != ''">
+					facility_address =		#{facilityAddr},
+				</if>
+				<if test="facilityTell != null and facilityTell != ''">
+					facility_tell = 		#{facilityTell},					
+				</if>
+				<if test="businessNum != null and businessNum != ''">					
+					business_number = 		#{businessNum},
+				</if>
+				<if test="facilityPostNum != null and facilityPostNum != ''">
+					facility_post_num = 	#{facilityPostNum},
+				</if>
+				<if test="facilityDetailAddr != null and facilityDetailAddr != ''">
+					facility_detail_addr = 	#{facilityDetailAddr},
+				</if>
+				<if test="areaCd != null and areaCd != ''">
+					area_cd 		=	    #{areaCd},
+				</if>
+				<if test="cityCd != null and cityCd != ''">
+					city_cd = 				#{cityCd},
+				</if>
+				<if test="facilityDetail != null and facilityDetail != ''">
+					facility_detail = 				#{facilityDetail}
+				</if>
+			</trim>	
+			WHERE 
+				facility_cd	=			#{facilityCd};
+		</update>
+		
+		
+		<select id="getAdminFacilityListById" parameterType="Facility" resultMap="facilityResultMap">
+		/*아이디 별 시설 조회*/
+			SELECT
+				f.facility_cd 
+				,f.main_ctg_cd
+				,fu.facility_use_nm
+				,a.area_nm
+				,ac.city_nm
+				,act.town_nm
+				,f.user_id
+				,f.facility_nm
+				,f.facility_address
+				,f.facility_detail_addr
+				,f.facility_tell
+				,f.business_number
+				,f.facility_reg_date
+				,f.facility_detail
+			FROM
+				facility AS f
+				INNER JOIN 
+				area AS a
+				ON 
+				f.area_cd = a.area_cd
+				INNER join
+				area_city AS ac
+				ON 
+				f.city_cd= ac.city_cd
+				INNER join
+				area_city_town AS act
+				on
+				f.town_cd = act.town_cd
+				INNER join
+				facility_use AS fu
+				ON 
+				f.facility_use_cd = fu.facility_use_cd
+				left join
+				facility_user AS fus
+				on
+				f.facility_cd = fus.facility_cd
+			WHERE
+				fus.user_id = #{userId} AND fus.facility_approve_state = 'Y' OR f.user_id = #{userId}
+			GROUP BY
+	 			f.facility_cd;
+		</select>
+		
+		<select id="getAdminFacilityInfoByCd" parameterType="String" resultMap="facilityResultMap">
+		/*시설코드로 시설상세정보조회*/
+			SELECT 
+				facility_cd 		
+				,main_ctg_cd		
+				,area_cd			
+				,city_cd			
+				,town_cd			
+				,facility_use_cd	
+				,user_id			
+				,facility_nm		
+				,facility_address
+				,facility_detail_addr
+				,facility_tell		
+				,facility_post_num	
+				,business_number	
+				,facility_reg_date
+				,facility_detail
+			FROM 
+				facility 
+			WHERE
+				facility_cd = #{facilityCd};
+		</select>
+
+
+
+		<insert id="addFacility" parameterType="Facility" >
+		/*시설등록*/
+		<selectKey resultType="String" keyProperty="facilityCd" order="BEFORE">
+			SELECT sf_new_facility_cd()
+		</selectKey>
+			INSERT INTO facility
+				(facility_cd
+				,main_ctg_cd
+				,town_cd
+				,facility_use_cd
+				,user_id
+				,facility_nm
+				,facility_address
+				,facility_tell
+				,business_number
+				,facility_reg_date
+				,facility_post_num
+				,facility_detail_addr
+				,area_cd
+				,city_cd
+				,facility_detail
+				)VALUES (
+					sf_new_facility_cd()
+					,#{mainCtgCd}
+					,#{townCd}
+					,#{facilityUseCd}
+					,#{userId}
+					,#{facilityNm}
+					,#{facilityAddr}
+					,#{facilityTell}
+					,#{businessNum}
+					,CURDATE()
+					,#{facilityPostNum}
+					,#{facilityDetailAddr}
+					,#{areaCd}
+					,#{cityCd}
+					,#{facilityDetail})
+		</insert>
+		
+		<select id="getFacilityCount" resultType="int">
+			/*시설 목록 총 튜플 수*/
+			SELECT
+				COUNT(*)
+			FROM
+				facility;
+		</select>
+
+
+		<select id="getAdminFacilityList" parameterType="map" resultType="map">
+		/*시설전체조회*/
+			SELECT
+				f.facility_cd 			AS facilityCd
+				,f.main_ctg_cd 			AS mainCtgCd
+				,fu.facility_use_nm 	AS facilityUseNm
+				,a.area_nm 				AS areaNm
+				,ac.city_nm				AS cityNm
+				,act.town_nm 			AS townNm
+				,f.user_id 				AS userId
+				,f.facility_nm 			AS facilityNm
+ 				,f.facility_address 	AS facilityAddr
+				,f.facility_detail_addr AS facilityDetailAddr
+				,f.facility_tell 		AS facilityTell
+				,f.business_number		AS businessNum
+				,f.facility_reg_date 	AS facilityRegDate
+				,f.facility_detail		AS facilityDetail
+				
+			FROM
+				facility AS f
+				INNER JOIN 
+				area AS a
+				ON 
+				f.area_cd = a.area_cd
+				INNER join
+				area_city AS ac
+				ON 
+				f.city_cd= ac.city_cd
+				INNER join
+				area_city_town AS act
+				on
+				f.town_cd = act.town_cd
+				INNER join
+				facility_use AS fu
+				ON 
+				f.facility_use_cd = fu.facility_use_cd
+			LIMIT #{startRow}, #{rowPerPage};
+		</select>
+		
+		
+		<select id="getMainCtgList" resultType="MainCtg">
+			SELECT 
+				main_ctg_cd 	AS mainCtgCd
+				,main_ctg_nm	AS mainCtgNm
+			FROM 
+				main_ctg;
+		</select>
+	
+		<select id="getFacilityUseList" resultType="FacilityUse">
+			SELECT 
+				facility_use_cd 	AS facilityUseCd
+				,facility_use_nm	AS facilityUseNm
+			FROM 
+				facility_use;
+		
+		</select>
+		<select id="getAreaList" resultType="Area">
+			SELECT 
+				area_cd	AS areaCd
+				,area_nm	AS areaNm
+			FROM
+				area;
+		</select>
+
+		<select id="getAreaCityList" resultType="AreaCity">
+			/*시도 기준 시군군 정보 조회*/
+			SELECT 
+				city_cd		AS cityCd
+				,area_cd	AS areaCd
+				,city_nm	AS cityNm
+			FROM
+				area_city
+			WHERE
+				area_cd = #{areaCd};
+		</select>
+		
+		<select id="getAreaCityTownList" resultType="AreaCityTown">
+			SELECT 
+				town_cd 	AS townCd
+				,area_cd	AS areaCd
+				,city_cd	AS cityCd
+				,town_nm	AS townNm
+			FROM
+				area_city_town
+			WHERE
+				city_cd = #{cityCd};
+		</select>
+</mapper> 
+  
+  

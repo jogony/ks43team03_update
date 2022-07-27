@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default}">
+
+<!-- 사용자 정의 title -->
+<th:block layout:fragment="customTitle">
+   <title th:text="${title}"></title>
+</th:block>
+
+<!-- 사용자 정의 Js 파일-->
+<th:block layout:fragment="customJs">
+	<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+ 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9c5dbc5a281ccc90ee278e75316bee9c&libraries=services,clusterer,drawing"></script>
+	<link rel="stylesheet" th:href="@{/resource/css/star.css}" type="text/css">
+	
+	<script>
+		
+		
+	$(function(){
+			
+			function validationCheck(data){
+				if(typeof data == 'undefined' || data == '' || data == null){
+					return false;
+				}
+				return true;
+			}
+			/* 시설 등록시 유효성 검사 */
+			$('#bookingBtn').click(function(){
+				var isSubmit = true;
+				var id = $("#userId").val();
+				var bdate = $("#resesrvationDate").val();
+				var btime = $("#reservationStartTime").val();
+				
+				if(id == ''){
+					alert("로그인 후 이용가능합니다.");
+					return false;
+				}else if(bdate == ''){
+					alert("날짜를 선택해주세요.");
+					return false;
+				}else if(btime == ''){
+					alert("시간을 선택해주세요.");		
+					return false;
+				}
+				if(isSubmit) $('#stadiumForm').submit();
+			});
+		});
+
+	</script>
+	
+</th:block>
+
+<!-- 사용자 정의 css 선언 -->
+	<th:block layout:fragment="customCss">
+	
+		<link rel="stylesheet" th:href="@{/resource/css/mapOverlay.css}" type="text/css">
+		<link rel="stylesheet" th:href="@{/calendar/css/fullcalendar.min.css}" />
+	    <link rel="stylesheet" th:href="@{/calendar/css/bootstrap.min.css}">
+	    <link rel="stylesheet" th:href="@{/calendar/css/select2.min.css}" />
+	    <link rel="stylesheet" th:href="@{/calendar/css/bootstrap-datetimepicker.min.css}" />
+	
+	    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,500,600">
+	    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	    
+	<style>
+		#bookingTime input[type=checkbox]{
+		    display: none;
+		}
+		.none-display {
+			display: none;
+		}
+		
+        #calendar {
+            clear: both;
+        }
+        #calendar th {
+            height: 50px;
+            width: 70px;
+            background-color:  #EBFBFF;
+            text-align: center;
+        }
+        #calendar td {
+            text-align: center;
+            height: 50px;
+            width: 70px;
+            background-color: #EBFBFF;  
+        }
+        #calendar input {
+            height: 50px;
+            width: 70px;
+            border: none;
+            background-color:  #EBFBFF;
+            font-size: 30px;
+        }
+        #calendar .year_mon{
+            font-size: 25px;
+        }
+        #calendar .colToday{
+            background-color: #EBFBFF;
+        }
+        .possible {
+        	background-color: #BEEFFF;
+        }
+        .reservation-possible {
+        	background-color: #BEEFFF;
+        }
+	</style>
+	</th:block>
+
+
+
+
+<th:block layout:fragment="customContents">
+
+  <div class="breadcrumb-option">
+  <th:block th:if="${not #lists.isEmpty(stadiumDetail)}" th:each="l : ${stadiumDetail}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                        <a href="#">shop</a>
+                        <span><a th:text="${l.facilityStadiumNm}"></a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+  	</th:block>
+    </div>
+
+
+
+
+
+<!-- Product Details Section Begin -->
+    <section class="product-details spad">
+        <div class="container">
+            <div class="row">
+             <th:block th:if="${not #lists.isEmpty(stadiumDetail)}" th:each="l : ${stadiumDetail}">
+                <div class="col-lg-6">
+                    <div class="product__details__pic">
+                        <div class="product__details__pic__left product__thumb nice-scroll">
+                            <th:block th:if="${not #lists.isEmpty(l.tFile)}" th:each="t, i : ${l.tFile}">
+	                            <a class="pt active" th:data-img="${t.representImg}" th:href="@{#product-} + ${i.index+1}">
+	                                <img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+	                            </a>
+                            </th:block>
+                        </div>
+                        <div class="product__details__slider__content">
+                            <div class="product__details__pic__slider owl-carousel">
+                            	<th:block th:if="${not #lists.isEmpty(l.tFile)}" th:each="t, i : ${l.tFile}">
+		                                <img th:data-hash="@{product-} + ${i.index+1}" class="product__big__img" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+		                        </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product__details__text">
+                        <h3 th:text="${l.facilityStadiumNm}"></h3>
+                        <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div style="margin: 20px 0 70px 0;">
+	                        <h5 th:text="${l.facility.facilityNm}" style="margin-bottom: 10px;"></h5>
+	                        <p th:text="${l.facility.facilityAddr} + ' ' +${l.facility.facilityDetailAddr}" style="font-size : medium; margin: 0px;" ></p>
+                      	</div>
+                        <div class="product__details__button">
+                            <a th:href="@{/facility/facilityDetail(facilityCd=${l.facilityCd})}" class="cart-btn"><span class="icon_bag_alt"></span> 시설방문</a> 
+                            <ul>
+                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
+                                <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="product__details__tab">
+	                        <ul class="nav nav-tabs" role="tablist">
+	                            <li class="nav-item">
+	                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">구장예약</a>
+	                            </li>
+	                            <li class="nav-item">
+	                                <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab" id="mapTab">위치안내</a>
+	                            </li>
+	                            <li class="nav-item">
+	                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">후기</a>
+	                            </li>
+	                        </ul>
+	                        <div class="tab-content">
+	                            <div class="tab-pane active" id="tabs-1" role="tabpanel">	           
+	                                <section class="checkout spad" style="padding-top: 20px;">
+								        <div class="container">
+								            <form id="stadiumForm" th:action="#" method="post" class="checkout__form">
+								                <div class="row">
+								                    <div class="col-lg-8" style="padding-bottom: 25px;">
+								                        <h5>구장정보</h5>
+								                        <div class="row">
+								                            <div class="col-lg-6 col-md-6 col-sm-6">
+								                                <div class="checkout__form__input">
+									                                <p th:text="${l.facilityStadiumDetail}"></p>
+								                                </div>
+								                                <div class="checkout__form__input">
+									                                 <p th:text="${l.facility.facilityTell}"></p>
+								                                </div>
+								                            </div>
+								                       </div>
+								                    </div>
+								                    <div class="col-lg-8">
+								                        <h5>구장예약</h5>
+								                        <div class="row">
+								                        </div>
+								                        <div class="row">
+								                        	<div class="container">
+																<div class="row">
+																	<table id="calendar">
+																	    <thead>
+																	        <tr>
+																	            <th><input name="preMon" type="button" value="<"></th>
+																	            <th colspan="5" class="year_mon"></th>
+																	            <th><input name="nextMon" type="button" value=">"></th>
+																	        </tr>
+																	        <tr>
+																	            <th>일</th>
+																	            <th>월</th>
+																	            <th>화</th>
+																	            <th>수</th>
+																	            <th>목</th>
+																	            <th>금</th>
+																	            <th>토</th>
+																	        </tr>
+																	    </thead>
+																	    <tbody>
+																	    </tbody>
+																	</table>
+																	
+															        <!-- 일정 추가 MODAL -->
+															        <div class="modal fade" tabindex="-1" role="dialog" id="eventModal">
+															            <div class="modal-dialog" role="document">
+															                <div class="modal-content" style="width: 580px;">
+																                <form action="calendar/reservation" id="reservationData">
+																                    <div class="modal-header">
+																                        <button type="button" class="close modalClose" data-dismiss="modal" aria-label="Close"><span
+																                                aria-hidden="true">&times;</span></button>
+																                        <h4 class="modal-title"></h4>
+																                    </div>
+																                    <div class="modal-body">						
+																                        <div class="row">
+																                            <div class="col-md-12">
+																                                <table border="1" id="reSchedule">
+																                                	<tbody>
+																                                		<tr>
+																											<td><input class="reservationTime" type="button" value="09:00"></td>
+																											<td><input class="reservationTime" type="button" value="10:00"></td>
+																											<td><input class="reservationTime" type="button" value="11:00"></td>
+																											<td><input class="reservationTime" type="button" value="12:00"></td>
+																											<td><input class="reservationTime" type="button" value="13:00"></td>
+																											<td><input class="reservationTime" type="button" value="14:00"></td>
+																											<td><input class="reservationTime" type="button" value="15:00"></td>
+																											<td><input class="reservationTime" type="button" value="16:00"></td>
+																                                		</tr>
+																                                		<tr>
+																											<td><input class="reservationTime" type="button" value="17:00"></td>
+																											<td><input class="reservationTime" type="button" value="18:00"></td>
+																											<td><input class="reservationTime" type="button" value="19:00"></td>
+																											<td><input class="reservationTime" type="button" value="20:00"></td>
+																											<td><input class="reservationTime" type="button" value="21:00"></td>
+																											<td><input class="reservationTime" type="button" value="22:00"></td>
+																											<td><input class="reservationTime" type="button" value="23:00"></td>
+																											<td><input class="reservationTime" type="button" value="24:00"></td>
+																                                		</tr>
+																                                	</tbody>
+																                                </table>
+																                            </div>
+																                        </div>
+																                        <div class="row">
+																                            <div class="col-xs-12">
+																                                <label class="col-xs-4" for="edit-start">시작</label>
+																                                <!-- 30분 단위로 되게끔 수정 -->
+																                                <input class="inputModal lesson" type="text" name="reservationStartTime" id="edit-start" readonly="readonly"/>
+																                            </div>
+																                        </div>
+																                        <div class="row">
+																                            <div class="col-xs-12">
+																                                <label class="col-xs-4" for="edit-end">끝</label>
+																                                <!-- 30분 단위로 되게끔 수정 -->
+																                                <input class="inputModal lesson" type="text" name="reservationEndTime" id="edit-end" readonly="readonly"/>
+																                            </div>
+																                        </div>
+																                        <div class="row">
+																                            <div class="col-xs-12">
+																                                <label class="col-xs-4" for="price">가격</label>
+																                                <input class="inputModal lesson" type="text" name="goodsPrice" id="price" readonly="readonly"/>
+																                            </div>
+																                        </div>
+																                    </div>
+																                    <div class="modal-footer modalBtnContainer-modifyEvent">
+																                        <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="close" id="updateEvent">저장하기</button>
+																                    </div>
+															                    </form>
+															                </div><!-- /.modal-content -->
+															            </div><!-- /.modal-dialog -->
+															        </div><!-- /.modal -->
+																</div>
+															</div>
+								                        </div>
+								                    </div>
+							                        <div class="col-lg-4">
+							                            <div class="checkout__order">
+							                                <h5>Your order</h5>
+							                                <div class="checkout__order__product">
+							         
+							                                    <ul>
+							                                        <li>
+							                                            <span class="top__text">예약정보</span>
+							                                            <input type="hidden" id="facilityCd" name="facilityCd" th:value="${l.facilityCd}">
+							                                            <input type="hidden" id="facilityGoodsCd" name="facilityGoodsCd" th:value="${l.facilityGoodsCd}">
+							                                            <input type="hidden" id="userId" name="userId" th:value="${session.SID}">
+							                                            <input type="hidden" id="goodsCtgCd" name="goodsCtgCd" value="stadium">
+							                                            
+							                                        </li>
+							                                        <li>
+							                                        	예약날짜 
+							                                        	<span class="dateCheck">-</span>
+							                                        	<input type="hidden" id="reservationDate" name="reservationDate">	
+							                                        </li>
+							                                        <li>
+							                                        	예약시간
+							                                        	<p class="totalTime"></p>
+							                                        	<p class="startTime"></p>
+							                                        	<input type="hidden" id="reservationEndTime" name="reserveEndTime">
+							                                        	<p class="endTime"></p>
+							                                        	<input type="hidden" id="reservationStartTime" name="reserveStartTime">
+							                                        </li>
+							                                    </ul>
+							                                </div>
+							                                <div class="checkout__order__total">
+							                                    <ul>
+							                                        <li>시간 당 금액 
+							                                        	<span class="price" th:text="${l.stadiumPrice.dayPrice}"></span></li>
+							                                        <li>
+							                                        	총 금액
+							                                        	<span id="totlaPrice"></span>
+							                                        	<input type="hidden" id="bookingPrice" name="bookingPrice">
+							                                        </li>
+							                                    </ul>
+							                                </div>
+							                                <button type="button" class="site-btn" data-dismiss="modal" aria-label="Close" id="bookingBtn">예약하기</button>
+							                            </div>
+							                        </div>
+								                </div>
+								            </form>
+								        </div>
+								    </section>
+	                            </div>
+	                            <div class="tab-pane" id="tabs-2" role="tabpanel">
+	                                <h6><i class="fa fa-map-marker"></i>위치정보</h6>
+	                                <p th:text="${l.facility.facilityAddr} + ' ' + ${l.facility.facilityDetailAddr}" ></p>
+                             		<div class="x_content">
+										<div class="table-responsive">
+												<input type="hidden" th:value ="${l.facility.facilityAddr}" class="placeAddr">
+												<input type="hidden" th:value ="${l.facility.facilityNm}" class="placeName">
+												<input type="hidden" th:value ="${l.facility.facilityCd}" class="placeCode">
+										</div>
+									</div>
+	                                <div>
+										<p style="margin-top:-12px">
+											<em class="link">
+												<a href="javascript:void(0);" onclick="window.open('http://fiy.daum.net/fiy/map/CsGeneral.daum', '_blank', 'width=981, height=650')">
+													혹시 주소 결과가 잘못 나오는 경우에는 여기에 제보해주세요.
+												</a>
+											</em>
+										</p>
+										<div id="map" style="width:100%; height:500px;"></div>
+									</div>
+	                            </div>
+	                            <div class="tab-pane" id="tabs-3" role="tabpanel">
+	                                <div class="board__details__comment">
+			                            <h5 th:text="REVIEW"></h5>
+			                            <a data-toggle="modal" data-target="#reviewModal" class="leave-btn">후기 등록</a>
+			                            <div class="board__comment__item" th:if="${not #lists.isEmpty(reviewList)}" th:each="l:${reviewList}">
+			                                <div class="board__comment__item__pic">
+			                                    <img src="img/board/details/comment-1.jpg" alt="">
+			                                </div>
+			                                <div class="board__comment__item__text">
+			                                    <h6 th:text="${l.userId}"></h6>
+			                                    <p th:text="${l.reviewDetail}"></p>
+			                                    <ul>
+			                                        <li><i class="fa fa-clock-o"></i><a th:text="${l.reviewRegDate}"></a></li>
+			                                        <li><i class="fa fa-heart-o"></i> 12</li>
+			                                        <li id="removeComment">
+														<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="#CA1515" class="bi bi-trash3" viewBox="0 0 16 16">
+														  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+														</svg>
+															<a>
+																삭제
+															</a>
+													</li>
+			                                    </ul>
+			                                </div>
+			                            </div>
+										<div class="board__comment__item text-center" th:unless="${not #lists.isEmpty(reviewList)}" >
+											<a>후기가 없습니다.</a>
+										</div>
+									</div>
+	                            </div>
+	                        </div>
+                   	 	</div>
+                    </div>
+                </th:block>    
+            </div>
+        </div>
+    </section>
+    <!-- Product Details Section End -->
+	<!-- modal -->
+	<div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<form id="reviewForm" th:action="@{/review/addReview}" method="post">
+			<div class="modal-dialog" role="document">
+		 		<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">후기 작성</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group row" style="margin-bottom: 0px;">
+							<div class="col-md-3 col-sm-3">								  
+								<input type="hidden" name="payCd" value="pay_cd_3"> 
+								<input type="hidden" name="goodsCtgCd" value="lesson"> 
+								<input type="hidden" name="userId" value="id008"> 
+								<label class="control-label" for="userId">평점</label>
+							</div>
+							<div class="mb-3" id="myform" style="position: right;">
+								<fieldset>
+									<input type="radio" name="reviewScore" value="5" id="rate1"><label
+										for="rate1">★</label>
+									<input type="radio" name="reviewScore" value="4" id="rate2"><label
+										for="rate2">★</label>
+									<input type="radio" name="reviewScore" value="3" id="rate3"><label
+										for="rate3">★</label>
+									<input type="radio" name="reviewScore" value="2" id="rate4"><label
+										for="rate4">★</label>
+									<input type="radio" name="reviewScore" value="1" id="rate5"><label
+										for="rate5">★</label>
+								</fieldset>
+							</div>			
+						</div>
+						<div class="form-group row">
+							<div class="col-md-12 col-sm-12">
+								<textarea  class="form-control" name="reviewDetail" placeholder="후기를 작성해주세요.">
+								</textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="form-group">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">취소</button>
+							<button type="button" class="btn btn-danger" id="reviewBtn">저장</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<!-- modal end -->
+
+<script th:src="@{/resource/js/map.js}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
+<script th:src="@{/calendar/js/jquery.min.js}"></script>
+<script th:src="@{/calendar/js/bootstrap.min.js}"></script>
+<script th:src="@{/calendar/js/moment.min.js}"></script>
+<script th:src="@{/calendar/js/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/calendar/js/select2.min.js}"></script>
+<script th:src="@{/calendar/js/customStadium.js}"></script>
+<script th:src="@{/calendar/js/addReservation.js}"></script>
+
+</th:block>	  
+	  
+</html>

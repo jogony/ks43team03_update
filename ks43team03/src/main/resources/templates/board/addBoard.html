@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default.html}">
+	  
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+		
+	<th:block layout:fragment="customContents">
+	 
+	<!-- Breadcrumb Begin -->
+	    <div class="breadcrumb-option">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <div class="breadcrumb__links">
+	                        <a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+	                        <a th:href="@{/board/boardList}">게시판</a>
+	                        <span>게시글 작성</span>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	 <!-- Breadcrumb End -->
+	
+		<section class="checkout spad" th:fragment="checkOutFragment">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<h6 class="coupon__link">
+							<span class="icon_tag_alt"></span>
+							게시글을 작성해주세요 :)
+						</h6>
+					</div>
+				</div>
+				<form th:action="@{/board/addBoard}" class="checkout__form" method="post" id="addBoardForm" enctype="multipart/form-data" name="multipart">
+					<div class="row">
+						<div class="col-lg-8">
+							<h5>작성란</h5>
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12">
+									<div class="checkout__form__input">
+										<p>작성자 아이디
+											<span>*</span>
+										</p>
+										<input type="text" th:value="${session.SID}" name="userId" readonly="readonly">
+										<input type="text" th:value="${facilityCd}" name="facilityCd" hidden>
+									</div>
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12">
+									<div class="checkout__form__input">
+										<p>카테고리
+											<span>*</span>
+										</p>
+										<select name="boardCtgCd" class="tip" id="ctg-select" style="margin-bottom: 25px;">
+											<option value="" id="chooseCtg"> :: 게시글 카테고리 선택 :: </option>
+											<th:block th:if="${not #lists.isEmpty(boardCtgCdList)}" th:each="nm : ${boardCtgCdList}" name="boardCtgCd">
+											    <option id="boardCtgCd" th:value="${nm.boardCtgCd}">[[${nm.boardCtgNm}]]</option>
+											</th:block>
+										</select>
+									</div>
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12">
+									<div class="checkout__form__input">
+										<p>제목
+											<span>*</span>
+										</p>
+										<input type="text" th:value="${board.boardPostTitle}" name="boardPostTitle" id="boardPostTitle">
+									</div>
+								</div>
+								<div class="col-lg-12">
+									<div class="checkout__form__input">
+										<p>내용
+											<span>*</span>
+										</p>
+										<textarea class="form-control" style="min-height: 150px;" th:value="${board.boardPostContent}" name="boardPostContent" id="boardPostContent"></textarea>
+									</div>
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12">
+									<div class="checkout__form__input" style="margin-top: 20px;">
+										<p>첨부파일</p>
+										<input type="file" name="boardImgFile" class="form-control BoardPost-img">
+									</div>
+								</div>
+								
+							</div>
+						</div>
+						<div class="col-lg-4">
+							<div class="checkout__order">
+								<h5>구매내역</h5>
+								<div class="checkout__order__product">
+									<ul>
+										<li>
+											<span class="top__text">Product</span>
+											<span class="top__text__right">Total</span>
+										</li>
+										<li>01. 가나다 수영장
+											<span>10,000</span>
+										</li>
+										<li>02. 기초 클라이밍
+											<span>50,000</span>
+										</li>
+									</ul>
+								</div>
+								<div class="checkout__order__total">
+									<ul>
+										<li>Total <span>60,000 원</span></li>
+									</ul>
+								</div>
+							</div>
+							<div class="text-right">
+								<button type="submit" class="site-btn" id="addBoardBtn" style="margin-top: 20px;">
+									작성하기
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</section>
+	
+		<!-- 사용자 정의 Js 파일-->
+		<th:block layout:fragment="customJs">
+			<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+			
+			<script>
+				$(function(){
+					function validationCheck(data){
+						if(typeof data == 'undefined' || data == '' || data == null){
+							return false;
+						}
+						return true;
+					}
+					
+					$('#addBoardBtn').click(function(){
+						var isSubmit = true;
+						
+						if($("select[name=boardCtgCd]").val() == ''){
+						    alert("카테고리를 선택해주세요.");
+						    isSubmit = false;
+						    return false;
+						}
+						if($("#boardPostTitle").val() == ""){
+						    alert("제목을 입력해주세요.");
+						    $("#boardPostTitle").focus();
+						    isSubmit = false;
+						    return false;
+						}
+						if($("#boardPostContent").val() == ""){
+						    alert("내용을 입력해주세요.");
+						    $("#boardPostContent").focus();
+						    isSubmit = false;
+						    return false;
+						}
+						
+						console.log('유효여부 폼전송할건지?' + isSubmit )
+						
+						if(isSubmit) $('#addBoardForm').submit();
+					});
+				});
+			</script>
+		</th:block>
+	</th:block>
+</html>

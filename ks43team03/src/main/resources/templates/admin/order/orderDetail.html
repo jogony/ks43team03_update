@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault.html}">
+
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+	<div th:if="${not #strings.isEmpty(session.SID)}">
+			<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>주문 상세 테이블 <small>관리자</small></h2>
+
+								<div class="clearfix"></div>
+							</div>
+
+							<div class="x_content">
+								<div class="row">
+									<input type="hidden" th:value="${order.facilityGoodsCd}">
+									<input type="hidden" th:value="${order.facility.facilityCd}">
+									<input type="hidden" th:value="${order.goodsCtgCd}">
+									<div class="col-sm-6 col-lg-6 offset-3">
+										<table class="table table-hover">
+										<tbody>
+											<tr>
+												<th class="col-sm-2 col-lg-2">주문 회원 아이디 </th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.userId}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">주문 코드</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.orderCd}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">주문 카테고리</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.goodsCtgCd}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">가격</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.orderPrice}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">회원포인트</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.userPoint}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">회원사용포인트</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.usedPoint}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">결제가격</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.orderPayPrice}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">주문 일자</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.orderRegDate}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">주문 상태</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.orderPayState}">hi</td>
+											</tr>
+											<tr>
+												<th class="col-sm-2 col-lg-2">판매자 회원 아이디</th>
+												<td class="col-sm-10 col-lg-10" th:text="${order.facilityGoods.userId}">hi</td>
+											</tr>
+									
+										</tbody>
+									</table>
+									</div>
+									
+								</div>
+								<div class="row">
+									<div class="col-md-6 col-sm-6 offset-md-4">
+										<a class="btn btn-primary" th:href="@{/facility/facilityDetail(facilityCd=${order.facility.facilityCd})}">시설상세보기</a>
+										<button class="btn btn-primary" type="button" onclick="history.back()">뒤로가기</button>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+		
+		</div>
+					
+				<div th:unless="${not #strings.isEmpty(session.SID)}">
+					로그인이 필요한 서비스입니다. 
+				</div>
+	</th:block>
+
+</html>

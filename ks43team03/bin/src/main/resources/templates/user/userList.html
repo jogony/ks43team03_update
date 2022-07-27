@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>userList</title>
+</head>
+<body>
+	<h1>userList</h1>
+	
+	<table border="1">
+			<thead>
+				<tr>
+					<th>회원 아이디</th>
+					<th>회원 등급</th>
+					<th>회원 비밀번호</th>
+					<th>회원 이름</th>
+					<th>회원 주소</th>
+					<th>회원 생년월일</th>
+					<th>회원 이메일</th>
+					<th>회원 폰</th>
+					<th>회원 성별</th>
+					<th>회원 탈퇴여부</th>
+					<th>회원 가입경로</th>
+					<th>회원 등록날짜</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${not #lists.isEmpty(userList)}" th:each="l : ${userList}">
+					<td th:text="${l.userId}"></td>
+					<td th:text="${l.userLevel}"></td>
+					<td th:text="${l.userPw}"></td>
+					<td th:text="${l.userName}"></td>
+					<td th:text="${l.userAddr}"></td>
+					<td th:text="${l.userBirth}"></td>
+					<td th:text="${l.userEmail}"></td>
+					<td th:text="${l.userTell}"></td>
+					<td th:text="${l.userGender}"></td>
+					<td th:text="${l.userDrop}"></td>
+					<td th:text="${l.userRegPath}"></td>
+					<td th:text="${l.userRegDate}"></td>
+				</tr>
+				<tr th:unless="${not #lists.isEmpty(userList)}">
+					<td colspan="9">조회된 내용이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+</body>
+</html>

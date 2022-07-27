@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- th:replace="경로 :: 조각이름" -->
+<head th:replace="fragments/head :: headFragment">
+</head>
+
+<body>
+	<!-- Page Preloder -->
+	<div id="preloder">
+		<div class="loader"></div>
+	</div>
+	
+	<!-- Offcanvas Menu Begin -->
+	<div class="offcanvas-menu-overlay"></div>
+	<!-- 모바일 메뉴 화면임 -->
+	<div class="offcanvas-menu-wrapper">
+	<div class="offcanvas__close">+</div>
+		<ul class="offcanvas__widget">
+			<li><span class="icon_search search-switch"></span></li>
+			<!-- 모바일 메뉴 화면 아이콘 하트 / 장바구니임-->
+			<li>
+				<th:block th:unless="${session.SLEVEL == '5'}">
+					<i class="fa fa-heart" title="일반회원만 이용 가능합니다"></i>
+				</th:block>
+				<th:block th:if="${session.SLEVEL == '5'}">
+					<a th:href="@{/boomk/boomkList}" title="즐겨찾기 페이지">
+						<i class="fa fa-heart"></i>
+					</a>
+				</th:block>
+			</li>
+			<li>
+				<a th:href="@{/}" title="관리자페이지">
+					<span class="icon_house_alt"></span>
+				</a>
+			</li>
+		</ul>
+	<div class="offcanvas__logo">
+		<a th:href="@{/user}"><img src="../img/-003.png" alt=""></a>
+	</div>
+	<div id="mobile-menu-wrap"></div>
+		<div class="offcanvas__auth">
+			<th:block th:if="${session.SID == null}">
+				<a th:href="@{/login}">Login</a>
+			</th:block>
+			<th:block th:unless="${session.SID == null}">
+				<a th:href="@{/user/userDetail}">
+					[[${session.SNAME}]]님 마이페이지!<small>(강신호)</small>
+				</a>
+			</th:block>
+			<a href="@{/logout}">Logout<br/><small>(김지혜)</small></a>
+		</div>
+	</div>
+	<!-- Offcanvas Menu End -->
+    
+	<div th:replace="fragments/header :: headerFragment"></div>
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+	
+	</th:block>
+			
+	
+	<div th:replace="fragments/footer :: footerFragment"></div>
+
+	<!-- Js Plugins -->
+	<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+	<script th:src="@{/js/bootstrap.min.js}"></script>
+	<script th:src="@{/js/jquery.magnific-popup.min.js}"></script>
+	<script th:src="@{/js/jquery-ui.min.js}"></script>
+	<script th:src="@{/js/mixitup.min.js}"></script>
+	<script th:src="@{/js/jquery.countdown.min.js}"></script>
+	<script th:src="@{/js/jquery.slicknav.js}"></script>
+	<script th:src="@{/js/owl.carousel.min.js}"></script>
+	<script th:src="@{/js/jquery.nicescroll.min.js}"></script>
+	<script th:src="@{/js/main.js}"></script>
+	<!-- 검색 js -->
+	<script th:src="@{/resource/js/commonSearch.js}"></script>
+</body>
+
+</html>

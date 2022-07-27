@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+	<th:block layout:fragment="customJs">
+		<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	</th:block>
+	
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+	
+		<style>
+			#lesson#pass#stadium {
+				padding-top: 20px;
+			}
+	
+			#lesson.none-display{
+				display: none;
+			}
+	
+			#pass.none-display{
+				display: none;
+			}
+	
+			#stadium.none-display{
+				display: none;
+			}
+		</style>
+	
+	
+		<div class="page-title">
+			<div class="title_left">
+				<h3>상품수정</h3>
+			</div>
+			<div class="title_right">
+				<div class="col-md-5 col-sm-5  form-group pull-right top_search">
+					<div class="input-group">
+						<input type="text" class="form-control" placeholder="Search for...">
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button">Go!</button>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	
+	
+	
+	
+		<div class="row" id="goods-re">
+			<div class="col-md-12 col-sm-12 ">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2>상품수정 <small>different form elements</small></h2>
+	
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<br>
+						<form data-parsley-validate="" class="form-horizontal form-label-left" novalidate="">
+							<br>
+							<div class="item form-group">
+								<label for="facilityCd" class="col-form-label col-md-3 col-sm-3 label-align">시설대표코드<span
+										class="required">*</span></label>
+								<div class="col-md-6 col-sm-6">
+									<!-- ***임시 시설 대표 코드*** -->
+									<input type="text" class="form-control" id="facilityCd" data-parsley-id="5"
+										name="facilityCd" value="ss_35011740_01" readonly="readonly">
+								</div>
+							</div>
+							<div class="item form-group">
+								<label for="" class="col-form-label col-md-3 col-sm-3 label-align">종목<span
+										class="required">*</span></label>
+								<div class="col-md-6 col-sm-6">
+									<select class="custom-select" id="sportsCtg"  th:data-sport="${lesson.sports.sportsCd}">
+										<!--*****수정!!!!! db에서 리스트 받아서 뿌리기*****-->
+										<option>:: 시설에서 운영하는 종목을 선택해주세요::</option>
+										<option value="sp01">축구</option>
+										<option value="sp02">수영</option>
+										<option value="sp03">배드민턴</option>
+										<option value="sp04">배구</option>
+										<option value="sp05">클라이밍</option>
+										<option value="sp06">헬스</option>
+									</select>
+								</div>
+							</div>
+							<div class="item form-group">
+								<label for="" class="col-form-label col-md-3 col-sm-3 label-align">카테고리<span
+										class="required">*</span></label>
+								<div class="col-md-6 col-sm-6">
+									<select class="custom-select" id="goodsCtg" th:data-goodsCtg="${lesson.goodsCtgCd}" name="goodsCtgCd">
+										<option>::상품 카테고리를 선택해주세요</option>
+										<option value="lesson">레슨</option>
+										<option value="pass">이용권</option>
+										<option value="stadium">대관</option>
+									</select>
+								</div>
+							</div>
+							<div class="item form-group">
+								<div class="col-md-6 col-sm-6">
+									<!-- 후에 수정할 것!! userId => session.SID -->
+									<input type="hidden" class="form-control" data-parsley-id="5" id="user-id" name="userId" value="id007">
+								</div>
+							</div>
+	
+							<div class="ln_solid"></div>
+	
+						</form>
+						<div class="item form-group">
+							<div class="col-md-6 col-sm-6 offset-md-3">
+								<button class="btn btn-success" type="button" id="register-goods">등록</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	
+		<!-- 레슨 등록 폼-->
+		<div class="row" id="lesson">
+			<div class="col-md-12 col-sm-12 ">
+				<div class="x_panel">
+					<div class="x_title">
+						<h2>레슨권 <small>different form elements</small></h2>
+						<ul class="nav navbar-right panel_toolbox">
+							<li>
+								<a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+									aria-haspopup="true" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+								<ul class="dropdown-menu" role="menu">
+									<li>
+										<a class="dropdown-item" href="#">Settings 1</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="#">Settings 2</a>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a class="close-link"><i class="fa fa-close"></i></a>
+							</li>
+						</ul>
+						<div class="clearfix"></div>
+					</div>
+					<div class="x_content">
+						<br>
+						<form id="lesson-form" data-parsley-validate class="form-horizontal form-label-left" method="post" th:action="@{/lesson/modifyLesson}" enctype="multipart/form-data" name="multiPart"> <!--  enctype="multipart/form-data" name="mulP" --> 
+
+							<div class="item form-group">
+								<div class="col-md-6 col-sm-6 ">
+								
+									<input type="hidden" name="lessonCd" th:value = "${lesson.lessonCd}" id="lessonCd">
+									<input type="hidden" name="facilityGoodsCd" th:value = "${lesson.facilityGoodsCd}">
+									<input type="hidden" name="facilityCd" th:value = "${lesson.facilityCd}">
+									<input type="hidden" name="sportsCd" id="sportsCd-lesson" value="">
+								</div>
+							</div>
+							<div class="item form-group">
+								<label class="col-form-label col-md-3 col-sm-3 label-align" for="lessonNm">레슨 이름 <span class="required">*</span>
+								</label>
+								<div class="col-md-6 col-sm-6 ">
+									<input type="text" id="lessonNm" name="lessonName" required="required" class="form-control" th:value="${lesson.lessonName}">
+								</div>
+							</div>
+							<div class="item form-group" style = "list-style:none;">
+								<div class="col-form-label col-md-3 col-sm-3 label-align" id="lesson-img-label">이미지 수정</div>
+								<div class="col-md-6 col-sm-6 ">
+									<ul class="lesson-file-line">
+										<li th:if="${not #lists.isEmpty(lesson.tFile)}" th:each="t ,status : ${lesson.tFile}">
+											<img id="prev" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="..." style="width: 10vw; min-width: 50px;"/>
+											대표 이미지 변경<input type="radio" 	  class="representImgCheck" th:value="${status.count}" th:data-representImg="${t.representImg}" name="check">
+											삭제<input type="checkbox" class="deleteImg" th:value="${t.fileCd}" name="deleteImg">
+											<input type="hidden" th:value="N" class="representImg" name="representImg">
+											<input type="hidden" th:value="${t.fileCd}" name="fileCd">
+										</li>
+										<li th:unless="${not #lists.isEmpty(lesson.tFile)}" th:each="t : ${lesson.tFile}">>
+											<p>업로드된 사진 파일이 없습니다.</p>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="item form-group">   
+							   <label for="lessonDetail" class="col-form-label col-md-3 col-sm-3 label-align">레슨 정보</label>
+							   <div class="col-md-6 col-sm-6 ">
+							      <textarea id="lessonDetail" class="form-control" name="lessonDetail">[[${lesson.lessonDetail}]]</textarea>
+							   </div>
+							</div>
+							<div class="item form-group">   
+								<label for="lessonDetail" class="col-form-label col-md-3 col-sm-3 label-align">레슨 정보</label>
+								<div class="col-md-6 col-sm-6 ">
+									<ul class="lesson-file-line">
+								  <li>
+								      추가<input type="file" name="lessonImgFile" class="form-control newLine" accept="image/*">
+								      <button type= "button" id="plus-button">플러스</button>
+								      <button type= "button" id="minus-button">마이너스</button>
+								   </li>
+								</ul>
+								</div>
+							</div>
+							<div class="item form-group">
+							   <label class="col-form-label col-md-3 col-sm-3 label-align">개인/단체</label>
+							   <div class="col-md-6 col-sm-6 ">
+							      <div id="solo-party" class="btn-group" data-toggle="buttons">
+							         <label class="btn btn-secondary lessonDivision" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+							            <input type="radio" name="lessonDivision" value="단체" class="join-btn" th:data-division = "${lesson.lessonDivision}"> &nbsp; 단체레슨 &nbsp;
+							         </label>
+							         <label class="btn btn-primary lessonDivision" data-toggle-class="btn-primary" data-toggle-passive-class="btn-default">
+							            <input type="radio" name="lessonDivision" value="개인" class="join-btn" th:data-division = "${lesson.lessonDivision}"> 개인 레슨
+							         </label>
+							      </div>
+							   </div>
+							</div>
+							<div class="item form-group">
+							   <label for="lessonTotalMember" class="col-form-label col-md-3 col-sm-3 label-align">인원수</label>
+							   <div class="col-md-6 col-sm-6 ">
+							      <input id="lessonTotalMember" class="form-control" type="number" name="lessonTotalMember" th:value="${lesson.lessonTotalMember}">
+							   </div>
+							</div>
+							<div class="none-display" id="lessonNu">
+								<div class="item form-group">
+									<label class="col-form-label col-md-3 col-sm-3 label-align">회차 : <span class="required">*</span>
+										
+									</label>
+									<div class="col-md-6 col-sm-6">
+										<input type="number" class="form-control lessonCount" name="lessonCount"  th:value="${lesson.lessonCount}">
+									</div>
+								</div>
+							</div>
+						 
+							
+							<div class="item form-group">
+								<label class="col-form-label col-md-3 col-sm-3 label-align">레슨 날짜<span class="required">*</span>
+								
+								</label>
+								<div class="col-md-3 col-sm-3 ">
+								   <input type="date" class="form-control-file" name="lessonStartDate" id="lessonStartDate" th:value="${lesson.lessonStartDate}">
+								</div>
+								~
+								<div class="col-md-3 col-sm-3 ">
+							    	<input type="date" class="form-control-file" name="lessonEndDate" id="lessonEndDate" th:value="${lesson.lessonEndDate}">
+								</div>
+							</div>
+	
+							<div class="item form-group">
+								<label for = "lessonStartTime" class="col-form-label col-md-3 col-sm-3 label-align">레슨 시간<span class="required">*</span>
+								</label>
+								<div class="col-md-3 col-sm-3 ">
+								   <input type="time" class="form-control-file" name="lessonStartTime" id="lessonStartTime" th:value="${lesson.lessonStartTime}">
+								</div>
+								~
+								<div class="col-md-3 col-sm-3 ">
+								   <input type="time" class="form-control-file" name="lessonEndTime" id="lessonEndTime" th:value="${lesson.lessonEndTime}">
+								</div>
+							</div>
+	  
+							<div class="item form-group" >
+							   <label class="col-form-label col-md-3 col-sm-3 label-align" for="lessonPrice">수강료<span class="required">*</span>
+							   </label>
+							   <div class="col-md-6 col-sm-6 ">
+							      <input type="number" class="form-control-file" name="lessonPrice" id="lessonPrice" th:value="${lesson.lessonPrice}">
+							   </div>
+							</div>				   
+							<div class="ln_solid"></div>
+						</form>
+						<div class="item form-group">
+							<div class="col-md-6 col-sm-6 offset-md-3">
+								<button class="btn btn-primary" type="button">Cancel</button>
+								<button class="btn btn-primary" type="reset">Reset</button>
+								<button type="button" id="lesson-btn" class="btn btn-success">등록</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	
+		
+		<script type="text/javascript" th:src="@{/resource/js/modifyGoods.js}"></script>
+		
+	</th:block>
+
+</html>

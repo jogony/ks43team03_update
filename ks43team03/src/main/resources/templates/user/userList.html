@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault.html}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		<!-- 회원 전체 목록 -->
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>회원 전체 목록 조회 <small>관리자</small></h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+							<a class="dropdown-item" href="#">Settings 1</a>
+							<a class="dropdown-item" href="#">Settings 2</a>
+						</div>
+					</li>
+					<li><a class="close-link"><i class="fa fa-close"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="card-box table-responsive">
+							<p class="text-muted font-13 m-b-30">
+								DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+							</p>
+							<table id="datatable" class="table table-striped table-bordered" style="width:100%">
+								<thead>
+									<tr>
+										<th>회원 아이디</th>
+										<th>회원 등급</th>
+										<th>회원 비밀번호</th>
+										<th>회원 이름</th>
+										<th>회원 우편번호</th>
+										<th>회원 주소</th>
+										<th>회원 상세 주소</th>
+										<th>회원 생년월일</th>
+										<th>회원 이메일</th>
+										<th>회원 폰</th>
+										<th>회원 성별</th>
+										<th>회원 탈퇴여부</th>
+										<th>회원 가입경로</th>
+										<th>회원 등록날짜</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:if="${not #lists.isEmpty(userList)}" th:each="l : ${userList}">
+										<td th:text="${l.get('userId')}"></td>
+										<td th:text="${l.get('userLevel')}"></td>
+										<td th:text="${l.get('userPw')}"></td>
+										<td th:text="${l.get('userName')}"></td>
+										<td th:text="${l.get('userPostNum')}"></td>
+										<td th:text="${l.get('userAddr')}"></td>
+										<td th:text="${l.get('userDetailAddr')}"></td>
+										<td th:text="${l.get('userBirth')}"></td>
+										<td th:text="${l.get('userEmail')}"></td>
+										<td th:text="${l.get('userTell')}"></td>
+										<td th:text="${l.get('userGender')}"></td>
+										<td th:text="${l.get('userDrop')}"></td>
+										<td th:text="${l.get('userRegPath')}"></td>
+										<td th:text="${l.get('userRegDate')}"></td>
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(userList)}">
+										<td colspan="14">조회된 내용이 없습니다.</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="14" style="text-align: center;">
+											<a th:href="@{/user/userList}">[맨처음]</a>
+											<a th:if="${currentPage > 1}" th:href="@{/user/userList(currentPage=${currentPage - 1})}">[이전]</a>
+											<th:block th:each="num : ${#numbers.sequence(startPageNum,endPageNum)}">
+												<label th:if="${currentPage eq num}" th:text="${(num<10) ? '[0' + num +']' : '[' + num +']'}"></label>
+												<a th:unless="${currentPage eq num}" th:href="@{/user/userList(currentPage=${num})}" th:text="${(num<10) ? '[0' + num +']' : '[' + num +']'}"></a>
+											</th:block>
+											<a th:if="${currentPage < lastPage}" th:href="@{/user/userList(currentPage=${currentPage + 1})}">[다음]</a>
+											<a th:href="@{/user/userList(currentPage=${lastPage})}">[마지막]</a>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+</html>

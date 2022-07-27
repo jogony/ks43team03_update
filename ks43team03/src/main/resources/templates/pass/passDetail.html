@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>이용권 상세정보 <small>관리자</small></h2>
+
+								<div class="clearfix"></div>
+							</div>
+
+							<div class="x_content">
+
+								<div class="row">
+									<div class="col-sm-6 col-lg-6 offset-3">
+										<div class="table-responsive">
+											<table class="table jambo_table bulk_action">
+												<tbody>
+													<tr class="even pointer">
+														<td class=" ">이용권명</td>
+														<td th:text="${pass.passNm}"></td>
+													</tr>
+													<tr class="even pointer">
+														<td class=" ">이용권 시설</td>
+														<td th:text="${pass.facility.facilityNm}"></td>
+													</tr>
+													<tr class="even pointer">
+														<td class=" ">이용권 등록자</td>
+														<td th:text="${pass.userId}">땡떙체육관</td>
+													</tr>
+													<tr class="even pointer">
+														<td class=" ">이용권 가격</td>
+														<td th:text="${pass.passPrice}">땡떙체육관</td>
+													</tr>
+													<tr class="even pointer">
+														<td class=" ">이용권 유효일수</td>
+														<td th:text="${pass.passEndDate}">땡떙체육관</td>
+													</tr>
+													<tr class="even pointer">
+														<td class=" ">이용권 단위</td>
+														<td th:text="${pass.passUnit}">123</td>
+													</tr>
+													
+													<tr class="even pointer">
+														<td class=" ">이용권 등록일자</td>
+														<td th:text="${pass.passRegDate}">땡떙체육관</td>
+													</tr>
+													<tr class="even pointer">
+														<td class=" ">이용권 상태</td>
+														<td th:text="${pass.passState}">땡떙체육관</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<div>
+											<div class="col-sm-3 col-lg-6 offset-4">
+												<a class="btn btn-primary" th:href="@{/facility/facilityDetail(facilityCd=${pass.facility.facilityCd})}">시설 상세보기</a>
+												<button class="btn btn-primary" type="button" onclick="history.back()">뒤로가기</button>
+											</div>	
+										</div>
+									</div>
+										
+								</div>
+
+								
+
+
+							</div>
+						</div>
+					</div>
+
+	</th:block>
+
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default.html}">
+	<th:block layout:fragment="customCss">
+	<link rel="stylesheet" th:href="@{/resource/fullcalendar-5.11.0/lib/main.css}" />
+	</th:block>
+	<!-- 사용자 정의 js 선언 -->
+	<th:block layout:fragment="customJs">
+	
+	<script th:src="@{/resource/fullcalendar-5.11.0/lib/main.js}"></script>
+	<script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth'
+        });
+        calendar.render();
+      });
+
+</script>
+	</th:block>
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+	<!-- 이런식으로 넣으면 되겠죠? -->
+		<div id='calendar'></div>
+	</th:block>
+
+</html>

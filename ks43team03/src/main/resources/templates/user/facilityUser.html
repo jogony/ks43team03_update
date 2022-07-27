@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault.html}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	<th:block layout:fragment="customCss">
+		<style>
+			.pagination {
+				float: right;	
+			}
+		</style>
+	</th:block>
+	
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		<!-- 시설 내 회원 목록 -->
+		<div class="col-md-12 col-sm-12 ">
+			<div class="x_panel">
+				<div class="x_title">
+					<h2>회원 전체 목록 조회 <small>관리자</small></h2>
+					<ul class="nav navbar-right panel_toolbox">
+						<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item" href="#">Settings 1</a>
+								<a class="dropdown-item" href="#">Settings 2</a>
+							</div>
+						</li>
+						<li><a class="close-link"><i class="fa fa-close"></i></a>
+						</li>
+					</ul>
+					<div class="clearfix"></div>
+				</div>
+				<div class="x_content">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="card-box table-responsive">
+								<p class="text-muted font-13 m-b-30">
+									DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+								</p>
+								<table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="width:100%">
+									<thead>
+										<tr>
+											<th>시설명</th>
+											<th>회원 이름</th>
+											<th>주소</th>
+											<th>성별</th>
+											<th>전화번호</th>
+											<th>회원 권한</th>
+											<th>승인 여부</th>
+											<th>승인자</th>
+											<th>승인 날짜</th>
+											<th>승인 변경</th>
+											<th>이메일</th>
+											<th>가입 날짜</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:if="${not #lists.isEmpty(facilityUserList)}" th:each="l : ${facilityUserList}">
+											<td th:text="${l.get('facilityNm')}"></td>
+											<td th:text="${l.get('userName')}"></td>
+											<td th:text="${l.get('userAddr')}"></td>
+											<td th:text="${l.get('userGender')}"></td>
+											<td th:text="${l.get('userTell')}"></td>
+											<td th:text="${l.get('facilityUserLevel')}"></td>
+											<td th:text="${l.get('facilityApproveState')}"></td>
+											<td th:text="${l.get('facilityApproveId')}"></td>
+											<td th:text="${l.get('facilityApproveDate')}"></td>
+											<td>
+												<th:block th:if="${l.get('facilityApproveState') eq '승인'}">
+													<a th:href="@{/user/modifyFacilityUserState(facilityApproveState='N',userId=${l.get('userId')},facilityCd=${l.get('facilityCd')})}">
+														<button type="button" class="btn btn-danger btn-sm">탈퇴</button>
+													</a>
+												</th:block>
+												<th:block th:unless="${l.get('facilityApproveState') eq '승인'}">
+													<a th:href="@{/user/modifyFacilityUserState(facilityApproveState='Y',userId=${l.get('userId')},facilityCd=${l.get('facilityCd')})}">
+														<button type="button" class="btn btn-secondary btn-sm">승인</button>
+													</a>
+												</th:block>
+											</td>
+											<td th:text="${l.get('userEmail')}"></td>
+											<td th:text="${l.get('facilityRegDate')}"></td>
+										</tr>
+										<tr th:unless="${not #lists.isEmpty(facilityUserList)}">
+											<td colspan="12">조회된 내용이 없습니다.</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+</html>

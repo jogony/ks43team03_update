@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{margin-top:10px;}
+		</style>
+	</th:block>	
+	
+	<!-- 사용자 정의 Js 파일-->
+		<th:block layout:fragment="customJs">
+			<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	
+			<script>
+			$(function(){
+			
+			function validationCheck(data){
+				if(typeof data == 'undefined' || data == '' || data == null){
+					return false;
+				}
+				return true;
+			}
+			
+			/* 시설 등록시 유효성 검사 */
+			$('#modifyStadiumPriceBtn').click(function(){
+				var isSubmit = true;
+				var inputObj = $('#modifyStadiumPriceForm').find('input');
+				
+				$.each(inputObj, function(){
+					var inputData = $(this).val();
+					var result = validationCheck(inputData);
+					
+					// 사용자가 입력하지 않은 경우
+					if(!result){
+						$(this).focus();
+						isSubmit = false;
+						return false;
+					}
+				});
+				
+				
+				if(isSubmit){
+					if($("#sportsCd").val() == ""){
+					    alert("종목을 선택해주세요");
+					    $("#sportsCd").focus();
+					    isSubmit = false;
+					    return false;
+					}
+				}
+			
+			console.log('유효여부 폼전송할건지?' + isSubmit )
+			
+			if(isSubmit) $('#modifyStadiumPriceForm').submit();
+		});
+	});
+	
+	</script>		
+	</th:block>
+
+
+
+
+
+<!-- 사용자 정의Contents -->
+	<th:block layout:fragment="customContents">
+	<div class="title_left">
+		<h3>구장단가수정</h3>
+	</div>
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12">
+			<div class="x_panel">
+			<div class="x_title">
+				<h2>구장단가수정 </h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+			<form id="modifyStadiumPriceForm" th:action="@{/stadium/modifyStadiumPrice}" method="post">
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="facilityStadiumCd">구장대표코드 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="facilityStadiumCd" th:value="${stadiumPrice.facilityStadiumCd}" data-validate-minmax="10,100" required='required'></div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="sportsCd">종목<span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+						<select class="select2_single form-control" tabindex="-1" name="sportsCd" id="sportsCd" required="required">
+							<option value = "">:: 종목 선택 ::</option>
+							<th:block th:if="${not #lists.isEmpty(sportsList)}" th:each="l:${sportsList}">
+							<option th:value="${l.sportsCd}" th:selected="${stadiumPrice.sportsCd eq l.sportsCd}">[[${l.sportsName}]]</option>
+						</th:block>
+						</select>
+					</div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="dayPrice">주중가 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="dayPrice" th:value="${stadiumPrice.dayPrice}" data-validate-minmax="10,100" ></div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="nightPrice">야간가 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="nightPrice" th:value="${stadiumPrice.nightPrice}" data-validate-minmax="10,100" required='required'></div>
+				</div>
+				<div class="field item form-group">
+					<label class="col-form-label col-md-3 col-sm-3  label-align" for="holPrice">공휴일가 <span class="required">*</span></label>
+					<div class="col-md-6 col-sm-6">
+					<input class="form-control" type="text" name="holPrice" th:value="${stadiumPrice.holPrice}" data-validate-minmax="10,100" required='required'></div>
+				</div>
+				<div class="ln_solid">
+					<div class="form-group">
+						<div class="col-md-6 offset-md-3">
+							<button type='reset' class="btn btn-primary">취소</button>
+							<button type='submit' id="modifyStadiumPriceBtn" class="btn btn-success">등록</button>
+						</div>
+					</div>
+				</div>
+			</form>
+			</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+	  
+	  
+				<!-- <div class="item form-group">
+					<label class="col-form-label col-md-3 col-sm-3 label-align" for="lessonImgFile">구장 사진 
+					</label>
+					<div class="col-md-6 col-sm-6 ">
+						<input type="file" id="lessonImgFile"  name="facilityImgFile" multiple="multiple">
+					</div>
+				</div> -->
+</html>

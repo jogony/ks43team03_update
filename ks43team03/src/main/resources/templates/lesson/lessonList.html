@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/adminDefault.html}">
+	
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		
+		<div class="x_panel">
+			<div class="x_title">
+			<!-- 시설 이름이랑 가져와서 넣을 것 -->
+				<h2>시설 이름 내에 레슨 조회 <small>Users</small></h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+						<div class="dropdown-menu" aria-labelledby="dropdowNameenuButton">
+							<a class="dropdown-item" href="#">Settings 1</a>
+							<a class="dropdown-item" href="#">Settings 2</a>
+						</div>
+					</li>
+					<li><a class="close-link"><i class="fa fa-close"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="card-box table-responsive">
+							<p class="text-muted font-13 m-b-30">
+								DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+							</p>
+							<div class="table-responsive">
+								<table id="datatable" class="table table-striped jambo_table bulk_action table-bordered" style="width:100%">
+									<thead>
+										<!-- 테스트 데이터 -->
+										<tr>
+											<th>시설 이름		</th>
+											<th>레슨 이름		</th>
+											<th>종목		  	</th>
+											<th>레슨 수강료  	</th>
+											<th>레슨 시작 일자	</th>
+											<th>레슨 종료 일자	</th>
+											<th>레슨 상태		</th>
+											<th>레슨 등록 일자	</th>
+										</tr>
+									</thead>
+									<tbody>
+										<th:block th:if="${not #lists.isEmpty(resultMap)}" th:each="rm : ${resultMap}">
+											<tr th:if="${not #lists.isEmpty(rm.get('lessonList'))}" th:each="l : ${rm.get('lessonList')}">
+												<td th:text="${rm.get('facility').facilityNm}"></td>
+												<td><a th:href="@{/lesson/detailLesson(lessonCd=${l.lessonCd})}" th:text="${l.lessonName}"></a></td>
+												<td th:text="${l.sports.sportsName}"></td>
+												<td th:text="${l.lessonPrice}"></td>
+												<td th:text="${l.lessonStartDate}"></td>
+												<td th:text="${l.lessonEndDate}"></td>
+												<td th:text="${l.lessonState}"></td>
+												<td th:text="${l.lessonRegDate}"></td>
+											</tr>
+										</th:block>
+										
+										<tr th:unless="${not #lists.isEmpty(resultMap)}">
+											<td colspan="6">레슨 내용이 없습니다.</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div>
+								
+							</div>	
+						<div th:text="${lessonList}"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Button trigger modal -->
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+			Launch demo modal
+		</button>
+
+		<!-- Modal -->
+		<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalCenterTitle">레슨 삭제</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						정말 삭제하시겠습니까?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</th:block>
+</html>
+

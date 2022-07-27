@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default.html}">
+
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+	<!-- 이런식으로 넣으면 되겠죠? -->
+	
+	
+	<div class="breadcrumb-option">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="breadcrumb__links">
+						<a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+						<span>노래추천</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<section class="shop-cart spad">
+		<div class="container">
+			<div class="row">
+				<div th:replace="fragments/orderSidebar :: orderSidebarFragment"></div>
+				<div class="col-lg-9 col-md-9">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="">
+								<ul class="nav nav-tabs" role="tablist">
+									
+									<li class="nav-item">
+										<a class="nav-link" data-toggle="tab" href="#tabs-2"
+											role="tab">주문정보</a>
+									</li>
+								
+								</ul>
+								<div class="tab-content">
+									<div class="row">
+										<div class="col-sm-12 col-lg-12">
+											<table class="table">
+												<tbody>
+													<tr>
+														<th class="col-sm-2 col-lg-2">주문코드</th>
+														<td th:text="${order.orderCd}"></td>
+														<th rowspan="4" class="col-sm-3 col-lg-3">
+															<th:block th:if="${not order.isCancelDay}">
+																<div class="div btn-box ml-5" style="margin-top: 60px;">
+																<button type="button">취소하기</button>
+															</div>
+															</th:block>
+															<div class="div btn-box ml-5" style="margin-top: 60px;">
+																<a th:href="@{/facility/facilityDetail(facilityCd=${order.facility.facilityCd})}">상세보기</a>
+															</div>
+														</th>
+													</tr>
+													<tr>
+														<th rowspan="2" class="col-sm-2 col-lg-2">상품명</th>
+														<td th:text="${order.facility.facilityNm}">지구어딘가체육관/이용권</td>
+													</tr>
+													<tr>
+														<td class="col-sm-2 col-lg-2">[[${order.orderPayState}]]</td>
+													</tr>
+													<tr>
+														<th class="col-sm-2 col-lg-2">상품금액</th>
+														<td>[[${order.orderPrice}]]</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+							<!-- 예약 정보 -->
+
+							<div class="">
+								<ul class="nav nav-tabs" role="tablist">
+									
+									<li class="nav-item">
+										<a class="nav-link" data-toggle="tab" href="#tabs-2"
+											role="tab">결제상세정보</a>
+									</li>
+								
+								</ul>
+								<div class="tab-content">
+									<div class="row">
+										<div class="col-sm-12 col-lg-12">
+											<table class="table">
+												<tbody>
+													<tr>
+														<th class="col-sm-2 col-lg-2">주문일시</th>
+														<td th:text="${order.orderRegDate}">pay</td>
+														<th rowspan="4">
+															<div>
+																<div class="checkout__order">
+																	<div class="checkout__order__product">
+																		<ul>
+																			<li>주문상품가격
+																				<span>[[${order.orderPrice}]]</span>
+																			</li>
+																			<li>포인트 사용액
+																				<span>[[${order.usedPoint}]]</span>
+																			</li>
+																		</ul>
+																	</div>
+																	<div class="checkout__order__total">
+																		<ul>
+																			<li>Total <span>[[${order.orderPayPrice}]]</span></li>
+																		</ul>
+																	</div>
+																</div>
+															</div>
+														</th>
+													</tr>
+													<tr>
+														<th class="col-sm-2 col-lg-2">결제 수단</th>
+														<td th:text="${order.payType.name}"> 무통장(카카오)</td>
+													</tr>
+													<tr>
+														<th class="col-sm-2 col-lg-2">결제 금액</th>
+														<td>[[${order.orderPayPrice}]]</td>
+													</tr>
+													<tr>
+														<td>포인트 사용액</td>
+														<td>[[${order.usedPoint}]]</td>
+													</tr>
+													
+												</tbody>
+											</table>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-3">
+						<div class="col-lg-12 text-center">
+							<a class="primary-btn load-btn" th:href="@{/user}">home</a>
+							<a class="primary-btn load-btn" th:href="@{/order/orders/{id}(id=${session.SID})}">My주문</a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+
+
+
+</th:block>
+
+</html>

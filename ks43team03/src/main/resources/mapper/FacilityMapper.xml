@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.FacilityMapper">
+
+	<resultMap type="Facility" 					id="facilityResultMap">
+		<id 	column="facility_cd" 			property="facilityCd"/>
+		<result column="main_ctg_cd"			property="mainCtgCd"/>
+		<result column="town_cd"  				property="townCd"/>
+		<result column="facility_use_cd" 		property="facilityUseCd"/>
+		<result column="user_id" 				property="userId"/>
+		<result column="facility_nm" 			property="facilityNm"/>
+		<result column="facility_address" 		property="facilityAddr"/>
+		<result column="facility_tell" 			property="facilityTell"/>
+		<result column="facility_post_num" 		property="facilityPostNum"/>
+		<result column="business_number" 		property="businessNum"/>
+		<result column="facility_reg_date"		property="facilityRegDate"/>
+		<result column="facility_detail_addr" 	property="facilityDetailAddr"/>
+		<result column="area_cd"  				property="areaCd"/>
+		<result column="city_cd"  				property="cityCd"/>
+		<result column="facility_detail"  		property="facilityDetail"/>
+		<association property="mainCtg" 		javaType="MainCtg">
+			<id 	column="main_ctg_cd" 		property="mainCtgCd"/>
+			<result column="main_ctg_nm" 		property="mainCtgNm"/>
+		</association>
+		<association property="facilityUse" 	javaType="FacilityUse">
+			<id 	 column="facility_use_cd" 	property="facilityUseCd"/>
+			<result  column="facility_use_nm" 	property="facilityUseNm"/>
+		</association>
+		
+		<association property="area" 	javaType="Area">
+			<id 	 column="area_cd" 	property="areaCd"/>
+			<result  column="area_nm" 	property="areaNm"/>
+		</association>	
+		<association property="areaCity" 	javaType="AreaCity">
+			<id 	 column="city_cd" 		property="cityCd"/>
+			<result  column="area_cd" 		property="areaCd"/>
+			<result  column="city_nm" 		property="cityNm"/>
+		</association>	
+		<association property="areaCityTown" 	javaType="AreaCityTown">
+			<id 	 column="town_cd" 			property="townCd"/>
+			<result  column="city_cd" 			property="cityCd"/>
+			<result  column="area_cd" 			property="areaCd"/>
+			<result  column="town_nm" 			property="townNm"/>
+		</association>	
+		<collection property="facilityUser" 	javaType="FacilityUser">
+			<id column="facility_cd"				property="facilityCd"/>
+			<result column="user_id"				property="userId"/>
+			<result column="facility_user_level"	property="facilityUserLevel"/>
+			<result column="facility_approve_state"	property="facilityApproveState"/>
+			<result column="facility_approve_id"	property="facilityApproveId"/>
+			<result column="facility_approve_date"	property="facilityApproveDate"/>
+			<result column="facility_reg_date"		property="facilityRegDate"/>
+		</collection>
+		<collection property="tFile"  ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result column="re_file_name"			property="reFileName"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_date"			property="updatedDate"/>
+			<result	column="represent_img"		property="representImg"/>
+		</collection>
+	</resultMap>	
+	
+	
+	<select id="isUserCheck" parameterType="String" resultType="boolean">
+		/*시설에 가입한 회원 체크*/
+		SELECT
+			if(COUNT(1) = 1,0,1)
+		FROM
+		 	facility_user
+		WHERE 
+			user_id = #{userId} AND facility_cd = #{facilityCd};
+	</select>
+	
+	
+	
+	<insert id="addFacilityUser" parameterType="FacilityUser">
+		INSERT INTO facility_user
+			(facility_cd
+			,user_id
+			,facility_user_level
+			,facility_approve_state
+			,facility_reg_date
+			) VALUES (
+			#{facilityCd}
+			,#{userId}
+			,#{facilityUserLevel}
+			,'N'
+			,CURDATE());
+	</insert>
+	
+	<select id="getFacilityInfoByCd" resultType="Facility" resultMap="facilityResultMap">
+		/*시설상세정보조회*/
+			SELECT
+				f.facility_cd
+				,mc.main_ctg_nm
+				,fu.facility_use_nm
+				,a.area_nm
+				,ac.city_nm
+				,act.town_nm
+				,f.user_id
+				,f.facility_nm
+				,f.facility_address
+				,f.facility_detail_addr
+				,f.facility_tell
+				,f.business_number
+				,f.facility_reg_date
+				,f.facility_detail
+				,facility_file.file_cd			
+				,facility_file.re_file_name		
+				,facility_file.original_file_nm	
+				,facility_file.stored_file_path	
+				,facility_file.represent_img
+			FROM
+				facility AS f
+				INNER JOIN 
+				area AS a
+				ON 
+				f.area_cd = a.area_cd
+				INNER join
+				area_city AS ac
+				ON 
+				f.city_cd= ac.city_cd
+				INNER join
+				area_city_town AS act
+				on
+				f.town_cd = act.town_cd
+				INNER join
+				facility_use AS fu
+				ON 
+				f.facility_use_cd = fu.facility_use_cd
+				INNER join
+				main_ctg AS mc
+				ON 
+				f.main_ctg_cd = mc.main_ctg_cd
+				left join
+				(SELECT
+						rfwf.facility_cd 	
+						,tf.file_cd				
+						,tf.re_file_name		
+						,tf.original_file_nm	
+						,tf.stored_file_path	
+						,tf.file_size		
+						,tf.uploader_id			
+						,tf.upload_date		
+						,tf.updator_id			
+						,tf.updated_datetime	
+						,tf.represent_img		
+					FROM
+						rel_file_with_facility AS rfwf
+					   INNER JOIN
+					   t_file	AS tf
+					   on
+					   tf.file_cd = rfwf.file_cd
+					WHERE
+						tf.deleted_yn != 'Y') AS facility_file
+				on
+				f.facility_cd = facility_file.facility_cd
+			WHERE
+				f.facility_cd = #{facilityCd};
+	</select>
+	
+	
+	
+		<select id="getFacilityCount" resultType="int">
+			/*시설 목록 총 튜플 수*/
+			SELECT
+				COUNT(*)
+			FROM
+				facility;
+		</select>
+	
+	
+	<select id="getFacilityList" parameterType="Map" resultMap="facilityResultMap">
+		/*시설전체조회*/
+			SELECT 
+				f.facility_cd 					
+				,f.main_ctg_cd					
+				,f.area_cd						
+				,f.city_cd						
+				,f.town_cd						
+				,f.facility_use_cd									
+				,f.facility_nm					
+				,f.facility_address  			
+				,f.facility_tell				
+				,f.facility_post_num			
+				,f.facility_reg_date						
+				,facility_file.file_cd			
+				,facility_file.re_file_name		
+				,facility_file.original_file_nm	
+				,facility_file.stored_file_path	
+				,facility_file.represent_img
+			FROM 
+				facility as f
+				left join
+					 (SELECT
+						rfwf.facility_cd 	
+						,tf.file_cd				
+						,tf.re_file_name		
+						,tf.original_file_nm	
+						,tf.stored_file_path	
+						,tf.file_size		
+						,tf.uploader_id			
+						,tf.upload_date		
+						,tf.updator_id			
+						,tf.updated_datetime	
+						,tf.represent_img		
+					FROM
+						rel_file_with_facility AS rfwf
+					   INNER JOIN
+					   t_file	AS tf
+					   on
+					   tf.file_cd = rfwf.file_cd
+					WHERE
+						tf.deleted_yn != 'Y') AS facility_file
+				on
+				f.facility_cd = facility_file.facility_cd
+			<trim prefix="WHERE" prefixOverrides="and">
+		   		<if test="mainCtgCd != null and mainCtgCd != '' ">
+		   			f.main_ctg_cd = #{mainCtgCd}
+		   		</if>
+		   		<if test="cityCd != null and cityCd != ''">
+		   			and f.city_cd LIKE CONCAT(#{cityCd}, '%')
+		   		</if>
+		   		<if test="areaCd != null and areaCd != ''">
+		   			and f.area_cd = #{areaCd}
+		   		</if>
+		   		<if test="sportsCd != null and sportsCd != '' ">
+		   			and f.sports_cd = #{sportsCd}
+		   		</if>
+		   		<if test="searchValue != null and searchValue != '' ">		
+					and f.facility_nm LIKE CONCAT('%', #{searchValue}, '%')
+		   		</if>
+	   		</trim>
+	   		ORDER BY facility_reg_date DESC
+			LIMIT #{startRow}, #{rowPerPage}
+		</select>
+	
+
+</mapper>

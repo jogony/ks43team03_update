@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default.html}">
+
+<th:block layout:fragment="customJs">
+		<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+</th:block>
+<th:block layout:fragment="customCss">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	 <style>
+    h1 {
+        text-align: center;
+        margin-top: 230px;
+        font-size: 90px;
+    }
+    h1 span:nth-child(1) {
+        color:#4285f4;
+    }
+    h1 span:nth-child(2) {
+        color:#ea4335;
+    }
+    h1 span:nth-child(3) {
+        color:#fbbc05;
+    }
+    h1 span:nth-child(4) {
+        color:#4285f4;
+    }
+    h1 span:nth-child(5) {
+        color:#34a853;
+    }
+    h1 span:nth-child(6) {
+        color:#ea4335;
+    }
+    .search-bar {
+      width: 500px;
+    }
+  </style>
+</th:block>
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+	<!-- 이런식으로 넣으면 되겠죠? -->
+	<div class="breadcrumb-option">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="breadcrumb__links">
+						<a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+						<span>Shop</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<section class="shop spad">
+		<div class="container">
+			<div class="row">
+				<!-- shop 왼쪽 메뉴 -->
+				<div class="col-lg-3 col-md-3">
+                    <div class="shop__sidebar">
+                        <div class="sidebar__categories">
+                            <div class="section-title">
+                                <h4>Categories</h4>
+                            </div>
+                            <div class="categories__accordion">
+                                <div class="accordion" id="accordionExample">
+                                    <div class="card">
+                                        <div class="card-heading active">
+                                            <a data-toggle="collapse" data-target="#collapseOne">레슨카테고리</a>
+                                        </div>
+                                        <div id="collapseOne" class="collapse show" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <ul>
+                                                    <li><a href="#">사설레슨</a></li>
+                                                    <li><a href="#">공공레슨</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				<div class="col-lg-9 col-md-9">
+					<div class="row">
+						<th:block th:if="${not #lists.isEmpty(searchList)}" th:each="l : ${searchList}">
+							<th:block  th:if="${not #lists.isEmpty(l.tFile)}" th:each="t : ${l.tFile}">
+								<th:block  th:if="${t.representImg == 'Y'}">
+									<div class="col-lg-4 col-md-6" >
+										<div class="product__item">
+											<div class="product__item__pic set-bg" th:data-setbg="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}"
+													style="background-image: url(&quot;img/shop/shop-1.jpg&quot;);">
+												<div class="label new">New</div>
+												<ul class="product__hover">
+													<li><a href="img/shop/shop-1.jpg" class="image-popup"><span
+																class="arrow_expand"></span></a></li>
+													<li><a href="#"><span class="icon_heart_alt"></span></a></li>
+													<li><a href="#"><span class="icon_bag_alt"></span></a></li>
+												</ul>
+											</div>
+											<div class="product__item__text">
+												<h6><a th:href="@{/lesson/detailLessonForUser(lessonCd=${l.lessonCd})}" th:text="${l.lessonName}"></a></h6>
+												<div class="rating">
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+												</div>
+												<div class="product__price">$ [[${l.lessonPrice}]]</div>
+											</div>
+										</div>
+									</div>
+								</th:block>
+							</th:block>
+							<th:block th:unless="${not #lists.isEmpty(l.tFile)}" >
+								<div class="col-lg-4 col-md-6">
+									<div class="product__item__pic set-bg"  th:data-setbg="@{/images/notImage.jfif}"
+										style="background-image: url(&quot;img/shop/shop-1.jpg&quot;);">
+										<div class="label new">New</div>
+										<ul class="product__hover">
+											<li><a href="img/shop/shop-1.jpg" class="image-popup"><span
+														class="arrow_expand"></span></a></li>
+											<li><a href="#"><span class="icon_heart_alt"></span></a></li>
+											<li><a href="#"><span class="icon_bag_alt"></span></a></li>
+										</ul>
+									</div>
+									
+									<div class="product__item__text">
+										<h6><a th:href="@{/lesson/detailLessonForUser(lessonCd=${l.lessonCd})}" th:text="${l.lessonName}"></a></h6>
+										<div class="rating">
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+											<i class="fa fa-star"></i>
+										</div>
+										<div class="product__price">$ [[${l.lessonPrice}]]</div>
+									</div>
+								</div>
+							</th:block>
+						</th:block>
+						<th:block  th:unless="${not #lists.isEmpty(searchList)}">
+							<div class="col-lg-4 col-md-6">
+								<div style="text-align: center;">등록된 게시물이 없습니다.</div>
+							</div>
+						</th:block>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+								
+		<div class="col-lg-12 text-center">
+			<div class="pagination__option">
+				<a th:href="@{/lesson/lessonListForUser(searchCtg=LessonSearch)}">처음</a>
+				<a th:if="${currentPage > 1}" th:href="@{/lesson/lessonListForUser(currentPage=${currentPage - 1}, searchCtg=LessonSearch)}"><i class="fa fa-angle-left"></i></a>
+				<th:block th:each="num : ${#numbers.sequence(startPageNum,endPageNum)}">
+					<label th:if="${currentPage eq num}" th:text="${(num<10) ? '0' + num : num}"></label>
+					<a th:unless="${currentPage eq num}" th:href="@{/lesson/lessonListForUser(currentPage=${num}, searchCtg=LessonSearch)}" th:text="${(num<10) ? '0' + num : num}"></a>
+				</th:block>
+				<a th:if="${currentPage < lastPage}" th:href="@{/lesson/lessonListForUser(currentPage=${currentPage + 1}, searchCtg=LessonSearch)}"><i class="fa fa-angle-right"></i></a>
+				<a th:href="@{/lesson/lessonListForUser(currentPage=${lastPage}, searchCtg=LessonSearch)}">끝</a>
+			</div>
+		</div>
+									
+		
+	</section>
+	<div class="instagram">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-2 col-md-4 col-sm-4 p-0">
+					<div class="instagram__item set-bg" data-setbg="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201201/11/htm_201201110282260106011.jpg"
+						style="background-image: url(&quot;img/instagram/insta-1.jpg&quot;);">
+						<div class="instagram__text">
+							<i class="fa fa-instagram"></i>
+							<a href="https://github.com/ssinokang/ks43team03">@ github</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-4 col-sm-4 p-0">
+					<div class="instagram__item set-bg" data-setbg="https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201201/11/htm_201201110282260106011.jpg"
+						style="background-image: url(&quot;img/instagram/insta-2.jpg&quot;);">
+						<div class="instagram__text">
+							<i class="fa fa-instagram"></i>
+							<a href="https://github.com/ssinokang/ks43team03">@ github</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-4 col-sm-4 p-0">
+					<div class="instagram__item set-bg" data-setbg="https://mblogthumb-phinf.pstatic.net/MjAyMDAzMDlfMTYg/MDAxNTgzNzQwODYzMzIx.G-mQe-KfVzbCEFQ3G0BAKEgzpSPMODgh7XbgsvMH55Ug._8IceGlMEBy41Qum1DCtyZPDBPmwn-EKZ7QUCdpGpL4g.JPEG.6406dud/skysports-bukayo-saka-arsenal_4923293.jpg?type=w800"
+						style="background-image: url(&quot;img/instagram/insta-3.jpg&quot;);">
+						<div class="instagram__text">
+							<i class="fa fa-instagram"></i>
+							<a href="https://github.com/ssinokang/ks43team03">@ github</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-4 col-sm-4 p-0">
+					<div class="instagram__item set-bg" data-setbg="https://mblogthumb-phinf.pstatic.net/MjAyMDAzMDlfMTYg/MDAxNTgzNzQwODYzMzIx.G-mQe-KfVzbCEFQ3G0BAKEgzpSPMODgh7XbgsvMH55Ug._8IceGlMEBy41Qum1DCtyZPDBPmwn-EKZ7QUCdpGpL4g.JPEG.6406dud/skysports-bukayo-saka-arsenal_4923293.jpg?type=w800"
+						style="background-image: url(&quot;img/instagram/insta-4.jpg&quot;);">
+						<div class="instagram__text">
+							<i class="fa fa-instagram"></i>
+							<a href="https://github.com/ssinokang/ks43team03">@ github</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-4 col-sm-4 p-0">
+					<div class="instagram__item set-bg" data-setbg="https://www.sports-g.com/wp-content/uploads/2016/11/20161124_160439.jpg"
+						style="background-image: url(&quot;img/instagram/insta-5.jpg&quot;);">
+						<div class="instagram__text">
+							<i class="fa fa-instagram"></i>
+							<a href="https://github.com/ssinokang/ks43team03">@ github</a>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-4 col-sm-4 p-0">
+					<div class="instagram__item set-bg" data-setbg="https://www.sports-g.com/wp-content/uploads/2016/11/20161124_160439.jpg"
+						style="background-image: url(&quot;img/instagram/insta-6.jpg&quot;);">
+						<div class="instagram__text">
+							<i class="fa fa-instagram"></i>
+							<a href="https://github.com/ssinokang/ks43team03">@ github</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+
+</html>

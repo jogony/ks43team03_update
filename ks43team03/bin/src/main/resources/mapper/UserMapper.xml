@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ks43team03.mapper.UserMapper">
+	<resultMap type="User" id="userRsultMap">
+		<id column="user_id"			property="userId"/>
+		<result column="user_level"		property="userLevel"/>
+		<result column="user_password"	property="userPw"/>
+		<result column="user_nm"		property="userName"/>
+		<result column="user_address"	property="userAddr"/>
+		<result column="user_birth"		property="userBirth"/>
+		<result column="user_email"		property="userEmail"/>
+		<result column="user_tell"		property="userTell"/>
+		<result column="user_gender"	property="userGender"/>
+		<result column="user_drop"		property="userDrop"/>
+		<result column="reg_path"		property="userRegPath"/>
+		<result column="user_terms"		property="userTerms"/>
+		<result column="user_reg_date"	property="userRegDate"/>
+	</resultMap>
+	
+	<select id="getUserList" resultMap="userRsultMap">
+		SELECT
+			 user_id
+			,user_level
+			,user_password
+			,user_nm
+			,user_address
+			,user_birth
+			,user_email
+			,user_tell
+			,user_gender
+			,user_drop
+			,reg_path
+			,user_terms
+			,user_reg_date
+		FROM
+			user
+	</select>
+</mapper>

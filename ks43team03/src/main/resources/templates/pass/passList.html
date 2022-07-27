@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/adminDefault.html}">
+
+	<!-- 사용자 정의 contents -->
+	<th:block layout:fragment="customContents">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>이용권 리스트 테이블 <small>관리자</small></h2>
+
+								<div class="clearfix"></div>
+							</div>
+
+							<div class="x_content">
+
+
+
+								<div class="table-responsive">
+									<table class="table jambo_table bulk_action">
+										<thead>
+											<tr class="headings">
+												
+												<th class="column-title" style="display: table-cell;">이용권 명</th>
+												<th class="column-title" style="display: table-cell;">이용권등록자</th>
+												<th class="column-title" style="display: table-cell;">이용권단위</th>
+												<th class="column-title" style="display: table-cell;">이용권 단가</th>
+												<th class="column-title" style="display: table-cell;">이용권 등록일자</th>
+												<th class="column-title" style="display: table-cell;">이용권 상태</th>
+												<th class="column-title" style="display: table-cell;">수정</th>
+												<th class="column-title" style="display: table-cell;">삭제</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											<tr class="" th:if="${not #lists.isEmpty(passList)}" th:each="pass : ${passList}">
+												<td class=" " th:text="${pass.passNm}"></td>
+												<td class=" " th:text="${pass.userId}">땡떙체육관</td>
+												<td class=" " th:text="${pass.passUnit}"> </td>
+												<td class=" " th:text="${pass.passPrice}"> <i class="success fa fa-long-arrow-up"></i></td>
+												<td class=" " th:text="${pass.passRegDate}"></td>
+												<td class=" " th:text="${pass.passState}"></td>
+												<td><a class="btn btn-default" th:href="@{/pass/modifyPass(passCd=${pass.passCd},facilityGoodsCd=${pass.facilityGoodsCd},userId=${pass.userId})}">수정하기</a></td>
+												<td><a class="btn btn-default" th:href="@{/pass/removePass(passCd=${pass.passCd},facilityGoodsCd=${pass.facilityGoodsCd},userId=${pass.userId})}">삭제하기</a></td>
+												
+											</tr>
+											<tr th:unless="${not #lists.isEmpty(passList)}">
+												<td colspan="8">이용권을 등록해주세요.<button class="btn btn-primary" id="add-pass-btn" type="button">이용권등록</button> </td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+						
+	</th:block>
+
+</html>

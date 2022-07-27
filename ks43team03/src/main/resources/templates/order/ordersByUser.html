@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default.html}">
+
+<th:block layout:fragment="customJs">
+	<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+
+</th:block>
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+
+	<!-- 이런식으로 넣으면 되겠죠? -->
+	<section class="shop-cart spad">
+		<div class="container">
+			<div class="row">
+				<div th:replace="fragments/orderSidebar :: orderSidebarFragment"></div>
+				<div class="col-lg-9 col-md-9">
+					<div class="row">
+						<div class="col-lg-8 col-sm-8">
+							<form th:action="@{/order/orders/{id}(id=${session.SID})}" method="GET">
+								<div class="form row">
+									<div class="form-group col-8">
+										<div class="input-group">
+											<input type="hidden" name="dateMonth" th:value="${dateMonth}">
+											<input type="text" name="searchValue" class="form-control" id="formGroupExampleInput" placeholder="검색 키워드를 입력하세요." style="font-size: 14px;">
+											<div class="input-group-prepend">
+												<button type="submit" class="btn btn-outline-danger" style="font-size: 14px; background: #ec5552; color: #fff;">검색</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						
+						<div class="col-lg-12 col-sm-12 mt-4">
+							<label th:if="${#strings.equals(dateMonth, 3)}">3개월 이내</label>
+							<a class="btn btn-outline-secondary" th:unless="${#strings.equals(dateMonth, 3)}" th:href="@{/order/orders/{id}(id=${session.SID},dateMonth=${3})}">3개월 이내</a>
+							
+							<label th:if="${#strings.equals(dateMonth, 6)}">6개월 이내</label>
+							<a class="btn btn-outline-secondary" th:unless="${#strings.equals(dateMonth, 6)}" th:href="@{/order/orders/{id}(id=${session.SID},dateMonth=${6})}">6개월 이내</a>
+							
+							<label th:if="${#strings.equals(dateMonth, 9)}">9개월 이내</label>
+							<a class="btn btn-outline-secondary" th:unless="${#strings.equals(dateMonth, 9)}" th:href="@{/order/orders/{id}(id=${session.SID},dateMonth=${9})}">9개월 이내</a>
+							
+							<label th:if="${#strings.equals(dateMonth, 12)}">12개월 이내</label>
+							<a class="btn btn-outline-secondary" th:unless="${#strings.equals(dateMonth, 12)}" th:href="@{/order/orders/{id}(id=${session.SID},dateMonth=${12})}">12개월 이내</a>
+						</div>
+					</div>
+					
+					<div class="row mt-4">
+						<div class="col-sm-12 col-lg-12">
+							<ul class="nav nav-tabs" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link active" id="order-main" data-toggle="tab" href="#tabs-1" role="tab">전체주문</a>
+								</li>
+							</ul>	
+							<div class="tab-content">
+								<div class="tab-pane active" id="tabs-1" role="tabpanel">
+									<div class="row">
+										<div class="col-sm-12 col-lg-12" id="orderList">
+											<h6>전체주문</h6>
+											<th:block th:if="${not #lists.isEmpty(orderList)}" th:each="order : ${orderList}">
+											<div class="card mb-4">
+												<div class="card-body">
+													<div class="tab-content">
+														<div><span>주문일시 : </span> [[${order.orderRegDate}]]</div>
+														<div class="row">
+															<div class="col-sm-12 col-lg-12">
+																<table class="table">
+																	<tbody>
+																		<tr>
+																			<th class="col-sm-2 col-lg-2">주문코드</th>
+																			<td th:text="${order.orderCd}">order_cd_3306789785</td>
+																			<th rowspan="4" class="col-sm-3 col-lg-3">
+																				<div class="div btn-box ml-5" style="margin-top: 60px;">
+																					<a th:href="@{/order/orderDetail/{id}(id=${order.userId},orderCd=${order.orderCd})}" class="btn btn-outline-danger" style="font-size: 14px; background: #ec5552; color: #fff;">상세보기</a>
+																				</div>
+																			</th>
+																		</tr>
+																		<tr>
+																			<th rowspan="2" class="col-sm-2 col-lg-2">상품명</th>
+																			<td><a th:href="@{/facility/facilityDetail(facilityCd=${order.facility.facilityCd})}">[[${order.facility.facilityNm}]]</a></td>
+																		</tr>
+																		<tr>
+																			<td class="col-sm-2 col-lg-2" th:text="${order.orderPayState}">주문완료(결제완료)</td>
+																		</tr>
+																		<tr>
+																			<th class="col-sm-2 col-lg-2">결제 금액</th>
+																			<td th:text="${order.orderPayPrice}">500000</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+															
+														</div>
+													</div>
+												</div>
+											</div>
+											</th:block>
+											<th:block th:unless="${not #lists.isEmpty(orderList)}">
+													<div><span>비워있습니다.</span></div>
+											</th:block>
+										</div>
+	
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	
+</th:block>
+
+</html>

@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ks43team03.mapper.LessonMapper">
+	<resultMap type="Lesson" id="lessonResultMap">
+		<id 	column="lesson_cd" 				property="lessonCd"/>
+		<result column="lesson_division" 		property="lessonDivision"/>
+		<result column="facility_goods_cd" 		property="facilityGoodsCd"/>
+		<result column="facility_cd" 			property="facilityCd"/>
+		<result column="goods_ctg_cd" 			property="goodsCtgCd"/>
+		<result column="sports_cd" 				property="sportsCd"/>
+		<result column="user_id" 				property="userId"/>
+		<result column="lesson_nm" 				property="lessonName"/>
+		<result column="lesson_detail" 			property="lessonDetail"/>		
+		<result column="lesson_total_member" 	property="lessonTotalMember"/>		
+ 		<result column="lesson_member" 			property="lessonMember"/>		 
+		<result column="lesson_start_date" 		property="lessonStartDate"/>		
+		<result column="lesson_end_date" 		property="lessonEndDate"/>		
+		<result column="lesson_start_time" 		property="lessonStartTime"/>		
+		<result column="lesson_time" 			property="lessonTime"/>		
+		<result column="lesson_end_time" 		property="lessonEndTime"/>
+		<result column="lesson_count" 			property="lessonCount"/>
+		<result column="lesson_price" 			property="lessonPrice"/>		
+		<result column="lesson_reg_date" 		property="lessonRegDate"/>		
+		<result column="lesson_state" 			property="lessonState"/>		
+		<association property="sports" javaType="Sports">
+			<id 	column="sports_cd"	property="sportsCd"/>
+			<result column="sports_nm" 	property="sportsName"/>
+		</association>
+		<association property="facility" javaType="Facility">
+			<id 	column="facility_cd" 		property="facilityCd"/>
+			<result column="main_ctg_cd"		property="mainCtgCd"/>
+			<result column="area_cd"  			property="areaCd"/>
+			<result column="city_cd"  			property="cityCd"/>
+			<result column="town_cd"  			property="townCd"/>
+			<result column="facility_use_cd" 	property="facilityUseCd"/>
+			<result column="user_id" 			property="userId"/>
+			<result column="facility_nm" 		property="facilityNm"/>
+			<result column="facility_address" 	property="facilityAddr"/>
+			<result column="facility_tell" 		property="facilityTell"/>
+			<result column="facility_post_num" 	property="facilityPostNum"/>
+			<result column="business_number" 	property="businessNum"/>
+			<result column="facility_reg_date"	property="facilityRegDate"/>
+		</association>
+		<association property="areaCityTown" 	javaType="AreaCityTown">
+			<id 	column="town_cd" 			property="townCd"/>
+			<result column="city_cd" 			property="cityCd"/>
+			<result column="area_cd" 			property="areaCd"/>
+			<result column="town_nm" 			property="townNm"/>
+		</association>
+		<collection property="relFileWithGoods" ofType="Map">
+			<result	column="facility_goods_cd"	property="facilityGoodsCd"/>
+			<result	column="file_cd"			property="fileCd"/>
+		</collection>
+		<collection property="tFile" ofType="TFile">
+			<id		column="file_cd"				property="fileCd"/>	
+			<result	column="original_file_nm"		property="originalFileName"/>
+			<result	column="stored_file_path"		property="storedFilePath"/>
+			<result	column="file_size"				property="fileSize"/>
+			<result column="re_file_name"			property="reFileName"/>
+			<result	column="uploader_id"			property="uploaderId"/>
+			<result	column="upload_date"			property="uploadDate"/>
+			<result	column="updator_id"				property="updatorId"/>
+			<result	column="updated_date"			property="updatedDate"/>
+			<result	column="represent_img"		property="representImg"/>
+		</collection>
+		<collection property="reservation"	 ofType="Reservation">
+			<id		column="reservation_cd"			property="reservationCd"/>	
+			<result	column="facility_goods_cd"		property="facilityGoodsCd"/>
+			<result	column="reservation_id"			property="reservationId"/>
+			<result	column="reservation_date"		property="reservationDate"/>
+			<result	column="reservation_start_time"	property="reservationStartTime"/>
+			<result column="reservation_end_time"	property="reservationEndTime"/>
+			<result column="reservation_reg_date"	property="reservationRegDate"/>
+			<result	column="reservation_cancel"		property="reservationCancel"/>
+		</collection>
+	</resultMap>
+	<!-- 레슨 게시물 숫자 가져오기 -->
+	<select id="getLessonCount" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			lesson
+	</select>
+	
+	<select id="getReservation" parameterType="Map" resultMap="lessonResultMap">
+		<!-- 레슨 스케쥴 가져오기 -->
+		SELECT
+			l.lesson_cd,
+			l.lesson_start_date,
+			l.lesson_end_time,
+			l.lesson_end_date,
+			l.lesson_start_time,
+			l.lesson_time,
+			lr.reservation_date,
+			lr.reservation_start_time,
+			lr.reservation_end_time
+		FROM
+			lesson AS l
+			LEFT JOIN
+			(SELECT
+				lr.facility_goods_cd,
+				lr.reservation_date,
+				lr.reservation_start_time,
+				lr.reservation_end_time
+			FROM
+			reservation AS lr
+			WHERE
+				 <![CDATA[lr.reservation_cancel <> 'Y']]>) AS lr
+			on
+			l.facility_goods_cd = lr.facility_goods_cd
+		where
+		l.facility_goods_cd = #{facilityGoodsCd}
+	</select>
+	
+	
+	<update id="modifyLesson" parameterType="Lesson">
+	<!-- 레슨 수정하기 -->
+		UPDATE lesson
+		SET
+			lesson_division=#{lessonDivision}
+			,facility_goods_cd=#{facilityGoodsCd}
+			,sports_cd=#{sportsCd}
+			,user_id=#{userId}
+			,lesson_nm=#{lessonName}
+			,lesson_detail=#{lessonDetail}
+			,lesson_total_member=#{lessonTotalMember}
+			,lesson_start_date=#{lessonStartDate}
+			,lesson_end_date=#{lessonEndDate}
+			,lesson_price=#{lessonPrice}
+		WHERE
+			lesson_cd=#{lessonCd}
+	</update>
+
+	<select id="getLessonInfoByCd" fetchSize="100" parameterType="String" resultMap="lessonResultMap">
+		<!-- 레슨 코드를 사용한 레슨 상세 조회 -->
+		SELECT
+			lesson_sub.town_cd
+			,lesson_sub.town_nm
+			,lesson_sub.area_cd
+			,lesson_sub.facility_cd
+			,lesson_sub.main_ctg_cd
+			,lesson_sub.facility_use_cd
+			,lesson_sub.sports_cd
+			,lesson_sub.user_id
+			,lesson_sub.lesson_division
+			,lesson_sub.facility_nm
+			,lesson_sub.facility_address
+			,lesson_sub.facility_tell
+			,lesson_sub.business_number
+			,lesson_sub.facility_reg_date
+			,lesson_sub.facility_post_num
+			,lesson_sub.facility_detail_addr
+			,lesson_sub.area_cd
+			,lesson_sub.lesson_cd
+			,lesson_sub.goods_ctg_cd
+			,lesson_sub.sports_cd
+			,lesson_sub.lesson_division
+			,lesson_sub.sports_nm
+			,lesson_sub.lesson_nm
+			,lesson_sub.lesson_detail
+			,lesson_sub.lesson_total_member
+			,lesson_sub.lesson_member
+			,lesson_sub.lesson_start_date
+			,lesson_sub.lesson_end_date
+			,lesson_sub.lesson_start_time
+			,lesson_sub.lesson_end_time
+			,lesson_sub.lesson_count
+			,lesson_sub.lesson_price
+			,lesson_sub.facility_goods_cd
+			,lesson_sub.lesson_reg_date
+			,lesson_file.file_cd
+			,lesson_file.original_file_nm
+			,lesson_file.stored_file_path
+			,lesson_file.file_size
+			,lesson_file.re_file_name
+			,lesson_file.uploader_id
+			,lesson_file.upload_date
+			,lesson_file.updated_datetime
+			,lesson_file.represent_img
+			FROM
+				(SELECT
+					act.town_cd
+					,act.town_nm
+					,f.facility_cd
+					,f.main_ctg_cd
+					,f.facility_use_cd
+					,f.facility_nm
+					,f.facility_address
+					,f.facility_tell
+					,f.business_number
+					,f.facility_reg_date
+					,f.facility_post_num
+				  	,f.facility_detail_addr
+				  	,f.area_cd
+				  	,l.lesson_cd
+				  	,l.sports_cd
+				  	,l.lesson_division
+				  	,l.goods_ctg_cd
+				  	,l.user_id
+				  	,l.sports_nm
+				  	,l.lesson_nm
+				  	,l.lesson_detail
+				  	,l.lesson_total_member
+				  	,l.lesson_member
+				  	,l.lesson_start_date
+				  	,l.lesson_end_date
+				  	,l.lesson_start_time
+				  	,l.lesson_end_time
+				  	,l.lesson_count
+				  	,l.lesson_price
+				  	,l.facility_goods_cd
+				  	,l.lesson_reg_date
+				FROM
+					lesson   AS l
+				   INNER JOIN
+				   facility AS f
+				   ON
+					l.facility_cd = f.facility_cd
+				   INNER JOIN
+				   area_city_town AS act
+				   on
+				   f.town_cd = act.town_cd
+				WHERE
+		      	l.lesson_cd = #{lessonCd}) AS lesson_sub
+				LEFT JOIN
+				(SELECT
+					rfwg.facility_goods_cd
+					,tf.file_cd
+					,tf.re_file_name
+					,tf.original_file_nm
+					,tf.stored_file_path
+					,tf.file_size
+					,tf.uploader_id
+					,tf.upload_date
+					,tf.updator_id
+					,tf.updated_datetime
+					,tf.represent_img
+				FROM
+					rel_file_with_goods AS rfwg
+					INNER JOIN
+				    t_file	AS tf
+				    on
+				    tf.file_cd = rfwg.flie_cd
+				WHERE
+					tf.deleted_yn != 'Y') AS lesson_file
+				on
+				lesson_file.facility_goods_cd = lesson_sub.facility_goods_cd
+	</select>
+	<!-- 시설 내 레슨 조회 -->
+	<select id="getFacilityLessonList" fetchSize="100" parameterType="String" resultMap="lessonResultMap">
+		SELECT
+			l.lesson_cd
+			,l.lesson_division
+			,l.facility_goods_cd
+			,l.facility_cd
+			,l.goods_ctg_cd
+			,l.sports_cd
+			,l.user_id
+			,l.lesson_nm
+			,l.lesson_detail
+			,l.lesson_total_member
+			,l.lesson_price
+			,l.lesson_member
+			,l.lesson_start_date
+			,l.lesson_end_date
+			,l.lesson_start_time
+			,l.lesson_end_time
+			,l.lesson_count
+			,l.lesson_state
+			,l.lesson_reg_date
+			,s.sports_nm
+			,s.sports_cd
+		FROM
+			lesson AS l
+			INNER JOIN
+			sports AS s
+			on
+			l.sports_cd = s.sports_cd
+		WHERE
+			l.facility_cd = #{facilityCd}
+	</select>
+	<!-- 레슨 등록 -->
+	<insert id="addLesson" parameterType="Lesson">
+		INSERT INTO lesson
+		(
+			lesson_cd
+			,lesson_division
+			,facility_goods_cd
+			,facility_cd
+			,goods_ctg_cd
+			,sports_cd
+			,user_id
+			,lesson_nm
+			,lesson_detail
+			,lesson_total_member
+			,lesson_start_date
+			,lesson_end_date
+			,lesson_start_time
+			,lesson_end_time
+			,lesson_count
+			,lesson_price
+			,lesson_reg_date
+		) VALUES (
+			sf_new_lesson_cd()
+			,#{lessonDivision}
+			,#{facilityGoods.facilityGoodsCd}
+			,#{facilityCd}
+			,#{goodsCtgCd}
+			,#{sportsCd}
+			,#{userId}
+			,#{lessonName}
+			,#{lessonDetail}
+			,#{lessonTotalMember}
+			,#{lessonStartDate}
+			,#{lessonEndDate}
+			,#{lessonStartTime}
+			,#{lessonEndTime}
+			,#{lessonCount}
+			,#{lessonPrice}
+			,NOW()
+		)
+	</insert>
+	<select id="getLessonListForUser" parameterType="Map" resultMap="lessonResultMap">
+	select
+	lesson_sub.town_cd
+	,lesson_sub.town_nm
+	,lesson_sub.area_cd
+	,lesson_sub.facility_cd
+	,lesson_sub.main_ctg_cd
+	,lesson_sub.city_cd
+	,lesson_sub.facility_use_cd
+	,lesson_sub.user_id
+	,lesson_sub.facility_nm
+	,lesson_sub.facility_address
+	,lesson_sub.facility_tell
+	,lesson_sub.business_number
+	,lesson_sub.facility_reg_date
+	,lesson_sub.facility_post_num
+	,lesson_sub.facility_detail_addr
+	,lesson_sub.lesson_cd
+	,lesson_sub.lesson_division
+	,lesson_sub.sports_nm
+	,lesson_sub.sports_cd
+	,lesson_sub.lesson_nm
+	,lesson_sub.lesson_detail
+	,lesson_sub.lesson_total_member
+	,lesson_sub.lesson_member
+	,lesson_sub.lesson_start_date
+	,lesson_sub.lesson_end_date
+	,lesson_sub.lesson_start_time
+	,lesson_sub.lesson_end_time
+	,lesson_sub.lesson_price
+	,lesson_sub.facility_goods_cd
+	,lesson_sub.lesson_reg_date
+	,lesson_file.file_cd
+	,lesson_file.original_file_nm
+	,lesson_file.stored_file_path
+	,lesson_file.file_size
+	,lesson_file.re_file_name
+	,lesson_file.uploader_id
+	,lesson_file.upload_date
+	,lesson_file.updated_datetime
+	,lesson_file.represent_img
+	FROM
+		(SELECT
+			act.town_cd
+			,act.town_nm
+			,act.city_cd
+			,f.facility_cd
+			,f.main_ctg_cd
+			,f.facility_use_cd
+			,f.facility_nm
+			,f.facility_address
+			,f.facility_tell
+			,f.business_number
+			,f.facility_reg_date
+			,f.facility_post_num
+		  	,f.facility_detail_addr
+		  	,f.area_cd
+		  	,l.lesson_cd
+		  	,l.lesson_division
+		  	,l.user_id
+		  	,l.sports_nm
+		  	,l.sports_cd
+		  	,l.lesson_nm
+		  	,l.lesson_detail
+		  	,l.lesson_total_member
+		  	,l.lesson_member
+		  	,l.lesson_start_date
+		  	,l.lesson_end_date
+		  	,l.lesson_start_time
+		  	,l.lesson_end_time
+		  	,l.lesson_price
+		  	,l.facility_goods_cd
+		  	,l.lesson_reg_date
+		FROM
+			lesson   AS l
+		   INNER JOIN
+		   facility AS f
+		   ON
+			l.facility_cd = f.facility_cd
+		   INNER JOIN
+		   area_city_town AS act
+		   on
+		   f.town_cd = act.town_cd) AS lesson_sub
+		LEFT JOIN
+		(SELECT
+			rfwg.facility_goods_cd
+			,tf.file_cd
+			,tf.re_file_name
+			,tf.original_file_nm
+			,tf.stored_file_path
+			,tf.file_size
+			,tf.uploader_id
+			,tf.upload_date
+			,tf.updator_id
+			,tf.updated_datetime
+			,tf.represent_img
+		FROM
+			rel_file_with_goods AS rfwg
+		   INNER JOIN
+		   t_file	AS tf
+		   on
+		   tf.file_cd = rfwg.flie_cd
+		WHERE
+			tf.deleted_yn != 'Y'
+			and
+			tf.represent_img ='Y' OR null
+		ORDER BY tf.represent_img	) AS lesson_file
+		on
+		lesson_file.facility_goods_cd = lesson_sub.facility_goods_cd
+		
+		<trim prefix="where " prefixOverrides="and">
+	   		<if test="mainCtgCd != null and mainCtgCd != ''">
+	   			and lesson_sub.main_ctg_cd = #{mainCtgCd}
+	   		</if>
+	   		<if test="cityCd != null and cityCd != ''">
+	   			and lesson_sub.city_cd LIKE CONCAT(#{cityCd}, '%')
+	   		</if>
+	   		<if test="areaCd != null and areaCd != ''">
+	   			and lesson_sub.area_cd = #{areaCd}
+	   		</if>
+	   		<if test="sportsCd != null and sportsCd != '' ">
+	   			and lesson_sub.sports_cd = #{sportsCd}
+	   		</if>
+	   		<if test="searchValue != null and searchValue != '' ">		
+				and lesson_sub.lesson_nm LIKE CONCAT('%', #{searchValue}, '%')
+	   		</if>
+	   	</trim>
+	   	order by lesson_sub.lesson_reg_date desc
+		limit #{startRow}, #{rowPerPage}
+	</select>
+
+</mapper>

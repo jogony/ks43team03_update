@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default.html}">
+	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	
+	<!-- 사용자 정의 Css -->
+	<th:block layout:fragment="customCss">
+		<style>
+			.form-group{
+				margin-top: 20px;
+			}
+			
+			.table{
+				margin-top: 15px;
+				font-size: 15px;
+			}
+			
+			#tableHead{
+				background-color: #FBFBFB;
+			}
+			
+			.board__details__comment{
+				padding-bottom: 50px;
+				padding-top: 15px;
+				border-top: solid 1px #E0E0E0;
+			}
+			
+			.leave-btn{
+				padding-top: 12px;
+			}
+			
+			.board__comment__item{
+				padding-top: 5px;
+			}
+			
+			.board__comment__item__text{
+				margin-bottom: 0px;
+			}
+			
+			.commentUl{
+				position:relative; 
+				top:-15px; 
+				padding:5px 10px 10px 10px; 
+				border-bottom: solid 1px #E0E0E0;
+			}
+			
+			/* 파일 */
+			.uploadResult ul li span {color: white;}
+			.bigPictureWrapper {
+				position: absolute;
+				display: none;
+				justify-content: center;
+				align-items: center;
+				top: 0%;
+				width: 100%;
+				height: 100%;
+				z-index: 100;
+				background: rgba(255, 255, 255, 0.5);
+			}
+			.bigPicture {
+				position: relative;
+				display: flex;  
+				justify-content: center;  
+				align-items: center;
+			}
+			.bigPicture img {width: 600px;}
+
+			
+		</style>
+	</th:block>
+	
+	<th:block layout:fragment="customContents">
+	 
+	<!-- Breadcrumb Begin -->
+	    <div class="breadcrumb-option">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-lg-12">
+	                    <div class="breadcrumb__links">
+	                        <a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+	                        <a th:href="@{/board/boardList}">게시판</a>
+	                        <span th:text="${board.boardPostTitle}"></span>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	 <!-- Breadcrumb End -->
+	
+		<section class="board-details spad">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-8 col-md-8">
+					
+						<!-- contents -->
+						<div class="board__details__content">
+							
+							<!-- detail -->
+							<div class="board__details__item">
+								<img src="img/board/details/board-details.jpg" alt="">
+								<div class="board__details__item__title">
+									<input type="hidden" th:value="${board.boardCtgCd}" id="boardCtgCd">
+									<span class="tip">공지사항</span>
+									<label th:text="${board.boardPostTitle}"></label>
+									<input type="hidden" th:value="${board.boardPostCd}" id="boardPostCd">
+									<ul>
+										<li>by
+											<span th:text="${board.userId}"></span>
+										</li>
+										<li th:text="${board.boardPostDate}"></li>
+										<li> [[${board.boardPostCommentNum}]] Comments</li>
+									</ul>
+								</div>
+							</div>
+							<div class="board__details__desc">
+								<p th:text="${board.boardPostContent}" id="boardPostContent"></p>
+							</div>
+							<div class="board__item__pic">
+								<div class="product__details__pic__left product__thumb nice-scroll">
+									<th:block th:if="${not #lists.isEmpty(board.tFile)}" th:each="t : ${board?.tFile}">
+										<a class="pt" th:data-img="${t.representImg}">
+											<img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="이미지를 불러올 수 없습니다.">
+										</a>
+									</th:block>
+								</div>
+							</div>
+							
+							<!-- detail end -->
+							 
+							<div class="board__details__comment">
+								<h5>[[${board.boardPostCommentNum}]] Comment</h5>
+								<a class="leave-btn" data-toggle="modal" data-target="#addCommentModal" 
+									th:if="${session.SLEVEL =='1'or session.SLEVEL =='2' or session.SLEVEL =='3' or session.SLEVEL =='4' or session.SLEVEL =='5'}">
+									답글쓰기</a>
+								
+								<!-- modal -->
+								<div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<form id="addCommentForm" th:action="@{/board/addBoardComment}" method="post">
+										<div class="modal-dialog" role="document">
+									 		<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="exampleModalLabel">답글 작성</h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<div class="form-group row">
+														<div class="col-md-3 col-sm-3">
+															<label class="control-label" for="userId">아이디</label>
+														</div>
+														<div class="col-md-9 col-sm-9">
+															<input type="text" class="form-control" name="userId" readonly="readonly" th:value="${session.SID}">
+														</div>
+													</div>
+													<div class="form-group row">
+														<div class="col-md-3 col-sm-3">
+															<label class="control-label" for="boardPostContentDetail">답글</label>
+														</div>
+														<div class="col-md-9 col-sm-9">
+															<input type="hidden" th:value="${board.boardCtgCd}" name="boardCtgCd">
+															<input type="hidden" th:value="${board.boardPostCd}" name="boardPostCd">
+															<input type="text" class="form-control" id="boardPostContentDetail" name="boardPostContentDetail" placeholder="작성해주세요.">
+														</div>
+													</div>
+												</div>
+												<div class="modal-footer">
+													<div class="form-group">
+														<button type="button" class="btn btn-primary" data-dismiss="modal">취소</button>
+														<button type="submit" class="btn btn-danger" id="saveBtn1">저장</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+								<!-- modal end -->						
+								
+								<!-- comment -->
+								<div class="board__comment__item">
+									<div class="board__comment__item__text" th:each="c : ${boardCommentList}">
+										<h6 th:text="${c.userId}"></h6>
+										<p th:text="${c.boardPostContentDetail}"></p>
+										<ul class="commentUl">
+											<li id="removeComment" th:if="${session.SLEVEL =='1' or session.SID == c.userId}">
+												<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="#CA1515" class="bi bi-trash3" viewBox="0 0 16 16">
+												  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+												</svg>
+												<a th:href="@{/board/removeComment(boardPostCommentCd=${c.boardPostCommentCd},boardPostCd=${c.boardPostCd})}"
+												   style="color: gray;">
+													삭제
+												</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<!-- comment end -->
+							</div>
+							
+							<table class="table table-sm">
+								<thead>
+									<tr id="tableHead">
+										<th id="boardPostTitle">제목</th>
+										<th id="boardPostDate">등록일</th>
+										<th id="boardPostViews">조회수</th>
+										<th id="boardPostCommentNum">댓글 수</th>
+										<th id="userId">작성자</th>
+									</tr>
+								</thead>
+								<tbody id="boardBody">
+									<tr th:if="${not #lists.isEmpty(boardList)}" th:each="l : ${boardList}">
+										<input type="hidden" th:value="${l.boardPostCd}">
+										<td th:text="${l.boardPostTitle}"></td>
+										<td th:text="${l.boardPostDate}"></td>
+										<td th:text="${l.boardPostViews}"></td>
+										<td th:text="${l.boardPostCommentNum}"></td>
+										<td th:text="${l.userId}"></td>
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(boardList)}">
+										<td colspan="5">조회된 내용이 없습니다.</td>
+									</tr>
+								</tbody>
+							</table>
+							
+							<!-- paging -->
+							<div class="col-lg-12 text-center">
+								<div class="pagination__option">
+									<a th:if="${currentPage > 1}" th:href="@{/board/boardList(currentPage=${currentPage - 1})}"><i class="fa fa-angle-left"></i></a>
+									<th:block th:each="num : ${#numbers.sequence(startPageNum,endPageNum)}">
+										<label th:if="${currentPage eq num}" th:text="${(num<10) ? '0' + num  :  num }"></label>
+										<a th:unless="${currentPage eq num}" th:href="@{/board/boardList(currentPage=${num})}" th:text="${(num<10) ? '0' + num  :  num }"></a>
+									</th:block>
+									<a th:if="${currentPage < lastPage}" th:href="@{/board/boardList(currentPage=${currentPage + 1})}"><i class="fa fa-angle-right"></i></a>
+								</div>
+							</div>
+							<!-- paging end -->
+			
+							
+						</div>
+						<!-- contents end -->
+						
+					</div>
+					<div class="col-lg-4 col-md-4">
+						<div class="board__sidebar">
+							<div class="board__sidebar__item">
+								<div class="section-title">
+									<h4>Categories</h4>
+								</div>
+								<ul>
+									<li>
+										<a href="#">
+											공지
+											<span>(250)</span>
+										</a>
+									</li>
+									<li>
+										<a href="#">
+											건의
+											<span>(35)</span>
+										</a>
+									</li>
+									<li>
+										<a href="#">
+											신고
+											<span>(60)</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+							<div class="board__sidebar__item">
+								<div class="section-title">
+									<h4>자주묻는질문</h4>
+								</div>
+								<a href="#" class="board__feature__item">
+									<div class="board__feature__item__text">
+										<h6>결제가 안돼요!</h6>
+										<span>Seb 17, 2019</span>
+									</div>
+								</a>
+								<a href="#" class="board__feature__item">
+									<div class="board__feature__item__text">
+										<h6>트레이너가 수업을 안해요.</h6>
+										<span>Seb 17, 2019</span>
+									</div>
+								</a>
+								<div class="board__feature__item__text">
+									<h6>예약한 시설이 전화를 안받아요.</h6>
+									<span>Seb 17, 2019</span>
+								</div>
+							</div>
+							<div style="float: left; width: 50%">
+								<a class="site-btn" style="margin-top: 20px;" th:href="@{/board/modifyBoard(boardPostCd=${board.boardPostCd})}" 
+								   th:if="${session.SID == board.userId}">
+									수정하기
+								</a>
+							</div>
+							<div style="float: left; width: 50%">
+								<a class="site-btn" style="margin-top: 20px;" th:href="@{/board/removeBoard(boardPostCd=${board.boardPostCd})}"
+								   th:if="${session.SID == board.userId or session.SLEVEL =='1'}">
+									삭제하기
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- board Details Section End -->
+		
+		<!-- 사용자 정의 js -->
+		<!-- <script type="text/javascript" th:src="@{/resource/js/boardJs.js}"></script> -->
+		<!-- 사용자 정의 Js 파일-->
+		<th:block layout:fragment="customJs">
+			<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+			 	
+			<script>
+				
+				/* 목록에서 해당 게시글 클릭시 이동 */
+				$(function(){
+					var $boardTr = $('#boardBody tr');
+
+					$boardTr.click(function(){
+						console.log(this);
+	  
+						var boardPostCd = $(this).find('input').val();
+						console.log(boardPostCd);
+							
+						$(location).attr('href','/board/boardDetail?boardPostCd='+boardPostCd);
+					});
+				});
+				
+				
+			</script> 
+		</th:block>
+		
+	 </th:block>
+	
+</html>

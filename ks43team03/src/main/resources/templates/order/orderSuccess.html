@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default.html}">
+
+<!-- 사용자 정의 contents -->
+<th:block layout:fragment="customContents">
+	<!-- 이런식으로 넣으면 되겠죠? -->
+
+
+	<div class="breadcrumb-option">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="breadcrumb__links">
+						<a th:href="@{/user}"><i class="fa fa-home"></i> Home</a>
+						<span>노래추천</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<section class="shop-cart spad">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-md-12">
+					<div class="row">
+						<div class="col-sm-12">
+								<ul class="nav nav-tabs" role="tablist">
+
+									<li class="nav-item">
+										<a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">주문정보</a>
+									</li>
+
+								</ul>
+								<div class="tab-content">
+									<div class="row">
+										<div class="col-sm-12 col-lg-12">
+											<table class="table">
+												<tbody>
+													<tr>
+														<th class="col-sm-2 col-lg-2">주문코드</th>
+														<td th:text="${pay.orderId}">order_cd_3306789785
+															<input type="hidden" th:value="${pay.orderId}">
+														</td>
+														<th rowspan="4" class="col-sm-3 col-lg-3">
+															<div class="div btn-box ml-5" style="margin-top: 60px;">
+																<button type="button">주문 취소하기</button>
+															</div>
+														</th>
+													</tr>
+													<tr>
+														<th rowspan="2" class="col-sm-2 col-lg-2">상품명</th>
+														<td><a href="#">[[${pay.orderName}]]</a></td>
+													</tr>
+													<tr>
+														<td class="col-sm-2 col-lg-2" th:text="${pay.status.message}">
+														</td>
+													</tr>
+													<tr>
+														<th class="col-sm-2 col-lg-2">결제금액</th>
+														<td th:text="${pay.totalAmount}">결제금액 19877</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+									</div>
+								</div>
+						<div class="">
+								<ul class="nav nav-tabs" role="tablist">
+
+									<li class="nav-item">
+										<a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">결제상세정보</a>
+
+									</li>
+
+								</ul>
+
+							</div>
+							<th:block th:if="${#strings.equals(pay.method,'간편결제') or #strings.equals(pay.method,'카드')}">
+								
+							<div class="tab-content">
+											<div class="row">
+												<div class="col-sm-12 col-lg-12">
+													<table class="table">
+														<tbody>
+															<tr>
+																<th class="col-sm-2 col-lg-2">결제</th>
+																<td>pay</td>
+																<th rowspan="4">
+																	<div>
+																		<div class="checkout__order">
+																			<div class="checkout__order__product">
+																				<ul>
+																					<li>결제가격
+																						<span
+																							th:text="${pay.totalAmount}">50000</span>
+																					</li>
+
+																				</ul>
+																			</div>
+																			<div class="checkout__order__total">
+																				<ul>
+																					<li>Total <span
+																							th:text="${pay.totalAmount}">450000</span>
+																					</li>
+																				</ul>
+																			</div>
+																		</div>
+																	</div>
+																</th>
+															</tr>
+															<tr th:if="${pay.card != null}">
+																<th class="col-sm-2 col-lg-2">결제 수단</th>
+																<td><a href="#">[[${pay.card.company}]]카드</a></td>
+															</tr>
+															<tr th:if="${pay.virtualAccount != null}">
+																<th class="col-sm-2 col-lg-2">결제 수단</th>
+																<td><a href="#">[[${pay.virtualAccount.bank}]]은행</a>
+																</td>
+															</tr>
+															<tr th:if="${pay.virtualAccount != null}">
+																<th>예금주</th>
+																<td>[[${pay.virtualAccount.customerName}]]</td>
+															</tr>
+															<tr>
+																<th class="col-sm-2 col-lg-2">결제 금액</th>
+																<td>[[${pay.totalAmount}]]</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+
+											</div>
+										</div>
+							</th:block>
+							<th:block th:if="${#strings.equals(pay.method,'가상계좌')}">
+								<div class="tab-content">
+											<div class="row">
+												<div class="col-sm-12 col-lg-12">
+													<table class="table">
+														<tbody>
+															
+															<tr th:if="${pay.virtualAccount != null}">
+																<th class="col-sm-2 col-lg-2">결제 수단</th>
+																<td><a href="#">[[${pay.virtualAccount.bank}]]은행</a></td>
+															</tr>
+															<tr th:if="${pay.virtualAccount != null}">
+																<th class="col-sm-2 col-lg-2">결제 수단</th>
+																<td><a href="#">[[${pay.method}]]</a></td>
+															</tr>
+																<tr th:if="${pay.virtualAccount != null}">
+																<th class="col-sm-2 col-lg-2">결제기한</th>
+																<td><a href="#">[[${pay.virtualAccount.dueDate}]]이내</a></td>
+															</tr>
+															<tr>
+																<th>예금주</th>
+																<td>[[${pay.virtualAccount.customerName}]]</td>
+															</tr>
+															<tr>
+																<th class="col-sm-2 col-lg-2">결제 할 금액</th>
+																<td>[[${pay.totalAmount}]]</td>
+															</tr>
+															
+														</tbody>
+													</table>
+												</div>
+
+											</div>
+										</div>
+							</th:block>
+
+						</div>
+					</div>
+					<div class="row mt-3">
+						<div class="col-lg-12 text-center">
+							<a th:herf="@{/user}" class="primary-btn load-btn" id="indexHome">home</a>
+							<a class="primary-btn load-btn" th:href="@{/order/orders/{id}(id=${session.SID})}">My주문</a>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<input type="hidden" id="userId" th:value="${session.SID}">
+		<script>
+
+		
+	</script>
+	</section>
+
+
+	
+
+</th:block>
+
+</html>

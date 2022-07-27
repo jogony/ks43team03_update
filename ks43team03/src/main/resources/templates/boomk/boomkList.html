@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/default.html}"> 
+	  	<!-- 사용자 정의 title -->
+	<th:block layout:fragment="customTitle">
+		<title th:text="${title}"></title>
+	</th:block>
+	  
+	 <!-- 사용자 정의 Js 파일-->
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>
+		
+		<script>
+			$(function(){
+				var $boomkTr = $('#boomkBody tr');
+				console.log($boomkTr);
+
+				$boomkTr.click(function(){
+					console.log(this);
+  
+					var facilityCd = $(this).find('input').val();
+					console.log(facilityCd);
+						
+					$(location).attr('href','/facility/facilityDetail?facilityCd='+facilityCd);
+				});
+			});
+		</script>
+	</th:block>
+
+  	 <th:block layout:fragment="customContents">
+		<section class="shop-cart spad">
+			<div class="container">
+				<div th:unless="${session.SID == null}" style="text-align: left;">
+					<h4>[[${session.SNAME}]] 님의 즐겨찾기 목록</h4>
+				</div>				
+				
+				<div class="row" style="margin-top: 50px;">
+					<div class="col-lg-12 text-center">  <!-- text-center 텍스트 중앙정렬 -->
+						<div class="shop__cart__table">
+							<table class="table table table-hover">
+								<thead>
+									<tr>
+								<!-- 	<th>아이디</th>
+										<th>즐겨찾기 등록 날짜</th>
+										<th>즐겨찾기 여부</th> -->
+										<th>즐겨찾기 날짜</th>
+										<th>시설 명</th>
+										<th>시설 주소</th>
+										<th>시설 상세 주소</th>
+										<th>시설 전화번호</th>
+										<th>즐겨찾기 취소</th>
+									</tr>
+								</thead>
+								<tbody id="boomkBody"> 
+									<tr th:if="${not #lists.isEmpty(boomkList)}" th:each="l : ${boomkList}">
+										<!-- <td th:text="${l.get('userId')}"></td> -->
+ 								<!--	<td th:text="${l.userId}"></td>
+										<td th:text="${l.boomkRegDate}"></td>
+										<td th:text="${l.boomkFacilityState}"></td> -->
+										<input type="hidden" th:value="${l.facility.facilityCd}">
+										<td th:text="${l.boomkUpdateDate}"></td>
+										<td th:text="${l.facility.facilityNm}"></td>
+										<td th:text="${l.facility.facilityAddr}"></td>
+										<td th:text="${l.facility.facilityDetailAddr}"></td>
+										<td th:text="${l.facility.facilityTell}"></td>
+ 										<td>
+											<a th:href="@{/boomk/removeBoomk(facilityCd=${l.facilityCd}, userId=${l.userId})}">취소</a>
+										</td> 										
+									</tr>
+									<tr th:unless="${not #lists.isEmpty(boomkList)}">
+										<td colspan="6">일반회원만 시설 즐겨찾기를 이용할 수 있습니다.</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+     </th:block>
+	  
+	  
+</html>	  
