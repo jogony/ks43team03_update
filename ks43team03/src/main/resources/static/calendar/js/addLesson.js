@@ -9,7 +9,7 @@ function addLesson(fixedDate) {
 	$(document).off().on('click','.reservation.possible', reservationPossible);
 	
 	function reservationPossible() {
-
+		var yearMon = $(this).parent().attr("data-date");
 		const data = {
 			facilityGoodsCd 	 : $('#facilityGoodsCd').val()
 		}
@@ -27,9 +27,9 @@ function addLesson(fixedDate) {
 					reservationStartTime.val('');
 					reservationEndTime.val('');
 					
-					var yearMon = $(this).parent().attr("data-date");
-					clickDay = yearMon; //전역 변수에 클릭한 날짜 저장
 					
+					clickDay = yearMon; //전역 변수에 클릭한 날짜 저장
+					console.log(clickDay);
 					$('.lessonTime').each(function(){
 						mhours = moment($(this).val(), 'HH:mm');
 						if(moment(mhours).isSameOrAfter(lessonStartTime) && moment(mhours).isSameOrBefore(lessonEndTime)) {
@@ -58,7 +58,19 @@ function addLesson(fixedDate) {
 					})
 				} else {
 					orderCheck = false;
-					alert('먼저 레슨을 구매해 주세요');
+					swal({
+						title: '🐥먼저 레슨을 주문해주세요‼',
+						showCancelButton: true,
+						confirmButtonText: '주문하기',
+						showLoaderOnConfirm: true,
+						allowOutsideClick: false
+				    }).then((result) => {
+						if(result.value) {
+							$('.order-button').trigger('click');
+						} else if (result.dismiss == 'cancel') {
+							$('.modalClose').trigger('click');
+						}
+					})
 					
 				}
 			},
@@ -93,6 +105,7 @@ function addLesson(fixedDate) {
 	//예약 하기
 	$('#updateEvent').on('click', function() {
 		if(orderCheck) {
+			console.log(clickDay);
 		    const data = {
 				reservationDate 	 : clickDay,
 				reservationStartTime : reservationStartTime.val(),
@@ -107,6 +120,8 @@ function addLesson(fixedDate) {
 				showLoaderOnConfirm: true,
 				allowOutsideClick: false
 		    }).then((result) => {
+			console.log(result);
+			console.log(result.dismiss);
 				if (result.value && reservationStartTime.val() != '' && reservationStartTime.val() != null) {
 					var request = $.ajax({
 						url: "/calendar/reservation",
@@ -139,12 +154,19 @@ function addLesson(fixedDate) {
 						request.fail(function( jqXHR, textStatus ) {
 						alert( "Request failed: " + textStatus );
 					});
+				} else if(result.dismiss == 'cancel'){
+					swal({
+						type: 'error',
+						title: '❌취소 하셨습니다.❗',
+					}).then(()=>{
+						$('.modalClose').trigger('click');
+					});
 				} else {
 					swal({
 						type: 'error',
 						title: '❌시간을 입력해 주세요.❗',
 					}).then(()=>{
-						location.reload();
+						//location.reload();
 					});
 				}
 			})

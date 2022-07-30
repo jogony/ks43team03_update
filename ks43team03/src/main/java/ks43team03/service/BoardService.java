@@ -120,11 +120,6 @@ public class BoardService {
 	public String addBoard(Board board, MultipartFile[] boardImgFile, String fileRealPath) { 
 		System.out.println("------------------------게시글 등록 서비스-----------------------------");
 		
-		// 1. 파일 업로드
-		// 2. 파일 업로드 성공시 파일 DB 인서트
-		// 3. 게시글 인서트
- 		// 4. 결과값 리턴
-		
 		boolean fileCheck = true;
 		
 		for (MultipartFile multipartFile : boardImgFile){

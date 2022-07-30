@@ -77,6 +77,70 @@
 			<result	column="reservation_cancel"		property="reservationCancel"/>
 		</collection>
 	</resultMap>
+	
+	<select id="getFacilityLessonListByCd" parameterType="String" resultMap="lessonResultMap">
+		select
+			lesson_sub.facility_cd
+			,lesson_sub.lesson_cd
+			,lesson_sub.lesson_nm
+			,lesson_sub.facility_goods_cd
+			,lesson_file.file_cd
+			,lesson_file.original_file_nm
+			,lesson_file.stored_file_path
+			,lesson_file.file_size
+			,lesson_file.re_file_name
+			,lesson_file.uploader_id
+			,lesson_file.upload_date
+			,lesson_file.updated_datetime
+			,lesson_file.represent_img
+		FROM
+			(SELECT
+				f.facility_cd
+			  	,l.lesson_cd
+			  	,l.lesson_division
+			  	,l.lesson_nm
+			  	,l.facility_goods_cd
+			  	,l.lesson_reg_date
+			FROM
+				lesson   AS l
+			   INNER JOIN
+			   facility AS f
+			   ON
+				l.facility_cd = f.facility_cd) AS lesson_sub
+			LEFT JOIN
+			(SELECT
+				rfwg.facility_goods_cd
+				,tf.file_cd
+				,tf.re_file_name
+				,tf.original_file_nm
+				,tf.stored_file_path
+				,tf.file_size
+				,tf.uploader_id
+				,tf.upload_date
+				,tf.updator_id
+				,tf.updated_datetime
+				,tf.represent_img
+			FROM
+				rel_file_with_goods AS rfwg
+			   INNER JOIN
+			   t_file	AS tf
+			   on
+			   tf.file_cd = rfwg.flie_cd
+			WHERE
+				tf.deleted_yn != 'Y'
+				and
+				tf.represent_img ='Y' OR null
+			ORDER BY tf.represent_img	) AS lesson_file
+			on
+			lesson_file.facility_goods_cd = lesson_sub.facility_goods_cd
+			WHERE
+				lesson_sub.facility_cd = #{facilityCd}
+	</select>
+	
+	
+	
+	
+	
 	<!-- 레슨 게시물 숫자 가져오기 -->
 	<select id="getLessonCount" resultType="int">
 		SELECT

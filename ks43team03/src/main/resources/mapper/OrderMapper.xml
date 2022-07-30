@@ -536,16 +536,16 @@
 			o.order_reg_date,
 			o.order_pay_state,
 			o.pay_type,
-			,g.sports_cd
-			,g.facility_cd
-			,g.user_id
-			,g.facility_goods_reg_date
-			,s.facility_stadium_nm
-			,s.facility_stadium_cd
-			,s.facility_stadium_detail
-			,f.facility_cd
-			,f.facility_nm
-			,f.facility_tell
+			g.sports_cd,
+			g.facility_cd,
+			g.user_id,
+			g.facility_goods_reg_date,
+			s.facility_stadium_nm,
+			s.facility_stadium_cd,
+			s.facility_stadium_detail,
+			f.facility_cd,
+			f.facility_nm,
+			f.facility_tell
 		FROM
 			goods_order AS o
 			INNER join
@@ -580,17 +580,17 @@
 			o.order_reg_date,
 			o.order_pay_state,
 			o.pay_type,
-			,g.sports_cd
-			,g.facility_cd
-			,g.user_id
-			,g.facility_goods_reg_date
-			,l.lesson_cd
-			,l.lesson_nm
-			,l.lesson_price
-			,l.lesson_detail
-			,f.facility_cd
-			,f.facility_nm
-			,f.facility_tell
+			g.sports_cd,
+			g.facility_cd,
+			g.user_id,
+			g.facility_goods_reg_date,
+			l.lesson_cd,
+			l.lesson_nm,
+			l.lesson_price,
+			l.lesson_detail,
+			f.facility_cd,
+			f.facility_nm,
+			f.facility_tell
 		FROM
 			goods_order AS o
 			INNER join
@@ -626,17 +626,17 @@
 			o.order_reg_date,
 			o.order_pay_state,
 			o.pay_type,
-			,g.sports_cd
-			,g.facility_cd
-			,g.user_id
-			,g.facility_goods_reg_date
-			,p.pass_cd
-			,p.pass_nm
-			,p.pass_unit
-			,p.pass_price
-			,f.facility_cd
-			,f.facility_nm
-			,f.facility_tell
+			g.sports_cd,
+			g.facility_cd,
+			g.user_id,
+			g.facility_goods_reg_date,
+			p.pass_cd,
+			p.pass_nm,
+			p.pass_unit,
+			p.pass_price,
+			f.facility_cd,
+			f.facility_nm,
+			f.facility_tell
 		FROM
 			goods_order AS o
 			INNER join

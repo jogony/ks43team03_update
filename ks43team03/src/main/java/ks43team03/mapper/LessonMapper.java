@@ -9,6 +9,9 @@ import ks43team03.dto.Lesson;
 
 @Mapper
 public interface LessonMapper {
+	
+	//시설 페이지 내 레슨 조회
+	public List<Lesson> getFacilityLessonListByCd(String facilityCd);
 
 	//시설 내 레슨 조회하기
 	public List<Lesson> getFacilityLessonList(String facilityCd);

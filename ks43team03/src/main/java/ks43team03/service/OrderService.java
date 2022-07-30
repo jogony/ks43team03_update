@@ -1,7 +1,13 @@
 package ks43team03.service;
 
 
-import static ks43team03.exception.ErrorMessage.*;
+import static ks43team03.exception.ErrorMessage.DATABASE_ERROR;
+import static ks43team03.exception.ErrorMessage.IS_EMPTY_USER;
+import static ks43team03.exception.ErrorMessage.NOT_EXITS_PAYMENT_TYPE_ERROR;
+import static ks43team03.exception.ErrorMessage.NOT_FOUND_ORDER;
+import static ks43team03.exception.ErrorMessage.ORDER_DELETE_ERROR;
+import static ks43team03.exception.ErrorMessage.ORDER_ERROR_ORDER_PRICE;
+import static ks43team03.exception.ErrorMessage.USER_ERROR_USER_NOT_FOUND;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -16,15 +22,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import ks43team03.dto.Lesson;
 import ks43team03.dto.Order;
 import ks43team03.dto.OrderSearchDto;
 import ks43team03.dto.PageDto;
+import ks43team03.dto.Pass;
 import ks43team03.dto.ResponseGoods;
 import ks43team03.dto.User;
 import ks43team03.dto.type.GoodsType;
 import ks43team03.dto.type.OrderState;
 import ks43team03.exception.CustomException;
+import ks43team03.mapper.FacilityGoodsMapper;
 import ks43team03.mapper.OrderMapper;
+import ks43team03.mapper.PassMapper;
 import ks43team03.mapper.UserMapper;
 
 @Service
@@ -33,14 +43,17 @@ public class OrderService {
 
 	private final OrderMapper orderMapper;
 	private final UserMapper userMapper;
-	
-	
+	private final FacilityGoodsMapper facilityGoodsMapper;
+	private final PassMapper passMapper;
 	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
 	
-	public OrderService(OrderMapper orderMapper,UserMapper userMapper) {
+	public OrderService(OrderMapper orderMapper,UserMapper userMapper,
+						FacilityGoodsMapper facilityGoodsMapper,PassMapper passMapper) {
 		this.orderMapper = orderMapper;
 		this.userMapper = userMapper;
+		this.facilityGoodsMapper = facilityGoodsMapper;
+		this.passMapper = passMapper;
 	}
 
 
@@ -56,13 +69,19 @@ public class OrderService {
 		String paytype = req.getPayType().getName();
 		String userId = req.getUserId();
 		int orderPayPrice = req.getOrderPayPrice();
+		String goodsCategory = goods.getFacilityGoods().getGoodsCtgCd();
+		
 		
 		if(!paytype.equals("카드") && !paytype.equals("가상계좌")) {
 			throw new CustomException(NOT_EXITS_PAYMENT_TYPE_ERROR);
 		}
 		
-		if(orderPayPrice < 0 || orderPayPrice > goods.getPrice()) {
-			throw new CustomException(ORDER_ERROR_ORDER_PRICE);
+		
+		
+		if("lesson".equals(goodsCategory) || "pass".equals(goodsCategory)) {
+			if(orderPayPrice < 0 || orderPayPrice > goods.getPrice()) {
+				throw new CustomException(ORDER_ERROR_ORDER_PRICE);
+			}
 		}
 		
 		if(Strings.isEmpty(userId)) {
@@ -80,7 +99,7 @@ public class OrderService {
 				log.info("userName : {} , " , user.getUserName());
 				
 				//포인트 테이블 포인트 차감 하고 저장한다.
-				
+				// 미구현 ..
 				//
 			}
 		}catch(Exception e){
@@ -88,6 +107,9 @@ public class OrderService {
 		}
 		
 		//String code = commonMapper.createNewCode(COLUMN_NAME, TABLE_NAME);
+		if(!categoryGoodsSave(goodsCategory, goods)) {
+			throw new CustomException("상품의 정보 수정에 실패하였습니다.");
+		}
 		Order order = createOrder(req, goods );
 		orderMapper.addOrder(order);
 		order.setPayName(paytype);
@@ -95,6 +117,48 @@ public class OrderService {
 		return order;
 	}
 
+	
+	private boolean categoryGoodsSave(String categry, ResponseGoods goods) {
+		if("lesson".equals(categry)) {
+			Lesson lesson = goods.getFacilityGoods().getLesson();
+			String member =lesson.getLessonMember(); 
+			int number = 0;
+			if(member == null) {
+				number = 1;
+			}else {
+				number = Integer.parseInt(member) + 1;
+			}
+			
+			String totalMember = lesson.getLessonTotalMember();
+			
+			if(Integer.parseInt(totalMember) == number - 1) {
+				throw new CustomException("레슨 정원이 초과하였습니다.");
+			}
+			
+			lesson.setLessonMember(Integer.toString(number));
+			int result = facilityGoodsMapper.modifyLesson(lesson);
+			return result == 1;
+		}
+		
+		
+		if("pass".equals(categry)) {
+			Pass pass = goods.getFacilityGoods().getPass();
+			int unit = pass.getPassUnit();
+			if(unit == 0) {
+				throw new CustomException("이용권 정원이 마감되었습니다.");
+			}
+			
+			pass.setPassUnit(unit - 1);
+			if(unit - 1 == 0) {
+				pass.setPassState("N");
+			}
+			
+			return passMapper.modifyPass(pass) == 1;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * request데이터 order로 변환 메소드 
 	 */
@@ -129,6 +193,7 @@ public class OrderService {
 	public Order getOrderDetailByOrderCd(String orderCd) {
 		Order order = orderMapper.getOrderDetailByOrderCd(orderCd)
 				.orElseThrow(()-> new CustomException(NOT_FOUND_ORDER));
+		
 		dayCheck(order);
 		
 		return order;
@@ -137,19 +202,13 @@ public class OrderService {
 	private void dayCheck(Order order) {
 		
 		LocalDate orderDate = LocalDate.parse(order.getOrderRegDate());
-		
 		LocalDate now = LocalDate.now();
-		log.info("now Date : {}", now);
 		long day = orderDate.until(now,ChronoUnit.DAYS);
-		log.info("day date : {}", day);
 		if(day > 7L) {
 			order.setCancelDay(true);
 		}else {
 			order.setCancelDay(false);
 		}
-		
-		
-		
 	}
 	
 	
@@ -170,18 +229,13 @@ public class OrderService {
 		String goodsCtgCd = order.getGoodsCtgCd();
 		switch (goodsCtgCd) {
 		case "lesson":
-			order = orderMapper.getOrderDetailWithLesson(orderCd);
-			break;
+			return orderMapper.getOrderDetailWithLesson(orderCd);
 		case "stadium":
-			order = orderMapper.getOrderDetailWithStadium(orderCd);
-			break;
+			return orderMapper.getOrderDetailWithStadium(orderCd);
 		case "pass":
-			order = orderMapper.getOrderDetailWithPass(orderCd);
-			break;
-		default: 
-			throw new CustomException(NOT_FOUND_ORDER);
+			return orderMapper.getOrderDetailWithPass(orderCd);
 		}
-		return order;
+		throw new CustomException(NOT_FOUND_ORDER);
 	}
 	
 	/**
@@ -190,13 +244,38 @@ public class OrderService {
 	public void removeOrderByOrderUUID(String orderUUID){
 		try {
 			log.info("uuid 주문 정보 삭제 log");
+			Order order = orderMapper.getOrderByOrderUUID(orderUUID)
+					.orElseThrow(() -> new CustomException(NOT_FOUND_ORDER));
+			
 			int result = orderMapper.removeOrderByOrderUUID(orderUUID);
 			if(result == 0) {
 				throw new CustomException(ORDER_DELETE_ERROR);
 			}
+			
+			if(!modifyOrderGoods(order.getFacilityGoodsCd(),order.getGoodsCtgCd())) {
+				throw new CustomException("주문하신 상품삭제가 실패하였습니다.");
+			}
 		}catch (Exception e) {
 			throw new CustomException(DATABASE_ERROR);
 		}
+	}
+	
+	private boolean modifyOrderGoods(String goodsCode,String goodsCategory) {
+		switch (goodsCategory) {
+		case "lesson":
+			Lesson lesson = facilityGoodsMapper.getFacilityGoodsLesson(goodsCode).getLesson();
+			int number = Integer.parseInt(lesson.getLessonMember()) - 1;
+			lesson.setLessonMember(Integer.toString(number));
+		    return facilityGoodsMapper.modifyLesson(lesson) == 1;
+		case "stadium":
+			return true;
+		case "pass" : 
+			Pass pass = facilityGoodsMapper.getFacilityGoodsPass(goodsCode).getPass();
+			pass.setPassUnit(pass.getPassUnit() + 1);
+			pass.setPassState("Y");
+			return passMapper.modifyPass(pass) == 1;
+		}
+		throw new CustomException("존재하지 않은 카테고리가 입력되었습니다.");
 	}
 	
 	

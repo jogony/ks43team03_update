@@ -61,12 +61,4 @@ public class FacilityGoodsService {
 		throw new CustomException(ErrorMessage.NOT_FOUND_GOODS);
 	}
 	
-	
-	/*
-	 * Admin 전체조회
-	 */
-	public List<FacilityGoods> getFacilityGoodsList(){
-		return null;
-	}
-	
 }

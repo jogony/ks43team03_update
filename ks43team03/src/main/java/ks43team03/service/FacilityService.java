@@ -81,7 +81,7 @@ public class FacilityService {
 	
 	/*시설 내 레슨 목록*/
 	public List<Lesson> getLessonList(String facilityCd) {
-		List<Lesson> lessonList = lessonMapper.getFacilityLessonList(facilityCd);
+		List<Lesson> lessonList = lessonMapper.getFacilityLessonListByCd(facilityCd);
 		log.info("lessonList", lessonList);
 
 		

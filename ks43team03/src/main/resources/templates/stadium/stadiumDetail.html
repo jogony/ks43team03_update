@@ -29,8 +29,8 @@
 			$('#bookingBtn').click(function(){
 				var isSubmit = true;
 				var id = $("#userId").val();
-				var bdate = $("#resesrvationDate").val();
-				var btime = $("#reservationStartTime").val();
+				var bdate = $("#bookingDate").val();
+				var btime = $("#bookingStartTime").val();
 				
 				if(id == ''){
 					alert("로그인 후 이용가능합니다.");
@@ -63,9 +63,6 @@
 	    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	    
 	<style>
-		#bookingTime input[type=checkbox]{
-		    display: none;
-		}
 		.none-display {
 			display: none;
 		}
@@ -104,6 +101,18 @@
         .reservation-possible {
         	background-color: #BEEFFF;
         }
+        .pre{
+			font-size: 15px;
+			font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+			color: #000000;
+			font-weight: 400;
+			line-height: 24px;
+			margin: 0 0 15px 0;
+		}
+		pre{
+			background-color: #ffffff;
+    		border: none;
+		}
 	</style>
 	</th:block>
 
@@ -195,20 +204,12 @@
 	                            <div class="tab-pane active" id="tabs-1" role="tabpanel">	           
 	                                <section class="checkout spad" style="padding-top: 20px;">
 								        <div class="container">
-								            <form id="stadiumForm" th:action="#" method="post" class="checkout__form">
+								            <form id="stadiumForm" th:action="@{/booking/addBooking}" method="post" class="checkout__form">
 								                <div class="row">
 								                    <div class="col-lg-8" style="padding-bottom: 25px;">
 								                        <h5>구장정보</h5>
-								                        <div class="row">
-								                            <div class="col-lg-6 col-md-6 col-sm-6">
-								                                <div class="checkout__form__input">
-									                                <p th:text="${l.facilityStadiumDetail}"></p>
-								                                </div>
-								                                <div class="checkout__form__input">
-									                                 <p th:text="${l.facility.facilityTell}"></p>
-								                                </div>
-								                            </div>
-								                       </div>
+						                                <pre class="pre" th:text="${l.facilityStadiumDetail}"></pre>
+						                                <p class="pre" th:text="${l.facility.facilityTell}"></p>
 								                    </div>
 								                    <div class="col-lg-8">
 								                        <h5>구장예약</h5>
@@ -248,9 +249,13 @@
 																                                aria-hidden="true">&times;</span></button>
 																                        <h4 class="modal-title"></h4>
 																                    </div>
-																                    <div class="modal-body">						
-																                        <div class="row">
-																                            <div class="col-md-12">
+																                    <div class="modal-body">					
+																                        <div class="form-group row">
+																                        	<div class="col-md-3 col-sm-3">
+																								<label class="control-label" for="time">시간선택</label>
+																							</div>
+																                        
+																                            <div class="col-md-9 col-sm-9">
 																                                <table border="1" id="reSchedule">
 																                                	<tbody>
 																                                		<tr>
@@ -277,29 +282,33 @@
 																                                </table>
 																                            </div>
 																                        </div>
-																                        <div class="row">
-																                            <div class="col-xs-12">
-																                                <label class="col-xs-4" for="edit-start">시작</label>
-																                                <!-- 30분 단위로 되게끔 수정 -->
-																                                <input class="inputModal lesson" type="text" name="reservationStartTime" id="edit-start" readonly="readonly"/>
-																                            </div>
+																                        <div class="form-group row">
+																                        	<div class="col-md-3 col-sm-3">
+																								<label class="control-label" for="edit-start">시작시간</label>
+																							</div>
+																							<div class="col-md-9 col-sm-9">
+																								<input type="text" class="form-control inputModal lesson" name="reservationStartTime" id="edit-start" readonly="readonly"/>
+																							</div>
 																                        </div>
-																                        <div class="row">
-																                            <div class="col-xs-12">
-																                                <label class="col-xs-4" for="edit-end">끝</label>
-																                                <!-- 30분 단위로 되게끔 수정 -->
-																                                <input class="inputModal lesson" type="text" name="reservationEndTime" id="edit-end" readonly="readonly"/>
-																                            </div>
+																                        <div class="form-group row">
+																                        	<div class="col-md-3 col-sm-3">
+																								<label class="control-label" for="edit-end">끝시간</label>
+																							</div>
+																							<div class="col-md-9 col-sm-9">
+																								<input type="text" class="form-control inputModal lesson" name="reservationEndTime" id="edit-end" readonly="readonly"/>
+																							</div>
 																                        </div>
-																                        <div class="row">
-																                            <div class="col-xs-12">
-																                                <label class="col-xs-4" for="price">가격</label>
-																                                <input class="inputModal lesson" type="text" name="goodsPrice" id="price" readonly="readonly"/>
-																                            </div>
+																                        <div class="form-group row">
+																                        	<div class="col-md-3 col-sm-3">
+																								<label class="control-label" for="price">가격</label>
+																							</div>
+																							<div class="col-md-9 col-sm-9">
+																								<input type="text" class="form-control inputModal lesson" name="goodsPrice" id="price" readonly="readonly"/>
+																							</div>
 																                        </div>
 																                    </div>
 																                    <div class="modal-footer modalBtnContainer-modifyEvent">
-																                        <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="close" id="updateEvent">저장하기</button>
+																                        <button type="button" class="btn btn-primary" id="updateEvent">저장하기</button>
 																                    </div>
 															                    </form>
 															                </div><!-- /.modal-content -->
@@ -325,16 +334,17 @@
 							                                        </li>
 							                                        <li>
 							                                        	예약날짜 
-							                                        	<span class="dateCheck">-</span>
-							                                        	<input type="hidden" id="reservationDate" name="reservationDate">	
+							                                        	<span class="dateCheck pre">-</span>
+							                                        	<input type="hidden" id="bookingDate" name="bookingDate">	
 							                                        </li>
 							                                        <li>
 							                                        	예약시간
-							                                        	<p class="totalTime"></p>
-							                                        	<p class="startTime"></p>
-							                                        	<input type="hidden" id="reservationEndTime" name="reserveEndTime">
-							                                        	<p class="endTime"></p>
-							                                        	<input type="hidden" id="reservationStartTime" name="reserveStartTime">
+							                                        	<span class="totalTime"></span>
+							                                        	<input type="hidden" id="bookingEndTime" name="bookingEndTime">
+							                                        	<span class="endTime pre"></span>
+							                                        	<span> - </span>
+							                                        	<input type="hidden" id="bookingStartTime" name="bookingStartTime">
+							                                        	<span class="startTime pre"></span>
 							                                        </li>
 							                                    </ul>
 							                                </div>

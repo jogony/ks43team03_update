@@ -78,7 +78,7 @@ public class LoginController {
 					// 이전 destination으로 리디렉트
 					return "redirect:"+dest;
 				}
-				return "redirect:/";
+				return "redirect:/user";
 			}
 		}
 		

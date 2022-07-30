@@ -33,7 +33,7 @@
 		)
 			VALUES 
 		(
-			sf_new_reservation_code(),
+			sf_new_reservation_cd(),
 			#{reservationCtg},
 			#{facilityGoodsCd},
 			#{userId},

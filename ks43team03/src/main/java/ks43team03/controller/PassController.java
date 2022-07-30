@@ -1,6 +1,11 @@
 package ks43team03.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import ks43team03.dto.Facility;
 import ks43team03.dto.Pass;
+import ks43team03.service.AdminFacilityService;
 import ks43team03.service.FacilityGoodsService;
 import ks43team03.service.PassService;
 
@@ -32,10 +40,12 @@ public class PassController {
 
 	private final FacilityGoodsService facilityGoodsService;
 	private final PassService passService;
+	private final AdminFacilityService adminFacilityService;
 	
-	public PassController(FacilityGoodsService facilityGoodsService,PassService passService) {
+	public PassController(FacilityGoodsService facilityGoodsService,PassService passService,AdminFacilityService adminFacilityService ) {
 		this.facilityGoodsService = facilityGoodsService;
 		this.passService = passService;
+		this.adminFacilityService = adminFacilityService;
 	}
 
 	@PostMapping("/addPass")
@@ -77,7 +87,7 @@ public class PassController {
 	 * 관리자 이용권상세정보
 	 * 
 	 */
-	@GetMapping("/admin/passDetail")
+	@GetMapping("/passDetail")
 	public String amdinPassDetail(@RequestParam(name = "passCd")String passCd,
 							 @RequestParam(name = "facilityGoodsCd", required = false)String facilityGoodsCd,
 							 Model model) {
@@ -98,25 +108,26 @@ public class PassController {
 	
 	//== 시설주 이용권 리스트 ==//
 	/**
-	 * 이용권 리스트 
+	 * 이용권 리스트
+	 * 리펙토링 해야겠다
 	 */
 	@GetMapping("/passList")
-	public String passList(Model model) {
-		
-		//시설 관리자 정보확인  
-		
-		
-		//시설에 있는 관리자가 아니라면
-		
-		
-		//시설에 있는 관리자 정보가 맞다면
-		
-		
+	public String passList(Model model, HttpSession session) {
+		String userId = (String)session.getAttribute("SID");
 		//페이징 처리
-		String facilityCd = "ss_35011770_03";
-		List<Pass> passList = passService.getPassListOfFacility(facilityCd);
+		List<Facility> facilityList = adminFacilityService.getAdminFacilityListById(userId);
+		//String facilityCd = "ss_35011770_03";
+		List<Map<String,Object>> result = new ArrayList<>();
+		for(Facility facility : facilityList) {
+			Map<String,Object> map = new HashMap<String, Object>();
+			List<Pass> passList = passService.getPassListOfFacility(facility.getFacilityCd());
+			map.put("passList", passList);
+			map.put("facility", facility);
+			result.add(map);
+			
+		}
 		model.addAttribute("title", "시설이용권 리스트");
-		model.addAttribute("passList", passList);
+		model.addAttribute("result", result);
 		return "pass/passList";
 	}
 	
@@ -128,14 +139,6 @@ public class PassController {
 							 @RequestParam(name = "userId" ,required = false)String userId,
 							 @RequestParam(name = "facilityGoodsCd" , required = false)String facilityGoodsCd,
 							 Model model) {
-		
-		
-		//시설 관리자 정보확인  
-
-
-		//시설에 있는 관리자가 아니라면
-		
-		
 		//시설에 있는 관리자 정보가 맞다면
 		log.info("화면에서 받은 passCd데이터 : {}",passCd);
 		log.info("화면에서 받은 userId데이터 : {}",userId);
@@ -168,15 +171,16 @@ public class PassController {
 							 @RequestParam(name = "userId" ,required = false)String userId,
 							 @RequestParam(name = "facilityGoodsCd" , required = false)String facilityGoodsCd){
 		
-		//시설 관리자 정보확인  
-		
-		
-		//시설에 있는 관리자가 아니라면
-		
-		
-		//시설에 있는 관리자 정보가 맞다면
-		
 		return "pass/removePass";
+	}
+	
+	
+	@PostMapping("/facility")
+	@ResponseBody
+	public List<Facility> getFacility(@RequestParam("userId") String userId){
+		log.info("userId : data {}", userId);
+		List<Facility> facilityList = adminFacilityService.getAdminFacilityListById(userId);
+		return facilityList;
 	}
 	
 	

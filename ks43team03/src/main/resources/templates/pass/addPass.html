@@ -3,6 +3,37 @@
 	layout:decorate="~{layout/adminDefault.html}">
 <th:block layout:fragment="customJs">
 	<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	
+	<script>
+		
+		$(function(){
+			
+			const id = '[[${session.SID}]]';
+			
+			$.ajax({
+				type: 'POST',
+				url: '/pass/facility',
+	   		   	dataType : 'JSON',
+				data:{
+					userId : id
+				}
+				,success: function(data){
+					console.log(data.length);
+					if(data.length == 0){
+						alert('등록된 시설이 없습니다.')
+						history.back()
+					}else{
+						for(let i = 0; i < data.length; i++){
+							let option = $("<option value= " + data[i].facilityCd  +">"+data[i].facilityNm+"</option>");
+							$('#facility').append(option);
+						}
+					}
+					
+					
+				}
+			});
+		});
+	</script>
 </th:block>
 <!-- 사용자 정의 contents -->
 <th:block layout:fragment="customContents">
@@ -44,8 +75,8 @@
 							<label for="facilityCd" class="col-form-label col-md-3 col-sm-3 label-align">시설대표코드<span
 									class="required">*</span></label>
 							<div class="col-md-6 col-sm-6">
-								<input type="text" class="form-control pass-input" id="facilityCd" data-parsley-id="5"
-									name="facilityCd" value="ss_35011770_03" required/>
+								<select class="custom-select pass-input" id="facility">
+								</select>
 							</div>
 						</div>
 						
@@ -70,35 +101,35 @@
 							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">아이디<span
 									class="required">*</span></label>
 							<div class="col-md-6 col-sm-6">
-								<input type="text" class="form-control pass-input" data-parsley-id="5" name="userId" value="id002" required/>
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="userId" th:value="${session.SID}" required/>
 							</div>
 						</div>
 						<div class="item form-group">
 							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">이용권명<span
 									class="required">*</span></label>
 							<div class="col-md-6 col-sm-6">
-								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passNm" value="헬스장 이용권" required/>
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passNm"  required/>
 							</div>
 						</div>
 						<div class="item form-group">
 							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">단위<span
 									class="required">*</span></label>
 							<div class="col-md-6 col-sm-6">
-								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passUnit" value="20" required/>
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passUnit"  required/>
 							</div>
 						</div>
 						<div class="item form-group">
 							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">이용권단가<span
 									class="required">*</span></label>
 							<div class="col-md-6 col-sm-6">
-								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passPrice" value="30000" required/>
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passPrice"  required/>
 							</div>
 						</div>
 						<div class="item form-group">
 							<label for="" class="col-form-label col-md-3 col-sm-3 label-align">유효일수<span
 									class="required">*</span></label>
 							<div class="col-md-6 col-sm-6">
-								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passEndDate" value="365" required/>
+								<input type="text" class="form-control pass-input" data-parsley-id="5" name="passEndDate" required/>
 							</div>
 						</div>
 						

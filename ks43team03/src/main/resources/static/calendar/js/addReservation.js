@@ -81,9 +81,13 @@ function addReservation(fixedDate) {
 		         price = getPrice(fixedDate, reservationStartTime.val(), reservationEndTime.val());
                  $('#totlaPrice').html(price);
                  $('#price').val(price);
+                 $('#bookingPrice').val(price);
 		         $('.startTime').html(reservationStartTime.val());
+		         $('#bookingStartTime').val(reservationStartTime.val());
 		         $('.endTime').html(reservationEndTime.val());
+		         $('#bookingEndTime').val(reservationEndTime.val());
 		         $('.dateCheck').html(clickDay);
+		         $('#bookingDate').val(clickDay);
            	 }
          }
       }

@@ -14,34 +14,20 @@
 				<nav class="header__menu">
 					<ul>
 
-						<li><a th:href="@{/facility/facilityList(searchCtg=FacilitySearch)}">시설!<br/><small>(정다운)</small></a>
-							<ul class="dropdown">
-								<li><a href="#">넣기전에</a></li>
-								<li><a href="#">항상</a></li>
-								<li><a href="#">먼저</a></li>
-								<li><a href="#">말씀해주세요~</a></li>
-							</ul>
+						<li><a th:href="@{/facility/facilityList(searchCtg=FacilitySearch)}">
+							시설<br/><small>(정다운)</small></a>
 						</li>
-						<li><a th:href="@{/lesson/lessonListForUser(searchCtg=LessonSearch)}">레슨!<br/><small>(김선원)</small></a>
-							
+						<li><a th:href="@{/lesson/lessonListForUser(searchCtg=LessonSearch)}">
+							레슨<br/><small>(김선원)</small></a>
 						</li>
-						<li><a th:href="@{/stadium/stadiumList(searchCtg=StadiumSearch)}">구장!<br/><small>(정다운)</small></a>
-							<ul class="dropdown">
-								<li><a href="#">넣기전에</a></li>
-								<li><a href="#">항상</a></li>
-								<li><a href="#">먼저</a></li>
-								<li><a href="#">말씀해주세요~</a></li>
-							</ul>
+						<li><a th:href="@{/stadium/stadiumList(searchCtg=StadiumSearch)}">
+							구장<br/><small>(정다운)</small></a>
 						</li>
-						<li><a th:href="@{/board/boardList}">게시판!<br/><small>(신서진)</small></a>
-							<ul class="dropdown">
-								<li><a href="#">넣기전에</a></li>
-								<li><a href="#">항상</a></li>
-								<li><a href="#">먼저</a></li>
-								<li><a href="#">말씀해주세요~</a></li>
-							</ul>
+						<li><a th:href="@{/board/boardList}">
+							게시판<br/><small>(신서진)</small></a>
 						</li>
-						<li><a th:href="@{/trainer/trainerList(searchCtg='TrainerSearch')}">트레이너!<br/><small>(강신호)</small></a>
+						<li><a th:href="@{/trainer/trainerList(searchCtg='TrainerSearch')}">
+							트레이너<br/><small>(강신호)</small></a>
 							<ul class="dropdown">
 								<li><a th:href="@{/trainer/trainerList(searchCtg='TrainerSearch')}">트레이너 목록</a></li>
 								<li><a th:href="@{/trainer/addTrainer}">트레이너 등록</a></li>
@@ -60,7 +46,7 @@
 						</th:block>
 						<th:block th:unless="${session.SID == null}">
 							<a th:href="@{/user/userDetail}">
-								[[${session.SNAME}]]님 마이페이지!
+								[[${session.SNAME}]]님 회원정보 수정
 							</a>
 							<a th:href="@{/logout}">Logout<br/><small>(강신호) / (김지혜)</small></a>
 							

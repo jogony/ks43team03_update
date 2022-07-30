@@ -163,20 +163,15 @@
 						<div class="tab-content">
 							<div class="tab-pane active" id="tabs-1" role="tabpanel">
 								<h6>Description</h6>
-								<p th:text="${lesson.lessonDetail}"></p>
-								<p>
-									Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
-									dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
-									nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium
-									quis, sem.
-								</p>
+								<p>[[${lesson.lessonDetail}]]</p>
+
+								<input type="hidden" id="facilityGoodsCd" th:value="${lesson.facilityGoodsCd}">
+								<input type="hidden" id="userId" th:value="${session.SID}">
+								<input type="hidden" id="goodsCtgCd" th:value="${lesson.goodsCtgCd}">
 							</div>
 							<div class="tab-pane" id="tabs-2" role="tabpanel" th:if="${lesson.lessonDivision == '개인'}">
 								<h6>개인 레슨 이용권 예약하기</h6>
 								<div class="container">
-									<input type="hidden" id="facilityGoodsCd" th:value="${lesson.facilityGoodsCd}">
-									<input type="hidden" id="userId" th:value="${session.SID}">
-									<input type="hidden" id="goodsCtgCd" th:value="${lesson.goodsCtgCd}">
 									<div class="row">
 										<table id="calendar">
 										    <thead>
