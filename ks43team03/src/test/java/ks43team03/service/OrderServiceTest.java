@@ -31,30 +31,30 @@ public class OrderServiceTest {
 	@Autowired
 	OrderService orderService;
 	
-	@Test
-	@DisplayName("정상흐름 주문에 성공을한다.")
-	void createOrder() {
-		// given
-		Order.Request orderReq = new Order.Request();
-
-		ResponseGoods goods = responseGoods();
-		orderReq.setFacilityGoodsCd(goods.getFacilityGoods().getFacilityGoodsCd());
-		orderReq.setPayType(PayType.CARD);
-		orderReq.setUserId("id001");
-		orderReq.setOrderPayPrice(400000);
-		orderReq.setOrderPrice(goods.getPrice());
-		orderReq.setUsedPoint(1000);
-		orderReq.setGoodsName("고급 강좌");
-		
-		//when
-		Order order = orderService.addOrder(orderReq, goods);
-		
-		
-		//then
-		assertThat(order.getFacilityGoodsCd()).isEqualTo(orderReq.getFacilityGoodsCd());
-		
-
-	}
+//	@Test
+//	@DisplayName("정상흐름 주문에 성공을한다.")
+//	void createOrder() {
+//		// given
+//		Order.Request orderReq = new Order.Request();
+//
+//		ResponseGoods goods = responseGoods();
+//		orderReq.setFacilityGoodsCd(goods.getFacilityGoods().getFacilityGoodsCd());
+//		orderReq.setPayType(PayType.CARD);
+//		orderReq.setUserId("id001");
+//		orderReq.setOrderPayPrice(400000);
+//		orderReq.setOrderPrice(goods.getPrice());
+//		orderReq.setUsedPoint(1000);
+//		orderReq.setGoodsName("고급 강좌");
+//		
+//		//when
+//		Order order = orderService.addOrder(orderReq, goods);
+//		
+//		
+//		//then
+//		assertThat(order.getFacilityGoodsCd()).isEqualTo(orderReq.getFacilityGoodsCd());
+//		
+//
+//	}
 	
 // 	@Test
 // 	@DisplayName("한명의 여러개의 주문리스트")

@@ -100,7 +100,7 @@
 			<h4>로그인이 필요한 서비스입니다.</h4>
 		</div>
 		<div class="container" th:unless="${#strings.isEmpty(session.SID)}">
-			<h4 style="display: inline;">[[${user.userName}]]<small>님의 마이페이지</small></h4>
+			<h4 style="display: inline;">[[${user.userName}]]<small>님 회원정보 수정</small></h4>
 			<th:block th:if="${user.userLevel eq '4'}">
 				<a th:href="@{/trainer/modifyTrainer}">
 					<button class="btn btn-info">트레이너 정보 수정</button>

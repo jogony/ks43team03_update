@@ -109,10 +109,13 @@
 	
 		<!-- 트레이너 정보 -->
 		<section class="board-details spad">
-			<div class="container" th:if="${#strings.isEmpty(session.SID)}">
-				<h4>로그인이 필요한 서비스입니다.</h4>
+			<div class="container" th:if="${trainerProfile == null}">
+				<h4>트레이너 등록이 필요한 서비스입니다.</h4>
+				<a th:href="@{/trainer/addTrainer}">
+					<button class="btn btn-info">트레이너 등록 바로가기</button>
+				</a>
 			</div>
-			<div class="container" th:unless="${#strings.isEmpty(session.SID)}">
+			<div class="container" th:unless="${trainerProfile == null}">
 				<input type="hidden" id="trainerData" th:value="${trainerProfile.trainerCd}">
 				<div class="row" style="padding-bottom: 80px">
 					<div class="product__details__pic col-lg-6 col-md-6">

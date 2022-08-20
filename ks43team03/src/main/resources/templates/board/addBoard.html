@@ -112,7 +112,7 @@
 								</div>
 							</div>
 							<div class="text-right">
-								<button type="submit" class="site-btn" id="addBoardBtn" style="margin-top: 20px;">
+								<button type="button" class="site-btn" id="addBoardBtn" style="margin-top: 20px;">
 									작성하기
 								</button>
 							</div>
@@ -158,9 +158,33 @@
 						
 						console.log('유효여부 폼전송할건지?' + isSubmit )
 						
-						if(isSubmit) $('#addBoardForm').submit();
+						if(isSubmit){
+						    var form = $('#addBoardForm')[0];  	    
+						    var data = new FormData(form);  	   
+						    
+						    $.ajax({             
+						    	type: "POST",          
+						        enctype: 'multipart/form-data',  
+						        url: "/board/addBoard",        
+						        data: data,          
+						        processData: false,    
+						        contentType: false,      
+						        cache: false,           
+						        timeout: 600000,  
+						        dataType : "TEXT",     
+						        success: function (data) { 
+									console.log(data);
+									location.href=data;
+						        },          
+						        error: function (e) {  
+						        	console.log("ERROR : ", e);     
+						         }     
+							});  
+						}
 					});
 				});
+				
+				
 			</script>
 		</th:block>
 	</th:block>

@@ -53,35 +53,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 			response.sendRedirect("/login");
 			
 			return false;
-		}else {
-			String sessionLevel = (String)session.getAttribute("SLEVEL");
-			String requestURI = request.getRequestURI();
-			log.info(requestURI, "requestURI__________________");
-			if("2".equals(sessionLevel)) {
-				if(requestURI.indexOf("/")		> -1) {
-					
-					response.sendRedirect("/");
-					return false;
-				}
-			}else if("3".equals(sessionLevel)) {
-				if(requestURI.indexOf("/")			> -1) {
-					
-					response.sendRedirect("/");
-					return false;
-				}
-			}else if("4".equals(sessionLevel)) {
-				if(requestURI.indexOf("/")			> -1) {
-					
-					response.sendRedirect("/");
-					return false;
-				}
-			}else if("5".equals(sessionLevel)) {
-				if(requestURI.indexOf("/")			> -1) {
-					
-					response.sendRedirect("/");
-					return false;
-				}
-			}
 		}
 			
 		return true;

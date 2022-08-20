@@ -93,13 +93,4 @@ public class AdminOrderController {
 		return "admin/order/orderDetail";
 	}
 	
-	
-//	@GetMapping("/order/search")
-//	public String orderSearch(@RequestParam(name = "date-after",required = false)String afterDate,@RequestParam(name = "date-before",required = false)String beforeDate,
-//			@RequestParam(name = "facilityName",required = false)String facilityName,Model model) {
-//		
-//		log.info("date-before {}", beforeDate);
-//		log.info("after-before {}", afterDate);
-//		return "admin/order/adminOrderList";
-//	}
 }

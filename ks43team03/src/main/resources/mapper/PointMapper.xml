@@ -78,11 +78,6 @@
 			g.facility_goods_cd = fp.facility_goods_cd
 		WHERE
 			pt.user_id = #{userId};
-		<trim prefix="WHERE">
-			<if test="userId != null and userId != ''">
-				pt.user_id = #{userId}
-			</if>
-		</trim>
 	</select>
 	
 	<!-- 포인트 합계 -->

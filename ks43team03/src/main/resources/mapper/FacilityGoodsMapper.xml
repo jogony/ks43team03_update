@@ -317,4 +317,65 @@ FROM
 			and
 			g.facility_goods_cd = #{facilityGoodsCd}
 	</select>
+	
+	<resultMap type="Lesson" id="lessonMap">
+		<id 	column="lesson_cd" 				property="lessonCd"/>
+		<result column="lesson_division" 		property="lessonDivision"/>
+		<result column="facility_goods_cd" 		property="facilityGoodsCd"/>
+		<result column="facility_cd" 			property="facilityCd"/>
+		<result column="goods_ctg_cd" 			property="goodsCtgCd"/>
+		<result column="sports_cd" 				property="sportsCd"/>
+		<result column="user_id" 				property="userId"/>
+		<result column="lesson_nm" 				property="lessonName"/>
+		<result column="lesson_detail" 			property="lessonDetail"/>		
+		<result column="lesson_total_member" 	property="lessonTotalMember"/>		
+ 		<result column="lesson_member" 			property="lessonMember"/>		 
+		<result column="lesson_start_date" 		property="lessonStartDate"/>		
+		<result column="lesson_end_date" 		property="lessonEndDate"/>		
+		<result column="lesson_start_time" 		property="lessonStartTime"/>		
+		<result column="lesson_time" 			property="lessonTime"/>		
+		<result column="lesson_end_time" 		property="lessonEndTime"/>
+		<result column="lesson_count" 			property="lessonCount"/>
+		<result column="lesson_price" 			property="lessonPrice"/>		
+		<result column="lesson_reg_date" 		property="lessonRegDate"/>		
+		<result column="lesson_state" 			property="lessonState"/>
+	</resultMap>
+	
+	<update id="modifyLesson" parameterType="Lesson">
+		UPDATE lesson
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="lessonDivision != null and lessonDivision != ''">
+				lesson_division=#{lessonDivision}
+			</if>
+			<if test="facilityGoodsCd != null and facilityGoodsCd != ''">
+				,facility_goods_cd=#{facilityGoodsCd}
+			</if>
+			<if test="sportsCd != null and sportsCd != ''">
+					,sports_cd=#{sportsCd}
+			</if>
+			<if test="lessonName != null and lessonName != ''">
+				,lesson_nm=#{lessonName}
+			</if>
+			<if test="lessonDetail != null and lessonDetail != ''">
+				,lesson_detail=#{lessonDetail}
+			</if>
+			<if test="lessonTotalMember != null and lessonTotalMember != ''">
+				,lesson_total_member=#{lessonTotalMember}
+			</if>
+			<if test="lessonMember != null and lessonMember != ''">
+				,lesson_member=#{lessonMember}
+			</if>
+			<if test="lessonStartDate != null and lessonStartDate != ''">
+				,lesson_start_date=#{lessonStartDate}
+			</if>
+			<if test="lessonEndDate != null and lessonEndDate != ''">
+				,lesson_end_date=#{lessonEndDate}
+			</if>
+			<if test="lessonPrice != null and lessonPrice != ''">
+				,lesson_price=#{lessonPrice}
+			</if>
+		</trim>
+		WHERE 
+			lesson_cd=#{lessonCd}
+	</update>
 </mapper>

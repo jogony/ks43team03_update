@@ -159,6 +159,17 @@
 				$(location).attr('href','/board/boardDetail?boardPostCd='+boardPostCd);
 			});
 		});
+		$(function(){
+			$('#subscribe').on('click', function() {
+				var userId 	       =  '[[${session.SID}]]';
+				var facilityCd 	   = $('.placeCode').val();
+				var facilityUserId = $('#facilityUserId').val();
+				
+				const eventSource  = new EventSource('/subscribe?userId=' + userId + '&receiverId=' + facilityUserId);
+				
+				location.href="/boomk/addBoomk?facilityCd="+ facilityCd + "&userId=" + userId;
+			});
+		});
 		 
 	</script>
  
@@ -189,6 +200,7 @@
         <div class="container">
             <div class="row">
              <th:block th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l : ${facilityDetail}">
+             	<input type="hidden" th:value="l.userId" id="facilityUserid">
                 <div class="col-lg-6">
                     <div class="product__details__pic">
                         <div class="product__details__pic__left product__thumb nice-scroll">
@@ -223,8 +235,8 @@
                         <div class="product__details__button" style="margin-top: 20px;">
                             <a data-toggle="modal" data-target="#addModal" class="cart-btn"><span class="icon_bag_alt"></span>시설가입</a> 
                             <ul>
-                                <li><a th:if="${session.SLEVEL == '5'}" th:href="@{/boomk/addBoomk(facilityCd=${l.facilityCd},userId=${session.SID})}"><span class="icon_heart_alt"></span></a></li>
-                                <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
+                                <li><a th:if="${session.SLEVEL == '5'}"><span class="icon_heart_alt"></span></a></li>
+                                <li><a href="#" id="subscribe"><span class="icon_adjust-horiz"></span></a></li>
                             </ul>
                         </div>
                       
@@ -360,8 +372,8 @@
 										<div class="table-responsive">
 											<th:block th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l:${facilityDetail}">
 												<input type="hidden" th:value ="${l.facilityAddr}" class="placeAddr">
-												<input type="hidden" th:value ="${l.facilityNm}" class="placeName">
-												<input type="hidden" th:value ="${l.facilityCd}" class="placeCode">
+												<input type="hidden" th:value ="${l.facilityNm}"   class="placeName">
+												<input type="hidden" th:value ="${l.facilityCd}"   class="placeCode">
 											</th:block>
 										</div>
 									</div>
@@ -445,29 +457,6 @@
                    	 	</div>
                     </div>
                 </th:block>    
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="img/product/related/rp-1.jpg">
-                            <ul class="product__hover">
-                                <li><a href="img/product/related/rp-1.jpg" class="image-popup"><span class="arrow_expand"></span></a></li>
-                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                                <li><a href="#"><span class="icon_bag_alt"></span></a></li>
-                            </ul>
-                        </div>
-                        <div class="product__item__text">
-                            <h6><a href="#">Buttons tweed blazer</a></h6>
-                            <div class="rating">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
     </section>

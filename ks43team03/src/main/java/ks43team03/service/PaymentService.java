@@ -1,6 +1,5 @@
 package ks43team03.service;
 
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +100,6 @@ public class PaymentService {
 
 	private void addPaySetting(Pay pay, PaymentResDto paymentResDto, Order order) {
 		String payMethod = paymentResDto.getMethod();
-		int result = 0;
 		if (PayType.CARD.equals(order.getPayType())) {
 			log.info("===========카드로 결제===========");
 			// 간편결제시 삼성폐이 = card
@@ -111,7 +109,7 @@ public class PaymentService {
 				pay.setPayCardType(res.getCardType());
 				pay.setPayCompany(res.getCompany());
 				pay.setPayCardNumber(res.getNumber());
-				result = payMapper.addPayCardInfo(pay);
+				payMapper.addPayCardInfo(pay);
 			} else if (paymentResDto.getVirtualAccount() != null) {
 				// == 가상계좌 정보가 있다면 ==//
 				PaymentVirtualResDto res = paymentResDto.getVirtualAccount();
@@ -119,7 +117,7 @@ public class PaymentService {
 				pay.setPayUserName(res.getCustomerName());
 				pay.setAccountNumber(res.getAccountNumber());
 				pay.setPayDueDate(res.getDueDate());
-				result = payMapper.addPayVirtualAccount(pay);
+				payMapper.addPayVirtualAccount(pay);
 			}
 		} else if (PayType.VIRTUAL_ACCOUNT.equals(order.getPayType())) {
 			log.info("===========가상계좌로 결제===========");
@@ -128,11 +126,7 @@ public class PaymentService {
 			pay.setPayUserName(res.getCustomerName());
 			pay.setAccountNumber(res.getAccountNumber());
 			pay.setPayDueDate(res.getDueDate());
-			result = payMapper.addPayVirtualAccount(pay);
-		}
-		
-		if(result == 0) {
-			
+			payMapper.addPayVirtualAccount(pay);
 		}
 	}
 
@@ -201,17 +195,6 @@ public class PaymentService {
 		} catch (Exception e) {
 			throw new CustomException(NOT_FOUND_PAYMENT);
 		}
-	}
-
-	public List<Pay> getAllPayment() {
-
-		return null;
-	}
-
-	// 회원이 조회한 결제정보
-	public List<Pay> getAllPaymentByUserId(String userId) {
-
-		return null;
 	}
 
 }

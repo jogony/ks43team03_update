@@ -98,11 +98,11 @@
 					</tr>
 					<tr>
 						<td>사용 가능 포인트</td>
-						<td><input type="text" name="userPoint" class="form-control col-sm-4" value="50000" id="userPoint" disabled></td>
+						<td><input type="text" name="userPoint" class="form-control col-sm-4" value="0" id="userPoint" disabled></td>
 					</tr>
 					<tr>
 						<td>남은 포인트</td>
-						<td><input type="text" class="form-control col-sm-4" id="remPoint" value="50000" disabled></td>
+						<td><input type="text" class="form-control col-sm-4" id="remPoint" value="0" disabled></td>
 					</tr>
 					<tr>
 						<td>포인트 사용</td>
@@ -120,8 +120,9 @@
 						<td><input type="text" class="form-control col-sm-4" id="sum-pay" th:value="${goods.price}" disabled></td>
 					</tr>
 				</table>
-
+				
 			</div>
+			<input type="hidden" name="usedPoint2" id="usedPoint2">
 			<!-- input tag hidden -->
 			<div class="card row">
 				<div class="card-header col-sm-12">
@@ -238,6 +239,7 @@
 				orderPrice.val(price - used);
 				sumPay.val(price - used);
 			}
+			$('#usedPoint2').val(used);
 			
 		}
 
@@ -259,14 +261,14 @@
 					orderPrice : $('input[name="price"]').val(),
 					goodsName : $('input[name="goodsName"]').val(),
 					userPoint : $('input[name="userPoint"]').val(),
-					usedPoint : $('input[name="usedPoint"]').val(),
+					usedPoint : $('input[name="usedPoint2"]').val(),
 					orderPayPrice : $('#sum-pay').val(),
 					payType : $('input[name=method]:checked').val()
 			};
-			
-			
-			console.log(data);
-			$.ajax({
+			if(checkPayAndOrder(data)){
+				alert('등록되지 않은 결제 정보가 있습니다.');
+			}else{
+				$.ajax({
 					type: 'POST',
 					url: '/order/addOrder',
 					dataType: 'JSON',
@@ -278,15 +280,16 @@
 					requestTossData(data);
 				}).fail(function (error) {
 					console.log(error);
-				});
-			
+					alert(error.responseJSON.message);
+				});	
+			}
 			
     	});
 			
 		const checkPayAndOrder = (data) => {
 			
-			for(value in data){
-				if(typeof 'undefinded' == value || value == '' || value == null){
+			for(let value in data){
+				if(typeof 'undefinded' == data[value] || data[value]== '' || data[value]== null || data[value].trim()===''){
 					return true;
 				}
 				return false;

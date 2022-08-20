@@ -33,8 +33,8 @@
 		)
 			VALUES 
 		(
-			sf_new_reservation_code(),
-			#{reservationCtg},
+			sf_new_reservation_cd(),
+			#{goodsCtgCd},
 			#{facilityGoodsCd},
 			#{userId},
 			#{reservationDate},
@@ -57,12 +57,14 @@
 				reservation_start_time BETWEEN #{reservationStartTime} and #{reservationEndTime}
 				and
 				reservation_end_time BETWEEN #{reservationStartTime} and #{reservationEndTime}
+				and
+				reservation_ctg = #{goodsCtgCd}
 			)
 			or
 			(
-				<![CDATA[reservation_start_time < #{reservationStartTime}]]>
+				<![CDATA[reservation_start_time > #{reservationStartTime}]]>
 				AND
-				<![CDATA[reservation_end_time   > #{reservationEndTime}]]>
+				<![CDATA[reservation_end_time   < #{reservationEndTime}]]>
 			)
 	</select>
   	

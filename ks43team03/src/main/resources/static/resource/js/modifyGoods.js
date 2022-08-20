@@ -104,22 +104,12 @@ $(function() {
 	/**
 	 *  다중 파일 업로드
 	 **/
-	var fileInput = $('input[type="file"]').length;
+	var fileInput = $('input[name="deleteImg"]').length + 1;
 	var maxFileNum = 4;
 	var minFileNum = 0;
 	console.log(fileInput);
-	//추가
-	$('#plus-button').on('click', function() {
-		if(fileInput < maxFileNum) {
-			var newLi = $(this).parent().clone(true);
-			newLi.children('.lesson-img').val('');
-			$(this).parent().parent().append(newLi);
-			
-			fileInput++;
-		} else {
-			alert("최대 올릴 수 있는 이미지의 개수는 4개입니다.");
-		}
-	});
+	//추가	
+
 	//사진 변경
 	$('input[name="modiFile"]').on('change', function() {
 		
@@ -127,7 +117,7 @@ $(function() {
 	$('#plus-button').on('click', function() {
 		if(fileInput < maxFileNum) {
 			var newLi = $(this).parent().clone(true);
-			newLi.children('.lesson-img').val('');
+			newLi.children('.newLine').val('');
 			$(this).parent().parent().append(newLi);
 			
 			fileInput++;

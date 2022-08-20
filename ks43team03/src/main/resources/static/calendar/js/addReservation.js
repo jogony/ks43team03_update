@@ -81,9 +81,13 @@ function addReservation(fixedDate) {
 		         price = getPrice(fixedDate, reservationStartTime.val(), reservationEndTime.val());
                  $('#totlaPrice').html(price);
                  $('#price').val(price);
+                 $('#bookingPrice').val(price);
 		         $('.startTime').html(reservationStartTime.val());
+		         $('#bookingStartTime').val(reservationStartTime.val());
 		         $('.endTime').html(reservationEndTime.val());
+		         $('#bookingEndTime').val(reservationEndTime.val());
 		         $('.dateCheck').html(clickDay);
+		         $('#bookingDate').val(clickDay);
            	 }
          }
       }
@@ -130,4 +134,8 @@ function addReservation(fixedDate) {
 		
 		return sumPrice
 	}
+	//모달 창 닫기
+	$('#updateEvent').on('click', function() {
+		$('.modalClose').trigger('click');
+	})
 };

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -123,6 +124,7 @@ public class BoardController {
 	
 	/* 게시글 등록 처리 */
 	@PostMapping("/addBoard")
+	@ResponseBody
 	public String addBoard(Board board
 						  ,RedirectAttributes reAttr
 					 	  ,@RequestParam MultipartFile[] boardImgFile
@@ -130,6 +132,7 @@ public class BoardController {
 		System.out.println("------------------------게시글 등록 처리-----------------------------");
 		
 		log.info("회원이 입력한 게시글 내용 : {}", board); 
+		//log.info("boardImgFile : {}", boardImgFile[0].getOriginalFilename());
 		
 		String serverName = request.getServerName();
 		String fileRealPath = "";
@@ -150,8 +153,8 @@ public class BoardController {
 		reAttr.addAttribute("boardPostCd", boardPostCd);
 		
 		System.out.println("------------------------게시글 등록 처리 끝-----------------------------");
-		
-		return "redirect:/board/boardList";
+
+		return "/board/boardDetail?boardPostCd="+boardPostCd;
 	}
 	
 	/* 게시글 등록 페이지 */

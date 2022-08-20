@@ -11,28 +11,27 @@
 						<li><a th:href="@{/}">관리자 페이지</a></li>
 					</ul>
 				</li>
-				<li><a><i class="fa fa-bank"></i> 시설관리!(정다운) <span class="fa fa-chevron-down"></span></a>
+				<li><a><i class="fa fa-bank"></i> 시설관리(정다운) <span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
 						<li><a th:href="@{/adminFacility/addFacility}">시설등록</a></li>
 						<li><a th:href="@{/adminFacility/adminFacilityList}">전체시설목록</a></li>
 						<li><a th:href="@{/adminFacility/adminFacilityListById}">시설목록(시설관리자)</a></li>
 					</ul>
 				</li>
-				<li><a><i class="fa fa-table"></i> 레슨관리!(김선원) <span class="fa fa-chevron-down"></span></a>
+				<li><a><i class="fa fa-table"></i> 레슨관리(김선원) <span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
 						<li><a th:href="@{/admin/addGoods(goodsCtgCd=lesson)}">lesson추가</a></li>
 						<li><a th:href="@{/lesson/facilityLessonList}">시설 내 레슨 조회</a></li>
-						<li><a href="#">시설 내 레슨 예약 현황</a></li>
 					</ul>
 				</li>
-				<li><a><i class="fa fa-tag"></i> 이용권관리#(위찬복) <span class="fa fa-chevron-down"></span></a>
+				<li><a><i class="fa fa-tag"></i> 이용권관리(위찬복) <span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
 						<li><a th:href="@{/pass/addPass}">이용권</a></li>
 						<li><a th:href="@{/pass/admin/passList}">전체이용권(관리자)목록</a></li>
 						<li><a th:href="@{/pass/passList}">이용권(시설관리자)목록</a></li>
 					</ul>
 				</li>
-				<li><a><i class="fa fa-clone"></i> 구장관리!(정다운) <span class="fa fa-chevron-down"></span></a>
+				<li><a><i class="fa fa-clone"></i> 구장관리(정다운) <span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
 						<li><a th:href="@{/stadium/addStadium}">구장등록</a></li>
 						<li><a th:href="@{/stadium/adminStadiumList}">전체구장목록</a></li>
@@ -50,26 +49,19 @@
 				</li>
 				<li><a><i class="fa fa-shopping-cart"></i> 주문목록<span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
-						<li><a th:href="@{/admin/order/orderList}">주문리스트!</a></li>
+						<li><a th:href="@{/admin/order/orderList}">주문리스트</a></li>
 					</ul>
 				</li>
-				<li><a><i class="fa fa-users"></i> 회원관리!(강신호) <span class="fa fa-chevron-down"></span></a>
+				<li><a><i class="fa fa-users"></i> 회원관리(강신호) <span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
 						<li><a th:href="@{/user/facilityUser}">시설내회원목록</a></li>
 						<li><a th:href="@{/loginHistory}">로그인기록</a></li>
 					</ul>
 				</li>
-				<li><a><i class="fa fa-calendar"></i> 예약관리 <span class="fa fa-chevron-down"></span></a>
-					<ul class="nav child_menu">
-						<li><a href="page_403.html">403 Error</a></li>
-						<li><a href="page_404.html">404 Error</a></li>
-						<li><a href="page_500.html">500 Error</a></li>
-						<li><a href="plain_page.html">Plain Page</a></li>
-						<li><a href="login.html">Login Page</a></li>
-						<li><a href="pricing_tables.html">Pricing Tables</a></li>
-					</ul>
+				<li>
+					<a><i class="fa fa-calendar"></i> 예약관리 <span class="fa fa-chevron-down"></span></a>
 				</li>
-				<li><a><i class="fa fa-comments-o"></i> 후기관리!(정다운) <span class="fa fa-chevron-down"></span></a>
+				<li><a><i class="fa fa-comments-o"></i> 후기관리(정다운) <span class="fa fa-chevron-down"></span></a>
 					<ul class="nav child_menu">
 						<li><a th:href="@{/review/adminReviewList}">전체후기조회</a></li>
 						<li><a th:href="@{/review/adminReviewListById}">시설 후기 조회(시설관리자)</a></li>

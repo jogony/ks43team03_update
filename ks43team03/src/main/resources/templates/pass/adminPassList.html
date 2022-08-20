@@ -46,7 +46,7 @@
 												<td class=" " th:text="${pass.passPrice}"> <i class="success fa fa-long-arrow-up"></i></td>
 												<td class=" " th:text="${pass.passRegDate}"></td>
 												<td class=" " th:text="${pass.passState}"></td>
-												<td class="last"><a th:href="@{/pass/admin/passDetail(passCd=${pass.passCd},facilityGoodsCd=${pass.facilityGoodsCd})}">상세보기</a>
+												<td class="last"><a th:href="@{/pass/passDetail(passCd=${pass.passCd},facilityGoodsCd=${pass.facilityGoodsCd})}">상세보기</a>
 												</td>
 											</tr>
 											<tr th:unless="${not #lists.isEmpty(passList)}">

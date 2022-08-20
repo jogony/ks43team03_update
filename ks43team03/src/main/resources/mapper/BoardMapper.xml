@@ -151,7 +151,7 @@
 		INSERT INTO board_post
 			(board_post_cd
 			, board_ctg_cd
-			<!-- , facility_cd -->
+			, facility_cd
 			, user_id
 			, board_post_title
 			, board_post_content
@@ -162,7 +162,7 @@
 		VALUES(
 			#{boardPostCd}	
 			, #{boardCtgCd}
-			<!-- , #{facilityCd} -->
+			, #{facilityCd}
 			, #{userId}
 			, #{boardPostTitle}
 			, #{boardPostContent}

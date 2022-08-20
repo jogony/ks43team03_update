@@ -1,10 +1,13 @@
 package ks43team03.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -94,6 +97,8 @@ public class TrainerController {
 		if(userId != null && !userId.isEmpty()) {
 			
 			TrainerProfile trainerProfile = trainerService.getTrainerProfileByUserId(userId);
+			
+			log.info("trainerProfile : {}", trainerProfile);
 			
 			model.addAttribute("trainerProfile",	trainerProfile);
 		}
@@ -283,7 +288,8 @@ public class TrainerController {
 	public String addTrainer(TrainerProfile trainerProfile
 							,RedirectAttributes reAttr
 							,@RequestParam MultipartFile[] trainerImgFile
-							,HttpServletRequest request) {
+							,HttpServletRequest request
+							,HttpServletResponse response) throws IOException {
 		
 		log.info("trainerProfile : {}",trainerProfile);
 		
@@ -299,8 +305,27 @@ public class TrainerController {
 			//배포용 주소
 			fileRealPath = request.getSession().getServletContext().getRealPath("/WEB-INF/classes/static/");
 		}
-		      
-		String trainerCd = trainerService.addtrainer(trainerProfile, trainerImgFile, fileRealPath);
+		
+		String trainerCd = null;
+		
+		try {
+			trainerCd = trainerService.addtrainer(trainerProfile, trainerImgFile, fileRealPath);
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			
+			log.info("error : {}", "error");
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("text/html; charset=utf-8;");
+			PrintWriter writer = response.getWriter();
+			writer.println("<script>alert('이미 등록된 아이디입니다.'); "
+					+ "location.href='/user';</script>");
+			writer.flush();
+			
+			return null;
+		}
+		
 		log.info("trainerCd : {}",trainerCd);
 		
 		reAttr.addAttribute("trainerCd", trainerCd);

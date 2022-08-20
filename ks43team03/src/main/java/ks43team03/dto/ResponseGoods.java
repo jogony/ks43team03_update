@@ -2,8 +2,10 @@ package ks43team03.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class ResponseGoods {
 	private FacilityGoods facilityGoods;
 	

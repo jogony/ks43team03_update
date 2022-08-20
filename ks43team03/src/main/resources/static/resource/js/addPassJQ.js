@@ -136,7 +136,7 @@ $(function() {
 	$('#plus-button').on('click', function() {
 		if(fileInput < maxFileNum) {
 			var newLi = $(this).parent().clone(true);
-			newLi.children('.lesson-img').val('');
+			newLi.children('.newLine').val('');
 			$(this).parent().parent().append(newLi);
 			
 			fileInput++;

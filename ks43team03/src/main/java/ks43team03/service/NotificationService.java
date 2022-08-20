@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import ks43team03.common.EmitterRepository;
 import ks43team03.dto.Boomk;
+import ks43team03.dto.Notification;
 
 @Service
 public class NotificationService {
@@ -34,9 +35,9 @@ public class NotificationService {
         }
     }
 
-    /*
-    public void send(String receiver, Boomk boomk, String content) {
-        Notification notification = createNotification(receiver, boomk, content);
+    
+    public void send(String receiver, String content) {
+        Notification notification = new Notification(receiver, content);
         String id = String.valueOf(receiver);
         
         // 로그인 한 유저의 SseEmitter 모두 가져오기
@@ -46,15 +47,15 @@ public class NotificationService {
                     // 데이터 캐시 저장(유실된 데이터 처리하기 위함)
                     emitterRepository.saveEventCache(key, notification);
                     // 데이터 전송
-                    sendToClient(emitter, key, NotificationResponse.from(notification));
+                    sendToClient(emitter, key, content);
                 }
         );
     }
-	*/
+	
 
-    public SseEmitter subscribe(String userId, String lastEventId) {
+    public SseEmitter subscribe(String id, String receiverId, String lastEventId) {
         
-        String id = userId + "_" + System.currentTimeMillis();
+        
         
         
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
@@ -66,16 +67,17 @@ public class NotificationService {
 
         // 503 에러를 방지하기 위한 더미 이벤트 전송
         log.info("503 에러를 방지하기 위한 더미 이벤트 전송");
-        sendToClient(emitter, id, "EventStream Created. [userId=" + userId + "]");
+        sendToClient(emitter, id, "EventStream Created. [userId=" + id + "]");
         log.info("503 에러를 방지하기 위한 더미 이벤트 전송 완료");
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
         if (!lastEventId.isEmpty()) {
-            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByuserId(String.valueOf(userId));
+            Map<String, Object> events = emitterRepository.findAllEventCacheStartWithByuserId(String.valueOf(id));
             events.entrySet().stream()
                   .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
                   .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
         }
+        send(receiverId, "좋아요 요청이 도착했습니다.");
 
         return emitter;
     }
@@ -85,19 +87,25 @@ public class NotificationService {
 	public SseEmitter login(String userId) {
 		String id = userId + "_" + System.currentTimeMillis();
         
-        
+   
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
         log.info("emitter : {}" ,emitter);
         
+        
         emitter.onCompletion(() -> emitterRepository.deleteById(id));
         emitter.onTimeout(() -> emitterRepository.deleteById(id));
-
+       
 
         // 503 에러를 방지하기 위한 더미 이벤트 전송
         log.info("503 에러를 방지하기 위한 더미 이벤트 전송");
-        sendToClient(emitter, id, "로그인 되었습니다.");
+        send(id, "로그인 되었습니다.");
+        
         log.info("503 에러를 방지하기 위한 더미 이벤트 전송 완료");
 		return emitter;
 		
+	}
+
+	public void logout(String userId) {
+		emitterRepository.deleteAllEmitterStartWithId(userId);
 	}
 }

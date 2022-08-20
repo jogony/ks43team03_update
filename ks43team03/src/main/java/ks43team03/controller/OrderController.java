@@ -41,7 +41,6 @@ public class OrderController {
 	private final FacilityGoodsService facilityGoodsService;
 	private final UserService userService;
 	
-	
 	public OrderController(OrderService orderService,FacilityGoodsService facilityGoodsService,UserService userService) {
 		this.orderService = orderService;
 		this.facilityGoodsService = facilityGoodsService;
@@ -63,19 +62,23 @@ public class OrderController {
 	@GetMapping("/addOrder")
 	public String order(Model model,HttpSession session ,
 									 @RequestParam(name = "facilityGoodsCd" , required = false)String facilityGoodsCd,
-									 @RequestParam(name = "goodsCtgCd" , required = false)String goodsCtgCd) {
+									 @RequestParam(name = "goodsCtgCd" , required = false)String goodsCtgCd,
+									 @RequestParam(name = "price",required = false)String price) {
 		
 		
 		log.info("facilityGoodsCd : {}", facilityGoodsCd);
 		log.info("goodsCtgCd : {}", goodsCtgCd);
-		
+		log.info("price : {}", price);
 		String userId = (String)session.getAttribute("SID");
 		User user = userService.getUserInfoById(userId);
 		
 		if(user == null) {
-			throw new CustomException(ErrorMessage.IS_EMPTY_USER);
+			return "redirect:/login";
 		}
 		ResponseGoods facilityGoods = facilityGoodsService.getFacilityGoodsCd(facilityGoodsCd,goodsCtgCd);
+		if("stadium".equals(goodsCtgCd)) {
+			facilityGoods.setPrice(Integer.parseInt(price));
+		}
 		model.addAttribute("title", "결제 페이지");
 		model.addAttribute("user", user);
 		model.addAttribute("goods", facilityGoods);

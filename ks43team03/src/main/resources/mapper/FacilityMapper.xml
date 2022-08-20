@@ -239,7 +239,7 @@
 					and f.facility_nm LIKE CONCAT('%', #{searchValue}, '%')
 		   		</if>
 	   		</trim>
-	   		ORDER BY facility_reg_date DESC
+	   		ORDER BY facility_reg_date asc
 			LIMIT #{startRow}, #{rowPerPage}
 		</select>
 	

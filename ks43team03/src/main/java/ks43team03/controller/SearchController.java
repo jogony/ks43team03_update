@@ -56,7 +56,6 @@ public class SearchController {
 		searchMap.put("searchValue", sv);
 		
 		Map<String, Object> resultMap = searchService.findSearch(searchName, searchMap, currentPage);
-		List<Area> 	 areaList		  = commonService.getAreaList();
 		List<Sports> sportsList		  = commonService.getSportsList();
 		
 		model.addAttribute("sportsList"			, sportsList);
