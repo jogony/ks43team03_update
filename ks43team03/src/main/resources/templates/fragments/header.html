@@ -1,8 +1,28 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
 <!-- Header Section Begin -->
 <header class="header" th:fragment="headerFragment">
+	<th:block layout:fragment="customJs">
+		<script type="text/javascript" th:src="@{/js/jquery-3.6.0.min.js}"></script>	
+		<script>
+			$(function() {
+				var userId = '[[${session.SID}]]';
+				$('#logout').on('click', function() {
+					const eventSource = new EventSource('/logout?userId=' + userId);
+				    eventSource.onopen = (e) => {
+				       
+				    };
+
+				    eventSource.onerror = (e) => {
+				        console.log(e);
+				    };
+				    location.href="/logout";
+				});
+			});
+		</script>
+	</th:block>	
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xl-2 col-lg-2">
@@ -42,13 +62,13 @@
 				<div class="header__right">
 					<div class="header__right__auth">
 						<th:block th:if="${session.SID == null}">
-							<a th:href="@{/login}">Login</a><small>(김지혜)</small></a>
+							<a th:href="@{/login}">Login</a><small>(김지혜)</small>
 						</th:block>
 						<th:block th:unless="${session.SID == null}">
 							<a th:href="@{/user/userDetail}">
 								[[${session.SNAME}]]님 회원정보 수정
 							</a>
-							<a th:href="@{/logout}">Logout<br/><small>(강신호) / (김지혜)</small></a>
+							<a href="#" id="logout">Logout<br/><small>(강신호) / (김지혜)</small></a>
 							
 							
 						</th:block>

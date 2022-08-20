@@ -134,4 +134,8 @@ function addReservation(fixedDate) {
 		
 		return sumPrice
 	}
+	//모달 창 닫기
+	$('#updateEvent').on('click', function() {
+		$('.modalClose').trigger('click');
+	})
 };

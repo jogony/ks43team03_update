@@ -111,7 +111,7 @@ function addLesson(fixedDate) {
 				reservationStartTime : reservationStartTime.val(),
 				reservationEndTime	 : reservationEndTime.val(),
 				facilityGoodsCd 	 : $('#facilityGoodsCd').val(),
-				reservationCtg       : 'lesson'
+				goodsCtgCd           : 'lesson'
 			}
 			swal({
 				title: '😦정말 예약하시겠습니까?',

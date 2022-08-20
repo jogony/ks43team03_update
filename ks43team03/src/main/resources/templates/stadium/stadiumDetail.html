@@ -243,7 +243,7 @@
 															        <div class="modal fade" tabindex="-1" role="dialog" id="eventModal">
 															            <div class="modal-dialog" role="document">
 															                <div class="modal-content" style="width: 580px;">
-																                <form action="calendar/reservation" id="reservationData">
+																                
 																                    <div class="modal-header">
 																                        <button type="button" class="close modalClose" data-dismiss="modal" aria-label="Close"><span
 																                                aria-hidden="true">&times;</span></button>
@@ -310,7 +310,7 @@
 																                    <div class="modal-footer modalBtnContainer-modifyEvent">
 																                        <button type="button" class="btn btn-primary" id="updateEvent">저장하기</button>
 																                    </div>
-															                    </form>
+															                    
 															                </div><!-- /.modal-content -->
 															            </div><!-- /.modal-dialog -->
 															        </div><!-- /.modal -->
@@ -330,20 +330,19 @@
 							                                            <input type="hidden" id="facilityGoodsCd" name="facilityGoodsCd" th:value="${l.facilityGoodsCd}">
 							                                            <input type="hidden" id="userId" name="userId" th:value="${session.SID}">
 							                                            <input type="hidden" id="goodsCtgCd" name="goodsCtgCd" value="stadium">
-							                                            
 							                                        </li>
 							                                        <li>
 							                                        	예약날짜 
 							                                        	<span class="dateCheck pre">-</span>
-							                                        	<input type="hidden" id="bookingDate" name="bookingDate">	
+							                                        	<input type="hidden" id="bookingDate" name="reservationDate">	
 							                                        </li>
 							                                        <li>
 							                                        	예약시간
 							                                        	<span class="totalTime"></span>
-							                                        	<input type="hidden" id="bookingEndTime" name="bookingEndTime">
+							                                        	<input type="hidden" id="bookingEndTime" name="resrvationStartTime">
 							                                        	<span class="endTime pre"></span>
 							                                        	<span> - </span>
-							                                        	<input type="hidden" id="bookingStartTime" name="bookingStartTime">
+							                                        	<input type="hidden" id="bookingStartTime" name="reservationEndTime">
 							                                        	<span class="startTime pre"></span>
 							                                        </li>
 							                                    </ul>
