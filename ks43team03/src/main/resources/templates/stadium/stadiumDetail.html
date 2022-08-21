@@ -27,11 +27,13 @@
 			}
 			/* 시설 등록시 유효성 검사 */
 			$('#bookingBtn').click(function(){
+				
+				
 				var isSubmit = true;
 				var id = $("#userId").val();
 				var bdate = $("#bookingDate").val();
 				var btime = $("#bookingStartTime").val();
-				
+				console.log(bdate + "날짜");
 				if(id == ''){
 					alert("로그인 후 이용가능합니다.");
 					return false;
@@ -145,7 +147,7 @@
     <section class="product-details spad">
         <div class="container">
             <div class="row">
-             <th:block th:if="${not #lists.isEmpty(stadiumDetail)}" th:each="l : ${stadiumDetail}">
+            <th:block th:if="${not #lists.isEmpty(stadiumDetail)}" th:each="l : ${stadiumDetail}">
                 <div class="col-lg-6">
                     <div class="product__details__pic">
                         <div class="product__details__pic__left product__thumb nice-scroll">
@@ -204,7 +206,7 @@
 	                            <div class="tab-pane active" id="tabs-1" role="tabpanel">	           
 	                                <section class="checkout spad" style="padding-top: 20px;">
 								        <div class="container">
-								            <form id="stadiumForm" th:action="@{/booking/addBooking}" method="post" class="checkout__form">
+								            <form id="stadiumForm" th:action="@{/order/addOrder}" method="get" class="checkout__form">
 								                <div class="row">
 								                    <div class="col-lg-8" style="padding-bottom: 25px;">
 								                        <h5>구장정보</h5>

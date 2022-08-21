@@ -25,28 +25,9 @@ import ks43team03.service.CommonService;
 @RequestMapping("/booking")
 public class BookingController {
 
-	private final CommonService commonService;
 	
 	private static final Logger log = LoggerFactory.getLogger(BookingController.class);
 
-	
-	public BookingController(CommonService commonService) {
-		this.commonService = commonService;
-	}
-	
-	@PostMapping("/addBooking")
-	public String addBooking(@RequestParam Map<String, String> reservationData, HttpSession session
-							,RedirectAttributes reAttr) {
-		
-		reservationData.put("userId", (String)session.getAttribute("SID"));
-		log.info("reservationData : {}", reservationData);
-		commonService.setRservation(reservationData);
-		
-		reAttr.addAttribute("facilityGoodsCd", reservationData.get("facilityGoodsCd"));
-		reAttr.addAttribute("goodsCtgCd", reservationData.get("goodsCtgCd"));
-		reAttr.addAttribute("price", reservationData.get("bookingPrice"));
-		return "redirect:/order/addOrder";
-	}
 	
 	
 	

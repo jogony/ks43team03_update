@@ -1,6 +1,7 @@
 package ks43team03.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,23 @@ public class FacilityGoodsService {
 	}
 	
 	// 상폼하나 조회 
+	public ResponseGoods getFacilityGoodsCd(Map<String, String> reservationData) {
+		String goodsCtgCd 	   = reservationData.get("goodsCtgCd");
+		String facilityGoodsCd = reservationData.get("facilityGoodsCd");
+		switch (goodsCtgCd) {
+		case "lesson":
+			FacilityGoods lessonGoods = facilityGoodsMapper.getFacilityGoodsLesson(facilityGoodsCd);
+			return lessonGoods.lessonDto();
+		case "stadium":
+			FacilityGoods stadiumGoods = facilityGoodsMapper.getFacilityGoodsStadium(facilityGoodsCd);
+			return stadiumGoods.stadiumDto();
+		case "pass":
+			FacilityGoods passGoods = facilityGoodsMapper.getFacilityGoodsPass(facilityGoodsCd);
+			return passGoods.passDto();
+		}
+		throw new CustomException(ErrorMessage.NOT_FOUND_GOODS);
+	}
+	
 	public ResponseGoods getFacilityGoodsCd(String facilityGoodsCd, String goodsCtgCd ) {
 
 		switch (goodsCtgCd) {
