@@ -32,6 +32,7 @@ import ks43team03.dto.User;
 import ks43team03.dto.type.GoodsType;
 import ks43team03.dto.type.OrderState;
 import ks43team03.exception.CustomException;
+import ks43team03.mapper.CommonMapper;
 import ks43team03.mapper.FacilityGoodsMapper;
 import ks43team03.mapper.OrderMapper;
 import ks43team03.mapper.PassMapper;
@@ -43,17 +44,19 @@ public class OrderService {
 
 	private final OrderMapper orderMapper;
 	private final UserMapper userMapper;
+	private final CommonMapper commonMapper;
 	private final FacilityGoodsMapper facilityGoodsMapper;
 	private final PassMapper passMapper;
 	private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
 	
 	public OrderService(OrderMapper orderMapper,UserMapper userMapper,
-						FacilityGoodsMapper facilityGoodsMapper,PassMapper passMapper) {
+						FacilityGoodsMapper facilityGoodsMapper,PassMapper passMapper, CommonMapper commonMapper) {
 		this.orderMapper = orderMapper;
 		this.userMapper = userMapper;
 		this.facilityGoodsMapper = facilityGoodsMapper;
 		this.passMapper = passMapper;
+		this.commonMapper = commonMapper;
 	}
 
 
@@ -65,10 +68,21 @@ public class OrderService {
 	public Order addOrder(Order.Request req, ResponseGoods goods) {
 		
 		log.info("요청 데이터의 PayType : {}", req.getPayType());
+		Map<String, String> reservationData = new HashMap<>();
 		
-		String paytype = req.getPayType().getName();
-		String userId = req.getUserId();
-		int orderPayPrice = req.getOrderPayPrice();
+		reservationData.put("facilityGoodsCd", 		req.getFacilityGoodsCd());
+		reservationData.put("userId", 				req.getUserId());
+		reservationData.put("reservationDate", 		req.getReservationDate());
+		reservationData.put("reservationStartTime", req.getReservationStartTime());
+		reservationData.put("reservationEndTime", 	req.getReservationEndTime());
+		reservationData.put("goodsCtgCd",	 		req.getGoodsCtgCd());
+		
+		
+		
+		
+		String paytype 		 = req.getPayType().getName();
+		String userId 		 = req.getUserId();
+		int orderPayPrice 	 = req.getOrderPayPrice();
 		String goodsCategory = goods.getFacilityGoods().getGoodsCtgCd();
 		
 		
@@ -114,6 +128,12 @@ public class OrderService {
 		orderMapper.addOrder(order);
 		order.setPayName(paytype);
 		order.setUserName(user.getUserName());
+		
+		String reservationCheck = commonMapper.reservationCheck(reservationData);
+		if(reservationCheck == null) {
+			commonMapper.setReservation(reservationData);
+			
+		}
 		return order;
 	}
 

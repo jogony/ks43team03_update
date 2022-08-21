@@ -1,7 +1,9 @@
 package ks43team03.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -17,10 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ks43team03.dto.GoodsCategoryDto;
 import ks43team03.dto.Order;
+import ks43team03.dto.Reservation;
 import ks43team03.dto.ResponseGoods;
 import ks43team03.dto.User;
-import ks43team03.exception.CustomException;
-import ks43team03.exception.ErrorMessage;
 import ks43team03.service.FacilityGoodsService;
 import ks43team03.service.OrderService;
 import ks43team03.service.UserService;
@@ -60,16 +61,22 @@ public class OrderController {
 	
 	
 	@GetMapping("/addOrder")
-	public String order(Model model,HttpSession session ,
-									 @RequestParam(name = "facilityGoodsCd" , required = false)String facilityGoodsCd,
-									 @RequestParam(name = "goodsCtgCd" , required = false)String goodsCtgCd,
-									 @RequestParam(name = "price",required = false)String price) {
+	public String order(Model model,
+						HttpSession session,
+						Reservation reservationData,
+						@RequestParam (name = "bookingPrice", required = false) String price,
+						@RequestParam (name = "goodsCtgCd", required = false) String goodsCtgCd) {
+		
+		Map<String, String> map = new HashMap<>();
+		
+		String facilityGoodsCd  = reservationData.getFacilityGoodsCd();
 		
 		
 		log.info("facilityGoodsCd : {}", facilityGoodsCd);
 		log.info("goodsCtgCd : {}", goodsCtgCd);
 		log.info("price : {}", price);
-		String userId = (String)session.getAttribute("SID");
+		String userId = (String) session.getAttribute("SID");
+		reservationData.setReservationId(userId);
 		User user = userService.getUserInfoById(userId);
 		
 		if(user == null) {
@@ -82,6 +89,7 @@ public class OrderController {
 		model.addAttribute("title", "결제 페이지");
 		model.addAttribute("user", user);
 		model.addAttribute("goods", facilityGoods);
+		model.addAttribute("reservationData" ,reservationData);
 		return "order/orderForm";
 	}
 

@@ -90,7 +90,7 @@ function addReservation(fixedDate) {
 		         $('#bookingDate').val(clickDay);
            	 }
          }
-      }
+      }	
    });
    //예약 하기
    $('#updateEvent').on('click', function() {

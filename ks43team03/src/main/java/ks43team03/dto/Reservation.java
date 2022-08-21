@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 public class Reservation {
 	String reservationCd;
+	String goodsCtgCd;
 	String facilityGoodsCd;
 	String reservationId;
 	String reservationDate;

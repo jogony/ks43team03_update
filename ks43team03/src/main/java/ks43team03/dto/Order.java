@@ -92,8 +92,10 @@ public class Order {
 		private int usedPoint;
 		private int orderPayPrice;
 		private PayType payType;
-		
-		
+		private String reservationDate;
+		private String reservationStartTime;
+		private String reservationEndTime;
+	
 		
 
 

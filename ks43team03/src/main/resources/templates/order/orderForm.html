@@ -123,6 +123,10 @@
 				
 			</div>
 			<input type="hidden" name="usedPoint2" id="usedPoint2">
+			<input type="hidden" name="reservationDate" 	 th:value="${reservationData.reservationDate}">
+			<input type="hidden" name="reservationStartTime" th:value="${reservationData.reservationStartTime}">
+			<input type="hidden" name="reservationEndTime" 	 th:value="${reservationData.reservationEndTime}">
+		
 			<!-- input tag hidden -->
 			<div class="card row">
 				<div class="card-header col-sm-12">
@@ -263,7 +267,10 @@
 					userPoint : $('input[name="userPoint"]').val(),
 					usedPoint : $('input[name="usedPoint2"]').val(),
 					orderPayPrice : $('#sum-pay').val(),
-					payType : $('input[name=method]:checked').val()
+					payType : $('input[name=method]:checked').val(),
+					reservationDate : $('input[name=reservationDate]').val(),
+					reservationStartTime : $('input[name=reservationStartTime]').val(),
+					reservationEndTime : $('input[name=reservationEndTime]').val(),
 			};
 			if(checkPayAndOrder(data)){
 				alert('등록되지 않은 결제 정보가 있습니다.');
@@ -306,6 +313,11 @@
 				orderName: data.goodsName,
 				customerName: data.userName,
 				method : data.payName,
+				facilityGoodsCd : $('input[name="facilityGoodsCd"]').val(),
+				goodsCtgCd : $('input[name="goodsCtgCd"]').val(),
+				reservationDate : $('input[name=reservationDate]').val(),
+				reservationStartTime : $('input[name=reservationStartTime]').val(),
+				reservationEndTime : $('input[name=reservationEndTime]').val(),
 				successUrl: window.location.origin + "/pay/success",
 				failUrl: window.location.origin + "/pay/fail",
 			};
