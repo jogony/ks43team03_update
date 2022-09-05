@@ -72,11 +72,19 @@
 									<img th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
 								</a>
 							</th:block>
+							<th:block th:unless="${not #lists.isEmpty(lesson.tFile)}">
+								<a class="pt">
+									<img th:src="@{/images/notImage.jfif}" alt="">
+								</a>
+							</th:block>
 						</div>
 						<div class="product__details__slider__content">
 							<div class="product__details__pic__slider owl-carousel">
 								<th:block  th:if="${not #lists.isEmpty(lesson.tFile)}" th:each="t, i : ${lesson.tFile}">                           
 									<img th:data-hash="@{product-} + ${i.index+1}" class="product__big__img" th:src="@{'/' + ${#strings.replace(t.storedFilePath,'\','/')}}" alt="">
+								</th:block>
+								<th:block  th:unless="${not #lists.isEmpty(lesson.tFile)}">                           
+									<img class="product__big__img" th:src="@{/images/notImage.jfif}" alt="">
 								</th:block>
 							</div>
 						</div>
@@ -268,7 +276,37 @@
 								</div>
 							</div>
 							<div class="tab-pane" id="tabs-3" role="tabpanel">
-						      <h6>Reviews ( 2 )</h6>
+								<div class="board__details__comment">
+									<!-- <h5 th:text="${reviewCount} + ' REVIEW'"></h5> -->
+									<h5>Review</h5>
+		                            <a data-toggle="modal" data-target="#reviewModal" class="leave-btn">후기 등록</a>
+		                            <div class="board__comment__item" th:if="${not #lists.isEmpty(reviewList)}" th:each="l:${reviewList}">
+		                                <div class="board__comment__item__pic">
+		                                    <img src="img/board/details/comment-1.jpg" alt="">
+		                                </div>
+		                                <div class="board__comment__item__text">
+		                                    <h6 th:text="${l.userId}"></h6>
+		                                    <p th:text="${l.reviewDetail}"></p>
+		                                    <ul>
+		                                        <li><i class="fa fa-clock-o"></i><a th:text="${l.reviewRegDate}"></a></li>
+		                                        <li><i class="fa fa-heart-o"></i> 12</li>
+		                                        <li id="removeComment">
+													<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="#CA1515" class="bi bi-trash3" viewBox="0 0 16 16">
+													  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
+													</svg>
+													<a class="removeReview" th:href="@{/review/reviewRemove(reviewCd = ${l.reviewCd}, userId = ${session.SID}, facilityCd = ${facilityDetail.facilityCd})}">
+														<input type="hidden" id="sId" name="sId" th:value="${session.SID}">
+														<input type="hidden" id="userId" name="userId" th:value="${l.userId}">
+														삭제
+													</a>
+												</li>
+		                                    </ul>
+		                                </div>
+		                            </div>
+									<div class="board__comment__item text-center" th:unless="${not #lists.isEmpty(reviewList)}" >
+										<a>후기가 없습니다.</a>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -335,6 +373,61 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- modal -->
+	<div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<form id="reviewForm" method="post">
+			<div class="modal-dialog" role="document">
+		 		<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">후기 작성</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group row" style="margin-bottom: 0px;">
+							<div class="col-md-3 col-sm-3">								 
+								<input type="hidden" name="payCd" value="pay_cd_3"> 
+								<input type="hidden" name="goodsCtgCd" value="lesson"> 
+								<input type="hidden" name="userId" th:value="${session.SID}">								
+								<th:block  th:if="${not #lists.isEmpty(facilityDetail)}" th:each="l : ${facilityDetail}">								
+									<input type="hidden" name="facilityCd" th:value="${l.facilityCd}">							
+								</th:block>
+								<label class="control-label">평점</label>
+							</div>
+							<div class="mb-3" id="myform">
+								<fieldset>
+									<input type="radio" name="reviewScore" value="5" id="rate1"><label
+										for="rate1">★</label>
+									<input type="radio" name="reviewScore" value="4" id="rate2"><label
+										for="rate2">★</label>
+									<input type="radio" name="reviewScore" value="3" id="rate3"><label
+										for="rate3">★</label>
+									<input type="radio" name="reviewScore" value="2" id="rate4"><label
+										for="rate4">★</label>
+									<input type="radio" name="reviewScore" value="1" id="rate5"><label
+										for="rate5">★</label>
+								</fieldset>
+							</div>			
+						</div>
+						<div class="form-group row">
+							<div class="col-md-12 col-sm-12">
+								<textarea class="form-control" rows="3"  name="reviewDetail" placeholder="후기를 입력해주세요."></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="form-group">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">취소</button>
+							<button type="button" class="btn btn-info" id="reviewBtn">저장</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<!-- modal end -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.2.0/sweetalert2.all.min.js"></script>
 	<script th:src="@{/calendar/js/jquery.min.js}"></script>
 	<script th:src="@{/resource/js/lesson/detailLessonForUser.js}"></script>
